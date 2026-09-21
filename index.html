@@ -219,9 +219,9 @@
           <dt>When the policy begins</dt>
           <dd>The 2019 base year; the limit compounds forward from there.</dd>
           <dt>What this receipt compares</dt>
-          <dd>A single fiscal year, FY2025-26: the county levy actually collected versus the limit for that year.</dd>
+          <dd>A single fiscal year, FY2025-26: the county property tax actually paid versus what it would have been under the limit.</dd>
           <dt>The "percent lower" figure</dt>
-          <dd>Uses the county's 5-year savings rate published in Data(tax).csv (the last column before grade); it is a county aggregate, not this parcel's single-year ratio.</dd>
+          <dd>The county's 5-year savings rate published in Data(tax).csv (the last column before grade); the bill assumes that rate extends to the property, so what you could have paid = what you paid &times; (1 &minus; rate).</dd>
           <dt>Why one year, not the five-year sum</dt>
           <dd>A parcel's assessment can shift relative to the county tax base over time, so summing years would assume a fixed share. FY2025-26 is compared on the current assessment.</dd>
           <dt>Taxes included</dt>
@@ -229,7 +229,7 @@
           <dt>Property value</dt>
           <dd>The parcel's current assessed value from NC OneMap; reassessment timing is not modeled.</dd>
           <dt>Formula</dt>
-          <dd>FY2025-26 actual rate = levy / assessed valuation; scenario levy = min(actual levy, 2019-base benchmark), so the limit never prescribes an increase.</dd>
+          <dd>FY2025-26 bill = assessed value &times; (actual levy / assessed valuation base). Under-limit bill = that bill &times; (1 &minus; savings rate), so the amount saved always matches the published savings rate.</dd>
         </dl>
         <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, U.S. Census population estimates, and BLS CPI-U.</p>
         <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
@@ -394,9 +394,10 @@ function selectParcel(f) {
     return;
   }
 
-  // Amounts are the Data(tax).csv FY2025-26 columns apportioned to this parcel's
-  // assessed value: paid = V * act / X, etc. Only one fiscal year is used because
-  // a parcel's assessment can shift relative to the county base over time.
+  // Paid is the FY2025-26 actual bill (assessed value x actual rate). The counted
+  // savings rate (Data(tax).csv column Q) is assumed to extend to this property's
+  // bill: could-have = paid x (1 - savings rate) and saved = paid x savings rate,
+  // so the percent saved always matches the published figure.
   if (COUNTY.below_benchmark) {
     const nm = COUNTY.label.replace(/ County$/, "");
     sentence.textContent = "Property tax rate growth in " + nm + " County was below the maximum allowed under a levy limit, so this property would not have saved anything.";
@@ -404,13 +405,15 @@ function selectParcel(f) {
     bill.classList.add("hidden");
   } else {
     const paid = (value * COUNTY.act) / COUNTY.x;
-    const could = (value * COUNTY.hyp) / COUNTY.x;
+    const rate = COUNTY.savings_rate;
+    const could = paid * (1 - rate);
+    const saved = paid * rate;
     sentence.classList.add("hidden");
     bill.classList.remove("hidden");
     byId("bPaid").textContent = fmtMoney(paid);
     byId("bCould").textContent = fmtMoney(could);
-    byId("bSaved").textContent = fmtMoney(paid - could);
-    byId("bPct").textContent = Math.round(100 * COUNTY.savings_rate) + "% lower";
+    byId("bSaved").textContent = fmtMoney(saved);
+    byId("bPct").textContent = Math.round(100 * rate) + "% lower";
   }
   byId("billResults").classList.remove("hidden");
 }

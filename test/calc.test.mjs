@@ -174,13 +174,17 @@ test("receipt percentage equals Data(tax).csv column Q (Wake ~11%), not the sing
   assert.ok(Math.abs(BENCHMARKS.wake.savings_rate_fy26 - 0.19449565867922175) < 1e-9);
 });
 
-test("per-property amounts are the FY2025-26 levy columns apportioned by assessed value", () => {
+test("per-property amounts: paid is the FY2025-26 levy scaled by value; the difference follows column Q", () => {
   const V = 291_834;
   const c = BENCHMARKS.wake;
   const paid = (V * c.act) / c.x;
-  const could = (V * c.hyp) / c.x;
+  const rate = c.savings_rate; // column Q = 0.108
+  const could = paid * (1 - rate);
+  const saved = paid * rate;
   assert.ok(Math.abs(paid - 1509.82) < 0.01, `paid ${paid}`);
-  assert.ok(Math.abs(paid - could - 293.65) < 0.01, `saved ${paid - could}`);
+  assert.ok(Math.abs(could - 1346.76) < 0.02, `could ${could}`);
+  assert.ok(Math.abs(saved - 163.06) < 0.02, `saved ${saved}`);
+  assert.ok(Math.abs(saved / paid - rate) < 1e-9, "saved/paid equals column Q");
 });
 
 test("four counties are at/below benchmark for FY2025-26", () => {
