@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2300467f'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
 <script src="calc.js"></script>
 <style>
   :root {
@@ -64,24 +64,66 @@
   #nores { color: var(--red); }
   .hidden { display: none !important; }
 
-  /* Bill */
-  #billResults { margin-top: 26px; }
-  .bill { background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-  .bill-head { padding: 18px 22px; border-bottom: 1px solid var(--line); background: #f8fafc; }
-  .bill-title { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--jlf); font-weight: 800; }
-  .bill-addr { font-size: 17px; font-weight: 700; margin-top: 6px; }
-  .bill-meta { font-size: 13px; color: var(--muted); margin-top: 3px; }
-  .bill-body { padding: 4px 22px; }
-  .bill-row { display: flex; justify-content: space-between; gap: 16px; padding: 15px 0; border-bottom: 1px dashed var(--line); font-size: 15px; }
-  .bill-row:last-child { border-bottom: 0; }
-  .bill-row .amt { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
-  .bill-total { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 18px 22px; background: #fff5f6; border-top: 2px solid var(--line); }
-  .bill-total .lab { font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: 13px; color: var(--red); }
-  .bill-total .amt { font-size: clamp(30px, 6.5vw, 44px); font-weight: 900; color: var(--red); font-variant-numeric: tabular-nums; line-height: 1; }
-  .bill-total .pct { display: block; font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 6px; text-align: right; }
-  .bill-foot { padding: 13px 22px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+  /* Receipt */
+  #billResults { margin-top: 30px; }
+  .receipt {
+    --paper: #fffdf6;
+    position: relative;
+    width: 372px;
+    max-width: 100%;
+    margin: 16px auto 0;
+    padding: 24px 22px 16px;
+    background: var(--paper);
+    color: #1c1c1c;
+    font-family: "Courier Prime", "Courier New", ui-monospace, monospace;
+    font-size: 13.5px;
+    line-height: 1.5;
+    filter: drop-shadow(0 7px 16px rgba(0, 0, 0, .16));
+  }
+  .receipt::before, .receipt::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; height: 10px;
+    background-repeat: repeat-x;
+    background-size: 20px 10px;
+  }
+  .receipt::before {
+    top: -10px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 10 L10 0 L20 10 Z' fill='%23fffdf6'/%3E%3C/svg%3E");
+  }
+  .receipt::after {
+    bottom: -10px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 0 L10 10 L20 0 Z' fill='%23fffdf6'/%3E%3C/svg%3E");
+  }
+  .receipt-brand { text-align: center; font-weight: 700; font-size: 14.5px; letter-spacing: .1em; text-transform: uppercase; }
+  .receipt-title { text-align: center; font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: #6b675c; margin-top: 3px; }
+  .receipt-rule { border-top: 1px dashed #b9b4a5; margin: 12px 0; }
+  .receipt-meta { text-align: center; text-transform: uppercase; letter-spacing: .03em; font-size: 12px; color: #38352e; }
+  .receipt-addr { text-align: center; text-transform: uppercase; letter-spacing: .02em; font-size: 13.5px; font-weight: 700; margin-bottom: 4px; }
+  .receipt-line { display: flex; align-items: baseline; gap: 6px; padding: 5px 0; text-transform: uppercase; letter-spacing: .02em; font-size: 12.5px; }
+  .receipt-line .leader { flex: 1; min-width: 14px; border-bottom: 2px dotted #9a958a; transform: translateY(-3px); }
+  .receipt-line .amt { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+  .receipt-total { text-align: center; padding: 6px 0 2px; }
+  .receipt-total-label { text-transform: uppercase; letter-spacing: .18em; font-size: 11px; color: var(--red); font-weight: 700; }
+  .receipt-total-amt { font-size: 36px; font-weight: 700; color: var(--red); letter-spacing: -0.01em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .receipt-total-pct { text-transform: uppercase; letter-spacing: .16em; font-size: 11px; color: #55524a; }
+  .receipt-note { text-align: center; text-transform: uppercase; letter-spacing: .05em; font-size: 10.5px; line-height: 1.7; color: #6b675c; }
+  .receipt-barcode {
+    height: 42px; width: 82%; margin: 16px auto 8px;
+    background: repeating-linear-gradient(90deg,
+      #1c1c1c 0 2px, transparent 2px 5px, #1c1c1c 5px 6px, transparent 6px 10px,
+      #1c1c1c 10px 13px, transparent 13px 15px, #1c1c1c 15px 16px, transparent 16px 21px);
+  }
+  .receipt-thanks { text-align: center; font-weight: 700; letter-spacing: .24em; font-size: 12.5px; }
+  .receipt-foot { text-align: center; text-transform: uppercase; letter-spacing: .18em; font-size: 9.5px; color: #8a857a; margin-top: 10px; }
 
-  .below-sentence { margin-top: 0; padding: 22px; border-radius: 12px; background: #e7f5ec; border: 1px solid #a7dcbe; color: var(--green); font-size: 17px; font-weight: 700; line-height: 1.45; }
+  .below-sentence {
+    width: 372px; max-width: 100%; margin: 16px auto 0; padding: 22px;
+    background: #e7f5ec; border: 1px dashed #7fbf98;
+    font-family: "Courier Prime", "Courier New", monospace;
+    text-align: center; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--green); font-size: 13px; font-weight: 700; line-height: 1.6;
+  }
 
   .method { margin-top: 18px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; }
   .method summary { cursor: pointer; font-weight: 800; font-size: 15px; list-style: none; }
@@ -96,7 +138,8 @@
   @media (max-width: 620px) {
     .search-row { flex-direction: column; }
     #countySelect { min-width: 0; width: 100%; }
-    .bill-row { font-size: 14.5px; }
+    .receipt { padding: 22px 16px 14px; }
+    .receipt-line { font-size: 12px; }
   }
 </style>
 </head>
@@ -133,24 +176,26 @@
   <section id="billResults" class="hidden" aria-live="polite">
     <p class="below-sentence hidden" id="belowSentence"></p>
 
-    <div class="bill" id="bill">
-      <div class="bill-head">
-        <div class="bill-title">County Property Tax Comparison</div>
-        <div class="bill-addr" id="bAddress"></div>
-        <div class="bill-meta" id="bMeta"></div>
+    <div class="receipt" id="bill">
+      <div class="receipt-brand">John Locke Foundation</div>
+      <div class="receipt-title">NC Property Tax Receipt</div>
+      <div class="receipt-rule"></div>
+      <div class="receipt-addr" id="bAddress"></div>
+      <div class="receipt-meta" id="bMeta"></div>
+      <div class="receipt-rule"></div>
+      <div class="receipt-line"><span>What you paid</span><span class="leader"></span><span class="amt" id="bPaid">$0</span></div>
+      <div class="receipt-line"><span>What you could have paid</span><span class="leader"></span><span class="amt" id="bCould">$0</span></div>
+      <div class="receipt-rule"></div>
+      <div class="receipt-total">
+        <div class="receipt-total-label">You could have saved</div>
+        <div class="receipt-total-amt" id="bSaved">$0</div>
+        <div class="receipt-total-pct" id="bPct"></div>
       </div>
-      <div class="bill-body">
-        <div class="bill-row"><span>What you paid</span><span class="amt" id="bPaid">$0</span></div>
-        <div class="bill-row"><span>What you could have paid</span><span class="amt" id="bCould">$0</span></div>
-      </div>
-      <div class="bill-total">
-        <div>
-          <div class="lab">You could have saved</div>
-          <div class="pct" id="bPct"></div>
-        </div>
-        <div class="amt" id="bSaved">$0</div>
-      </div>
-      <div class="bill-foot">County-wide property tax only. Municipal, school, and special district taxes are not included.</div>
+      <div class="receipt-rule"></div>
+      <div class="receipt-note">County-wide property tax only<br />Excludes municipal, school &amp; special district taxes</div>
+      <div class="receipt-barcode" aria-hidden="true"></div>
+      <div class="receipt-thanks">*** THANK YOU ***</div>
+      <div class="receipt-foot">HB 1089 &middot; Levy Limit Demo</div>
     </div>
 
     <details class="method">
@@ -307,7 +352,11 @@ function renderCandidates(feats) {
 // ---- bill ----
 function selectParcel(f) {
   byId("bAddress").textContent = f.siteadd || "No address";
-  byId("bMeta").textContent = (COUNTY ? COUNTY.label : "") + " · County-wide tax · FY2025-26 · Parcel " + (f.parno || "—") + " · Assessed $" + Number(f.parval || 0).toLocaleString();
+  byId("bMeta").innerHTML =
+    (COUNTY ? "<div>" + esc(COUNTY.label) + "</div>" : "") +
+    "<div>Tax year FY2025-26</div>" +
+    "<div>Parcel " + esc(f.parno || "—") + "</div>" +
+    "<div>Assessed value $" + Number(f.parval || 0).toLocaleString() + "</div>";
 
   const sentence = byId("belowSentence");
   const bill = byId("bill");
