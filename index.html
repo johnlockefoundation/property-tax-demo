@@ -227,13 +227,15 @@
           <dt>When the policy begins</dt>
           <dd>The 2019 base year; the limit compounds forward from there.</dd>
           <dt>What this receipt compares</dt>
-          <dd>The five fiscal years FY2021-22 through FY2025-26: the county levy actually collected, summed, versus the summed limit.</dd>
+          <dd>A single fiscal year, FY2025-26: the county levy actually collected versus the limit for that year.</dd>
+          <dt>Why one year, not the five-year sum</dt>
+          <dd>A parcel's assessment can shift relative to the county tax base over time, so summing years would assume a fixed share. FY2025-26 is compared on the current assessment.</dd>
           <dt>Taxes included</dt>
           <dd>County-wide property tax only, not the full bill.</dd>
           <dt>Property value</dt>
-          <dd>The parcel's current assessed value from NC OneMap is held constant; reassessment timing is not modeled.</dd>
+          <dd>The parcel's current assessed value from NC OneMap; reassessment timing is not modeled.</dd>
           <dt>Formula</dt>
-          <dd>5-year actual rate = summed levy / assessed valuation; scenario levy = min(summed actual, summed 2019-base benchmark), so the limit never prescribes an increase.</dd>
+          <dd>FY2025-26 actual rate = levy / assessed valuation; scenario levy = min(actual levy, 2019-base benchmark), so the limit never prescribes an increase.</dd>
         </dl>
         <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, U.S. Census population estimates, and BLS CPI-U.</p>
         <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
@@ -374,7 +376,7 @@ function selectParcel(f) {
   byId("bAddress").textContent = f.siteadd || "No address";
   byId("bMeta").innerHTML =
     (COUNTY ? "<div>" + esc(COUNTY.label) + "</div>" : "") +
-    "<div>FY2021-22 to FY2025-26</div>" +
+    "<div>FY2025-26</div>" +
     "<div>Parcel " + esc(f.parno || "—") + "</div>" +
     "<div>Assessed value $" + Number(f.parval || 0).toLocaleString() + "</div>";
   byId("bYears").innerHTML = "";
@@ -399,17 +401,17 @@ function selectParcel(f) {
     return;
   }
 
-  // Amounts are the Data(tax).csv 5-year columns apportioned to this parcel's
-  // assessed value: paid = V * act_5yr / X, etc. The percentage is the CSV
-  // savings_rate so the receipt matches the published figure exactly.
+  // Amounts are the Data(tax).csv FY2025-26 columns apportioned to this parcel's
+  // assessed value: paid = V * act / X, etc. Only one fiscal year is used because
+  // a parcel's assessment can shift relative to the county base over time.
   if (COUNTY.below_benchmark) {
     const nm = COUNTY.label.replace(/ County$/, "");
     sentence.textContent = "Property tax rate growth in " + nm + " County was below the maximum allowed under a levy limit, so this property would not have saved anything.";
     sentence.classList.remove("hidden");
     bill.classList.add("hidden");
   } else {
-    const paid = (value * COUNTY.act_5yr) / COUNTY.x;
-    const could = (value * COUNTY.hyp_5yr) / COUNTY.x;
+    const paid = (value * COUNTY.act) / COUNTY.x;
+    const could = (value * COUNTY.hyp) / COUNTY.x;
     sentence.classList.add("hidden");
     bill.classList.remove("hidden");
     renderYears(f, COUNTY);
