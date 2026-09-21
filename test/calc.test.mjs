@@ -128,10 +128,22 @@ test("residential filter keeps usable homes and excludes commercial/non-value", 
   assert.equal(PT.isUsableResidential({ parval: 260653, parusecode: null }), false);
 });
 
-test("residential filter accepts counties with only a description (e.g. Halifax)", () => {
-  assert.equal(PT.isUsableResidential({ parval: 132700, parusecode: "", parusedesc: "Residential" }), true);
-  assert.equal(PT.isUsableResidential({ parval: 132700, parusecode: "R100", parusedesc: "SINGLE FAMILY RESIDENTIAL" }), true);
-  assert.equal(PT.isUsableResidential({ parval: 500000, parusecode: "", parusedesc: "Commercial" }), false);
+test("residential filter accepts counties with varied descriptions (Alamance wording)", () => {
+  const cases = [
+    ["SINGLE FAMILY", true],
+    ["SINGLE WIDE MH", true],
+    ["DOUBLE WIDE MH", true],
+    ["MOBILE HOME L/I", true],
+    ["MANUFACTURED HOME", true],
+    ["VACANT LAND 0-9 ACRES", false],
+    ["GENERAL FARM - PRESENT US", false],
+    ["MANUFACTURING", false],
+    ["EXEMPT", false],
+    ["MISC", false]
+  ];
+  for (const [desc, expected] of cases) {
+    assert.equal(PT.isUsableResidential({ parval: 132700, parusecode: "", parusedesc: desc }), expected, desc);
+  }
 });
 
 test("ambiguity: a multi-match search yields a candidate list, not a silent pick", () => {

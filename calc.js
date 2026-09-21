@@ -92,13 +92,19 @@
   }
 
   // True if a parcel attribute object is a usable ordinary residential parcel.
-  // Some counties (e.g. Halifax) leave `parusecode` blank and only populate the
-  // human-readable `parusedesc`, so fall back to that when needed.
+  // Some counties leave `parusecode` blank and only populate the human-readable
+  // `parusedesc`, with varied residential wording (e.g. "SINGLE FAMILY", "SINGLE
+  // WIDE MH", "MANUFACTURED HOME"), so accept a curated set of descriptors.
+  var RESIDENTIAL_DESC = [
+    /\bRESID/, /\bFAMILY/, /\bTOWNHOUS/, /\bCONDO/, /\bAPARTMENT/, /\bMULTI-FAMILY/,
+    /\bDUPLEX/, /\bTRIPLEX/, /\bMOBILE HOME/, /\bMANUFACTURED HOME/, /\bSINGLE WIDE/,
+    /\bDOUBLE WIDE/, /\bCOTTAGE/, /\bBUNGALOW/, /\bTRAILER/
+  ];
   function isUsableResidential(attrs) {
-    const v = Number(attrs && attrs.parval);
-    const code = String((attrs && attrs.parusecode) || "").toUpperCase();
-    const desc = String((attrs && attrs.parusedesc) || "").toUpperCase();
-    const residential = code.indexOf("R") === 0 || desc.indexOf("RESID") !== -1;
+    var v = Number(attrs && attrs.parval);
+    var code = String((attrs && attrs.parusecode) || "").toUpperCase();
+    var desc = String((attrs && attrs.parusedesc) || "").toUpperCase();
+    var residential = code.indexOf("R") === 0 || RESIDENTIAL_DESC.some(function (re) { return re.test(desc); });
     return isFinite(v) && v > 0 && residential;
   }
 

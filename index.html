@@ -300,14 +300,20 @@ async function fetchAddressFeatures(q, cntyfips) {
   if (!where) return [];
   const body = new URLSearchParams();
   body.append("where", cntyfips ? `(${where}) AND stcntyfips = '${cntyfips}'` : `(${where}) AND stcntyfips LIKE '37%'`);
-  body.append("outFields", "parno,siteadd,parval,parvaltype,parusecode,parusedesc,stcntyfips,cntyfips");
+  body.append("outFields", "parno,siteadd,parval,parvaltype,parusecode,parusedesc,improvval,stcntyfips,cntyfips");
   body.append("f", "pjson");
   body.append("returnGeometry", "false");
   body.append("resultRecordCount", "40");
   const resp = await fetch(ONEMAP_QUERY, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
   const data = JSON.parse(await resp.text());
   if (data.error) throw new Error(data.error.message || "Service error");
-  return (data.features || []).map(f => f.attributes).filter(PT.isUsableResidential);
+  const feats = (data.features || []).map(f => f.attributes);
+  // Counties like Macon ship no land-use code OR description at all, so there is
+  // nothing to classify by; there, fall back to "a building stands on it"
+  // (improvement value > 0) so residences stay searchable.
+  const hasUseData = feats.some(a => String(a.parusecode || "").trim() || String(a.parusedesc || "").trim());
+  if (!hasUseData) return feats.filter(a => Number(a.improvval) > 0 && Number(a.parval) > 0);
+  return feats.filter(PT.isUsableResidential);
 }
 
 async function inferCountyKey(q) {
