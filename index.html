@@ -38,11 +38,13 @@
   #header .brand .sub a:hover { color: #fff; text-decoration-color: #fff; }
   #header .hdr-right img.logo { height: 30px; width: auto; display: block; }
 
-  .wrap { max-width: 760px; margin: 0 auto; padding: 30px 18px 64px; }
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 30px 18px 64px; }
   h1 { font-size: clamp(23px, 3.6vw, 32px); line-height: 1.15; letter-spacing: -0.015em; margin: 0 0 10px; }
   .lede { font-size: 16.5px; color: var(--muted); margin: 0 0 24px; max-width: 58ch; }
 
   .card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+  .cols { display: flex; gap: 32px; align-items: flex-start; }
+  .cols > .card { flex: 1 1 0; min-width: 0; }
   .county-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   #countySelect {
     font-size: 14px; font-weight: 700; padding: 9px 12px; border: 1px solid #cfcfcf;
@@ -65,7 +67,7 @@
   .hidden { display: none !important; }
 
   /* Receipt */
-  #billResults { margin-top: 30px; }
+  #billResults { flex: 0 0 400px; margin-top: 0; }
   .receipt {
     --paper: #fffdf6;
     position: relative;
@@ -141,6 +143,11 @@
   .method-body dd { margin: 2px 0 0; }
   .method-body .sources a { color: var(--jlf); }
 
+  @media (max-width: 900px) {
+    .cols { flex-direction: column; }
+    #billResults { flex: none; width: 100%; margin-top: 30px; }
+  }
+
   @media (max-width: 620px) {
     .search-row { flex-direction: column; }
     #countySelect { min-width: 0; width: 100%; }
@@ -161,6 +168,7 @@
   <h1>See what a property tax levy limit could have saved you</h1>
   <p class="lede">Enter a North Carolina address to compare the county property tax you paid with what you would have paid if a levy limit had been enacted on the 2019 base year.</p>
 
+  <div class="cols">
   <section class="card">
     <div class="county-bar">
       <select id="countySelect" aria-label="Select county">
@@ -205,8 +213,10 @@
       <div class="receipt-thanks">*** THANK YOU ***</div>
       <div class="receipt-foot">HB 1089 &middot; Levy Limit Demo</div>
     </div>
+  </section>
+</div>
 
-    <details class="method">
+<details class="method">
       <summary>How we calculated this</summary>
       <div class="method-body">
         <dl>
@@ -229,7 +239,7 @@
         <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
       </div>
     </details>
-  </section>
+
 </main>
 
 <script>
