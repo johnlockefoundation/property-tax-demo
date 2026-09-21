@@ -4,121 +4,99 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>NC Property Tax · Understanding HB 1089</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2300467f'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
 <script src="calc.js"></script>
 <style>
+  :root {
+    --jlf: #00467f;
+    --jlf-dark: #00325c;
+    --red: #c41230;
+    --green: #04843d;
+    --ink: #1a1919;
+    --muted: #5a6a7a;
+    --line: #dfe3e8;
+    --bg: #f3f4e7;
+  }
   * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; font-family: "Public Sans", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f3f4e7; color: #1a1919; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Public Sans", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
   #header {
     display: flex; align-items: center; gap: 18px; padding: 12px 20px;
-    background: #00467f; color: #fff; flex-wrap: wrap;
+    background: var(--jlf); color: #fff; flex-wrap: wrap;
   }
   #header .brand { font-size: 18px; font-weight: 900; letter-spacing: -0.2px; margin-right: auto; display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 2px; }
   #header .brand .sub { font-size: 12px; font-weight: 600; color: #d3e6f5; letter-spacing: .5px; }
   #header .brand .sub a { color: inherit; text-decoration: underline; text-decoration-color: rgba(211,230,245,.45); }
   #header .brand .sub a:hover { color: #fff; text-decoration-color: #fff; }
   #header .hdr-right img.logo { height: 30px; width: auto; display: block; }
-  #app {
-    display: grid;
-    grid-template-columns: min(42%, 560px) 1fr;
-    grid-template-rows: 1fr;
-    height: calc(100vh - 60px);
-    min-height: 480px;
-  }
-  #leftPanel {
-    background: rgba(255,255,255,0.97);
-    border-right: 1px solid #d9d9d9;
-    padding: 18px 18px 24px;
-    overflow-y: auto;
-    min-width: 0;
-  }
-  #rightArea { position: relative; overflow-y: auto; background: #eef0f2; }
 
-  .view { display: block; }
-  .view.active { display: block; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 30px 18px 64px; }
+  h1 { font-size: clamp(23px, 3.6vw, 32px); line-height: 1.15; letter-spacing: -0.015em; margin: 0 0 10px; }
+  .lede { font-size: 16.5px; color: var(--muted); margin: 0 0 24px; max-width: 58ch; }
 
-  /* County left panel */
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
   .county-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   #countySelect {
     font-size: 14px; font-weight: 700; padding: 9px 12px; border: 1px solid #cfcfcf;
-    border-radius: 8px; background: #fff; color: #222; cursor: pointer; min-width: 190px;
+    border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; min-width: 210px;
   }
-  .grade-badge {
-    width: 46px; height: 46px; border-radius: 50%; display: none; align-items: center;
-    justify-content: center; color: #fff; font-size: 22px; font-weight: 900; flex: 0 0 auto;
-  }
-  .grade-badge.show { display: flex; }
-  .section-card { margin-top: 12px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fff; overflow: hidden; }
-  .section-card summary { cursor: pointer; font-size: 15px; font-weight: 800; padding: 12px 14px; background: #fafafa; list-style: none; }
-  .section-card summary::-webkit-details-marker { display: none; }
-  .section-card summary:after { content: " ▾"; color: #888; }
-  .section-card[open] summary:after { content: " ▴"; }
-  .section-card .body { padding: 4px 14px 14px; }
-  .section-card.disabled { opacity: 0.55; pointer-events: none; }
-  .section-card.disabled summary { cursor: default; }
-  .chart-note { color: #666; font-size: 12px; margin: 4px 0 8px; line-height: 1.35; }
-  #sankey { width: 100%; }
-  .sankey-tooltip {
-    position: absolute; background: rgba(20,20,20,0.92); color: #fff; padding: 5px 8px;
-    border-radius: 4px; font-size: 12px; pointer-events: none; z-index: 1000; display: none;
-  }
-  .outline-note { font-size: 12px; color: #888; margin-top: 10px; line-height: 1.45; }
-  .outline-note a { color: #00467f; font-weight: 600; }
-
-  /* My Bill left panel */
   .search-row { display: flex; gap: 8px; }
-  #addrInput { flex: 1; font-size: 15px; padding: 11px 12px; border: 1px solid #cfcfcf; border-radius: 6px; min-width: 0; }
+  #addrInput { flex: 1; font-size: 15px; padding: 12px 13px; border: 1px solid #cfcfcf; border-radius: 8px; min-width: 0; }
   #addrInput:disabled { background: #eee; color: #999; }
-  #searchBtn { font-size: 15px; font-weight: 700; padding: 11px 16px; border: none; border-radius: 6px; background: #00467f; color: #fff; cursor: pointer; white-space: nowrap; }
-  #searchBtn:hover { background: #00325c; }
+  #searchBtn { font-size: 15px; font-weight: 700; padding: 12px 18px; border: none; border-radius: 8px; background: var(--jlf); color: #fff; cursor: pointer; white-space: nowrap; }
+  #searchBtn:hover { background: var(--jlf-dark); }
   #searchBtn:disabled { background: #9AA7B5; cursor: default; }
-  .hint { font-size: 12.5px; color: #5a6a7a; margin: 8px 0 0; line-height: 1.4; }
+  .hint { font-size: 12.5px; color: var(--muted); margin: 9px 0 0; line-height: 1.45; }
   #status { font-size: 13px; color: #555; margin: 12px 0 0; min-height: 18px; }
   .cands { list-style: none; margin: 10px 0 0; padding: 0; }
-  .cands li { width: 100%; text-align: left; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa; padding: 9px 11px; margin-bottom: 7px; cursor: pointer; font-size: 13px; }
-  .cands li:hover { border-color: #00467f; background: #d3e6f5; }
+  .cands li { width: 100%; text-align: left; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa; padding: 10px 12px; margin-bottom: 7px; cursor: pointer; font-size: 13px; }
+  .cands li:hover { border-color: var(--jlf); background: #d3e6f5; }
   .cands li .pid { color: #777; font-size: 12px; }
-  .cands li .val { color: #00467f; font-weight: 700; }
-  #nores.hidden, #billResults.hidden, #countyPanel.hidden, .hidden { display: none !important; }
-  .prop-line { font-size: 13.5px; color: #444; margin: 0 0 3px; }
-  .prop-line b { color: #222; }
-  .note { font-size: 12px; color: #888; line-height: 1.45; margin: 8px 0 0; }
+  .cands li .val { color: var(--jlf); font-weight: 700; }
+  #nores { color: var(--red); }
+  .hidden { display: none !important; }
 
-  /* Bill analysis */
-  #billResults { padding: 22px 24px 40px; max-width: 940px; margin: 0 auto; }
-  .saved-line { font-size: 27px; font-weight: 900; line-height: 1.15; color: #1a1919; margin: 0 0 20px; }
-  .saved-line .saved-amt { color: #c41230; font-variant-numeric: tabular-nums; }
-  .saved-sub { font-size: 14.5px; color: #333; margin: 5px 0; line-height: 1.4; font-variant-numeric: tabular-nums; }
-  .saved-sub b { color: #1a1919; }
-  .below-sentence { margin-top: 26px; padding: 22px 20px; border-radius: 12px; background: #e7f5ec; border: 1px solid #a7dcbe; color: #04843d; font-size: 17px; font-weight: 700; line-height: 1.45; }
-  .detail-item { font-size: 13.5px; margin: 4px 0; color: #444; }
-  .detail-item b { color: #222; }
-  .sources { font-size: 12.5px; line-height: 1.6; }
-  .sources a { color: #00467f; }
-  table.t { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
-  table.t th, table.t td { border: 1px solid #e6e6e6; padding: 4px 6px; text-align: right; }
-  table.t th:first-child, table.t td:first-child { text-align: left; }
-  table.t th { background: #fafafa; font-weight: 800; }
+  /* Bill */
+  #billResults { margin-top: 26px; }
+  .bill { background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .bill-head { padding: 18px 22px; border-bottom: 1px solid var(--line); background: #f8fafc; }
+  .bill-title { font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--jlf); font-weight: 800; }
+  .bill-addr { font-size: 17px; font-weight: 700; margin-top: 6px; }
+  .bill-meta { font-size: 13px; color: var(--muted); margin-top: 3px; }
+  .bill-body { padding: 4px 22px; }
+  .bill-row { display: flex; justify-content: space-between; gap: 16px; padding: 15px 0; border-bottom: 1px dashed var(--line); font-size: 15px; }
+  .bill-row:last-child { border-bottom: 0; }
+  .bill-row .amt { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+  .bill-total { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 18px 22px; background: #fff5f6; border-top: 2px solid var(--line); }
+  .bill-total .lab { font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: 13px; color: var(--red); }
+  .bill-total .amt { font-size: clamp(30px, 6.5vw, 44px); font-weight: 900; color: var(--red); font-variant-numeric: tabular-nums; line-height: 1; }
+  .bill-total .pct { display: block; font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 6px; text-align: right; }
+  .bill-foot { padding: 13px 22px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
 
-  /* Right panel: map on top, bill analysis below */
-  #mapView { position: relative; height: 60vh; min-height: 380px; }
-  #mapWrap { position: absolute; inset: 0; }
-  #map { position: absolute; inset: 0; }
+  .below-sentence { margin-top: 0; padding: 22px; border-radius: 12px; background: #e7f5ec; border: 1px solid #a7dcbe; color: var(--green); font-size: 17px; font-weight: 700; line-height: 1.45; }
 
-  .empty { display: flex; align-items: center; justify-content: center; height: 100%; color: #999; font-size: 15px; padding: 30px; }
+  .method { margin-top: 18px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; }
+  .method summary { cursor: pointer; font-weight: 800; font-size: 15px; list-style: none; }
+  .method summary::-webkit-details-marker { display: none; }
+  .method summary::after { content: " ▾"; color: var(--jlf); }
+  .method[open] summary::after { content: " ▴"; }
+  .method-body { font-size: 13.5px; color: #444; margin-top: 14px; line-height: 1.55; }
+  .method-body dt { font-weight: 700; color: var(--ink); margin-top: 12px; }
+  .method-body dd { margin: 2px 0 0; }
+  .method-body .sources a { color: var(--jlf); }
 
-  @media (max-width: 760px) {
-    #app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
-    #leftPanel { border-right: none; border-bottom: 1px solid #d9d9d9; }
-    #mapView { height: 45vh; }
-    .bill-cards { grid-template-columns: 1fr; }
+  @media (max-width: 620px) {
     .search-row { flex-direction: column; }
+    #countySelect { min-width: 0; width: 100%; }
+    .bill-row { font-size: 14.5px; }
   }
 </style>
 </head>
@@ -130,389 +108,132 @@
   </div>
 </header>
 
-<div id="app">
-  <aside id="leftPanel">
-    <!-- County view (left) -->
-    <section id="countyPanel" class="view active">
-      <details class="section-card" open>
-        <summary>Check My Address</summary>
-        <div class="body">
-          <div class="search-row">
-            <input id="addrInput" type="text" placeholder="Street address, e.g. 1000 E Woodlawn Rd" autocomplete="off" aria-label="Street address" />
-            <button id="searchBtn" type="button">Search</button>
-          </div>
-          <p class="hint">Partial addresses are OK. Pick a specific property if several match. The county is set automatically from your address.</p>
-          <div id="status" role="status"></div>
-          <ul class="cands" id="cands"></ul>
-          <div id="nores" class="hidden">
-            <p class="note" style="color:#c41230;">No residential properties matched in a supported county. Check the spelling or try a nearby street name.</p>
-          </div>
-          <div id="billMeta" class="hidden">
-            <div class="rule" style="height:1px;background:#e2e2e2;margin:14px 0;"></div>
-            <p class="prop-line"><b>Address:</b> <span id="rAddress"></span></p>
-            <p class="prop-line"><b>Parcel ID:</b> <span id="rParcel"></span></p>
-            <p class="prop-line"><b>Assessed value:</b> <span id="rValue"></span> (<span id="rBasis"></span>)</p>
-            <p class="prop-line"><b>Use:</b> <span id="rUse"></span></p>
-            <p class="note">Parcel data is a live NC OneMap snapshot and may predate the 2025 tax year. Sources and method on the right.</p>
-          </div>
-        </div>
-      </details>
-      <details class="section-card" open>
-        <summary>County Revenue &amp; Spending Flow</summary>
-        <div class="body" style="position:relative;">
-          <div class="county-bar">
-            <select id="countySelect" aria-label="Select county">
-              <option value="" selected>--Select a County--</option>
-            </select>
-            <div class="grade-badge" id="gradeBadge" title=""></div>
-          </div>
-          <p class="chart-note">Share of total revenue by source (left) flows into a shared General Fund pool, then out by spending area (right).</p>
-          <div class="sankey-tooltip" id="sankeyTip"></div>
-          <svg id="sankey" viewBox="0 0 700 520" width="100%"></svg>
-        </div>
-      </details>
-      <details class="section-card county-collapsible" style="display:none">
-        <summary>County Financial Data</summary>
-        <div class="body">
-          <p class="chart-note">County-level constants behind the per-property benchmark (FY figures).</p>
-          <p class="detail-item"><b>Actual county rate:</b> <span id="dActualRate"></span> per $100 (FY2025&ndash;26 <span id="rateCtx">official county rate</span>).</p>
-          <p class="detail-item"><b>Scenario rate:</b> <span id="dScenarioRate2"></span> per $100 — the inflation+population benchmark levy capped at the actual levy, divided by the taxable base.</p>
-          <p class="detail-item"><b>Actual county levy:</b> <span id="dLActual"></span> (FY2025&ndash;26).</p>
-          <p class="detail-item"><b>County taxable base:</b> <span id="dX"></span> (FY2025&ndash;26 assessed valuation).</p>
-          <p class="detail-item"><b>2016 baseline levy:</b> <span id="dL2016"></span> (FY2016&ndash;17).</p>
-          <p class="detail-item"><b>2025 benchmark ceiling:</b> <span id="dB"></span> — compounding the 2016 baseline through <span id="dN"></span> inflation+population transitions.</p>
-          <p class="detail-item"><b>Scenario levy (capped):</b> <span id="dLS"></span> = min(actual, ceiling).</p>
-          <p class="detail-item"><b>Rate reconciliation:</b> <span id="dRec"></span> between the reported levy and rate &times; base &divide; 100.</p>
-          <table class="t">
-            <thead><tr><th>Transition into year</th><th>Inflation</th><th>Population</th><th>Growth</th><th>Benchmark levy</th></tr></thead>
-            <tbody id="trBody"></tbody>
-          </table>
-          <p class="note">Inflation is the U.S. CPI-U annual average (BLS). Population is <span id="popCtx">Mecklenburg</span> annual resident estimates (U.S. Census). The transition into year T uses that year&rsquo;s inflation and population change.</p>
-          <p class="note"><b>Assumptions:</b> the ceiling compounds from the 2016 baseline; a year below the ceiling does not ratchet it down; no separate new-construction allowance or overrides. The scenario never prescribes an increase — if the actual levy is already below the ceiling, the actual rate is retained.</p>
-          <p class="sources" id="srcPara"><b>Sources:</b>&nbsp;</p>
-        </div>
-      </details>
-      <p class="outline-note">See the <a href="docs/methodology.pdf" target="_blank" rel="noopener">methodology</a> for how this per-property comparison is built.</p>
-    </section>
-  </aside>
+<main class="wrap">
+  <h1>See what a property tax levy limit could have saved you</h1>
+  <p class="lede">Enter a North Carolina address to compare the county property tax you paid with what you would have paid if a levy limit had been enacted on the 2019 base year.</p>
 
-  <main id="rightArea">
-    <!-- County view (right): map -->
-    <div id="mapView" class="view">
-      <div id="mapWrap"><div id="map"></div></div>
+  <section class="card">
+    <div class="county-bar">
+      <select id="countySelect" aria-label="Select county">
+        <option value="" selected>--Select a County--</option>
+      </select>
     </div>
+    <div class="search-row">
+      <input id="addrInput" type="text" placeholder="Street address, e.g. 1000 E Woodlawn Rd" autocomplete="off" aria-label="Street address" />
+      <button id="searchBtn" type="button">Search</button>
+    </div>
+    <p class="hint">Partial addresses are OK. Pick a specific property if several match. The county is set automatically from your address.</p>
+    <div id="status" role="status"></div>
+    <ul class="cands" id="cands"></ul>
+    <div id="nores" class="hidden">
+      <p class="note">No residential properties matched. Check the spelling or try a nearby street name.</p>
+    </div>
+  </section>
 
-    <!-- Bill analysis -->
-    <div id="billResults" class="view hidden">
-      <p class="below-sentence hidden" id="belowSentence"></p>
-      <div id="savedBlock">
-        <p class="saved-line">You could have saved <span class="saved-amt" id="savedAmt"></span></p>
-        <p class="saved-sub"><b>What you paid:</b> <span id="sActual"></span></p>
-        <p class="saved-sub"><b>What you could have paid:</b> <span id="sScenario"></span></p>
+  <section id="billResults" class="hidden" aria-live="polite">
+    <p class="below-sentence hidden" id="belowSentence"></p>
+
+    <div class="bill" id="bill">
+      <div class="bill-head">
+        <div class="bill-title">County Property Tax Comparison</div>
+        <div class="bill-addr" id="bAddress"></div>
+        <div class="bill-meta" id="bMeta"></div>
       </div>
+      <div class="bill-body">
+        <div class="bill-row"><span>What you paid</span><span class="amt" id="bPaid">$0</span></div>
+        <div class="bill-row"><span>What you could have paid</span><span class="amt" id="bCould">$0</span></div>
+      </div>
+      <div class="bill-total">
+        <div>
+          <div class="lab">You could have saved</div>
+          <div class="pct" id="bPct"></div>
+        </div>
+        <div class="amt" id="bSaved">$0</div>
+      </div>
+      <div class="bill-foot">County-wide property tax only. Municipal, school, and special district taxes are not included.</div>
     </div>
-  </main>
-</div>
+
+    <details class="method">
+      <summary>How we calculated this</summary>
+      <div class="method-body">
+        <dl>
+          <dt>What "levy limit" means</dt>
+          <dd>A cap on how much the county's total property tax levy may grow each year.</dd>
+          <dt>The assumed annual limit</dt>
+          <dd>Inflation (CPI-U) plus the county's population growth.</dd>
+          <dt>When the policy begins</dt>
+          <dd>The 2019 base year; the limit is compounded forward to the current tax year (FY2025-26).</dd>
+          <dt>Taxes included</dt>
+          <dd>County-wide property tax only, not the full bill.</dd>
+          <dt>Property value</dt>
+          <dd>The parcel's current assessed value from NC OneMap is held constant; reassessment timing is not modeled.</dd>
+          <dt>Formula</dt>
+          <dd>actual rate = county levy / assessed valuation; scenario levy = min(actual levy, 2019-base benchmark), so the limit never prescribes an increase.</dd>
+        </dl>
+        <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, U.S. Census population estimates, and BLS CPI-U.</p>
+        <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
+      </div>
+    </details>
+  </section>
+</main>
 
 <script>
-const GRADE = { "0": { g: "A", c: "#04843d" }, "1": { g: "B", c: "#d3a11c" }, "2": { g: "C", c: "#c46314" }, "3": { g: "D", c: "#c41230" } };
-const GRADE_NA = { g: "N/A", c: "#BDBDBD" };
-const BUCKET_COLORS = {
-  "Property taxes":"#00467f","Other taxes":"#7BA9D6","Sales taxes":"#04843d",
-  "Sales & services":"#a7dcbe","Intergovernmental":"#d3a11c","Debt proceeds":"#9A6FB0",
-  "Education":"#00467f","Debt service":"#9A6FB0","Human services":"#d3a11c",
-  "General government":"#8A8A8A","Public safety":"#c41230","Utilities":"#4E9A9A",
-  "Transportation":"#c46314","Other":"#6F6F6F"
-};
-
 const ONEMAP_QUERY = "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/MapServer/0/query";
 
-const NC_STFIPS = "37";
+let BENCHMARKS = {}; // county key -> benchmark record
+let SELECTED = null; // currently selected county key
+let COUNTY = null;   // selected county benchmark record
 
-// Registrar of selectable counties. `fips` is the full 5-digit STCOFIPS.
-// Loaded from data/counties.json (all counties with complete 2016-2025 data).
-// Counties without a `benchmark` file render + preview, but the per-property
-// bill comparison is unavailable for them.
-let COUNTIES = {};
-const fmtMoney = (x) => "$" + Math.abs(x).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (x < 0 ? " less" : "");
-const pctSigned = (x) => (x > 0 ? "+" : "") + x.toFixed(1) + "%";
-const fmtBig = (x) => (x / 1e6).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "M";
-
-const SRC_LABELS = {
-  rates: "county tax rate",
-  rate_news: "rate announcement",
-  ncdor_levy: "NCDOR levy/valuation reports",
-  parcels: "NC OneMap parcels",
-  census_pop: "U.S. Census population estimates",
-  bls_cpi: "BLS CPI-U",
-  hb1089: "HB 1089"
-};
-const hostOf = (url) => { try { return (new URL(url)).hostname.replace(/^www\./, ""); } catch (e) { return url; } };
-
-let DATA = null;      // selected county presentation json (e.g. mecklenburg.json)
-let COUNTY = null;    // selected county benchmark (e.g. mecklenburg_benchmark.json)
-let COUNTY_DATA = {}; // fips -> {label, score, diffPct, diffDollars} for counties with data
-let NC_GEO = null;    // nc_counties.geojson (all NC counties)
-let SELECTED = null;  // key into COUNTIES currently selected, or null
-let MAP = null;
-let COUNTIES_LAYER = null;
-let PARCEL_LAYER = null;
 const byId = (id) => document.getElementById(id);
+const fmtMoney = (x) => "$" + Math.abs(x).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (x < 0 ? " less" : "");
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 // ---- data loading ----
 async function loadAll() {
-  const reg = await fetch("data/counties.json").then(r => r.json()).catch(e => { console.error("counties registry load failed", e); return {}; });
-  COUNTIES = reg;
+  try {
+    BENCHMARKS = await fetch("data/benchmarks.json").then(r => r.json());
+  } catch (e) {
+    console.error("benchmark load failed", e);
+    BENCHMARKS = {};
+  }
   populateCountySelect();
-  const enabledKeys = Object.keys(COUNTIES);
-  const [nc, ...jsonArr] = await Promise.all([
-    fetch("data/nc_counties.geojson").then(r => r.json()).catch(e => { console.error("nc counties load failed", e); return { type: "FeatureCollection", features: [] }; }),
-    ...enabledKeys.map(k => fetch(COUNTIES[k].json).then(r => r.json()).catch(e => { console.error("county preload failed for " + k, e); return null; }))
-  ]);
-  NC_GEO = nc;
-  enabledKeys.forEach((k, i) => { if (jsonArr[i]) refreshCountyData(COUNTIES[k].fips, jsonArr[i]); }); // color counties on load
-  renderMap();
-  recolorMap();
 }
 
 function populateCountySelect() {
   const sel = byId("countySelect");
-  Object.keys(COUNTIES).forEach(k => {
-    const opt = document.createElement("option");
-    opt.value = k;
-    opt.textContent = COUNTIES[k].label;
-    sel.appendChild(opt);
-  });
-}
-
-// Store a county's presentation data for map coloring. `d` is a
-// mecklenburg.json-style object.
-function refreshCountyData(fips, d) {
-  if (!d) return;
-  COUNTY_DATA[fips] = {
-    label: d.label,
-    score: d.score,
-    diffPct: d.difference_pct,
-    diffDollars: d.difference_dollars
-  };
-}
-
-async function selectCounty(key) {
-  if (key === SELECTED) return;
-  SELECTED = key || null;
-  const c = key ? COUNTIES[key] : null;
-
-  if (!c) {
-    // No county chosen: clear results, hide the two county collapsibles.
-    clearBill();
-    setCollapsibles(false);
-    setStatus("");
-    byId("cands").innerHTML = "";
-    byId("gradeBadge").classList.remove("show");
-    updateCountyLabels();
-    if (MAP) MAP.fitBounds([[33.8, -84.4], [36.6, -75.4]], { padding: [10, 10] });
-    recolorMap();
-    return;
-  }
-
-  setStatus("Loading county…");
-  try {
-    const jsonReq = fetch(c.json).then(r => r.json());
-    const isLoading = { json: jsonReq, bm: c.benchmark ? fetch(c.benchmark).then(r => r.json()) : Promise.resolve(null) };
-    const [j, bm] = await Promise.all([isLoading.json, isLoading.bm]);
-    DATA = j; COUNTY = bm;
-    refreshCountyData(c.fips, j);
-    renderPanel(j);
-    renderSankey(j);
-    fillDetails();
-    setCollapsibles(true);
-    updateCountyLabels();
-    setStatus("");
-    recolorMap();
-    zoomToCounty(c.fips);
-  } catch (err) {
-    console.error(err);
-    setStatus("Could not load county data. Please try again.");
-  }
-}
-
-// Collapse + disable/enable the county-dependent collapsibles based on
-// selection state. "Check My Address" is always available (it does not
-// depend on a county being chosen), so it is left untouched.
-function setCollapsibles(on) {
-  document.querySelectorAll("details.county-collapsible").forEach(d => {
-    d.classList.toggle("disabled", !on);
-    if (!on) d.removeAttribute("open");
-  });
-}
-
-function clearBill() {
-  byId("billResults").classList.add("hidden");
-  byId("billMeta").classList.add("hidden");
-  byId("belowSentence").classList.add("hidden");
-  byId("savedBlock").classList.remove("hidden");
-  if (PARCEL_LAYER) { MAP && MAP.removeLayer(PARCEL_LAYER); PARCEL_LAYER = null; }
-}
-
-// Clear the address input and any search/bill output from "Check My Address".
-function clearAddress() {
-  byId("addrInput").value = "";
-  byId("cands").innerHTML = "";
-  byId("nores").classList.add("hidden");
-  byId("status").textContent = "";
-  clearBill();
-}
-
-// ---- county panel ----
-function renderPanel(d) {
-  const gd = d.score == null ? GRADE_NA : (GRADE[String(d.score)] || GRADE_NA);
-  const badge = byId("gradeBadge");
-  badge.textContent = gd.g;
-  badge.style.background = gd.c;
-  badge.style.color = gd.g === "N/A" ? "#333" : "#fff";
-  badge.title = d.score == null ? "Data not reported" : `Grade ${gd.g} (score ${d.score}/3)`;
-  badge.classList.add("show");
-}
-
-function gradeFor(score) {
-  return score == null ? GRADE_NA : (GRADE[String(score)] || GRADE_NA);
-}
-
-function renderMap() {
-  MAP = L.map("map", { scrollWheelZoom: true, minZoom: 6, maxZoom: 18, maxBounds: [[33.0, -85.0], [37.4, -74.8]], maxBoundsViscosity: 1.0 }).setView([35.5, -79.0], 7);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_30wm_1_653990a9989fe9a5239ea6e7", { attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(MAP);
-  COUNTIES_LAYER = L.geoJSON(NC_GEO, {
-    style: () => ({ fillColor: "#e8e8e8", weight: 1, opacity: 1, color: "#666", fillOpacity: 0.6 }),
-    onEachFeature: (feat, layer) => {
-      const fips = String(feat.id);
-      const nm = feat.properties && feat.properties.NAME;
-      layer.on("click", () => selectCountyFromFips(fips));
-      layer.bindTooltip(() => {
-        const d = COUNTY_DATA[fips];
-        if (!d) return `<strong>${esc(nm)}</strong><br/>No benchmark data yet`;
-        return `<strong>${esc(d.label)}</strong><br/>Grade: ${gradeFor(d.score).g}<br/>Percent gap: ${pctSigned(d.diffPct)}<br/>Amount gap: ${fmtMoney(Math.abs(d.diffDollars))}`;
-      });
-    }
-  }).addTo(MAP);
-}
-
-// Color each county: grade color if it has data, neutral grey otherwise.
-function recolorMap() {
-  if (!COUNTIES_LAYER || !NC_GEO) return;
-  COUNTIES_LAYER.eachLayer(l => {
-    const fips = String(l.feature.id);
-    const d = COUNTY_DATA[fips];
-    const sel = SELECTED && COUNTIES[SELECTED].fips === fips;
-    if (!d) {
-      l.setStyle({ fillColor: "#e8e8e8", weight: sel ? 2.5 : 1, color: sel ? "#222" : "#666", fillOpacity: 0.6 });
-    } else {
-      l.setStyle({ fillColor: gradeFor(d.score).c, weight: sel ? 2.5 : 1, color: sel ? "#222" : "#666", fillOpacity: 0.75 });
-    }
-  });
-}
-
-function zoomToCounty(fips) {
-  const target = COUNTIES_LAYER.getLayers().find(l => String(l.feature.id) === fips);
-  if (target && target.getBounds().isValid()) {
-    target.bringToFront();
-    MAP.fitBounds(target.getBounds(), { maxZoom: 11, padding: [24, 24] });
-  }
-}
-
-function selectCountyFromFips(fips) {
-  for (const key in COUNTIES) {
-    if (COUNTIES[key].fips === fips) {
-      byId("countySelect").value = key;
-      selectCounty(key);
-      return;
-    }
-  }
-}
-
-function renderSankey(d) {
-  const nodes = [];
-  const gfIndex = d.revenue.length;
-  const gfName = "General Fund";
-  d.revenue.forEach(r => nodes.push({ name: r.area, share: r.share }));
-  nodes.push({ name: gfName, share: 1 });
-  d.spending.forEach(s => nodes.push({ name: s.area, share: s.share }));
-  const links = [];
-  d.revenue.forEach((r, i) => links.push({ source: i, target: gfIndex, value: r.total }));
-  d.spending.forEach((s, j) => links.push({ source: gfIndex, target: gfIndex + 1 + j, value: s.total }));
-
-  const svg = d3.select("#sankey");
-  svg.selectAll("*").remove();
-  const margin = { top: 10, right: 120, bottom: 10, left: 120 };
-  const width = 700 - margin.left - margin.right;
-  const height = 520 - margin.top - margin.bottom;
-  const sankey = d3.sankey().nodeWidth(14).nodePadding(16).extent([[margin.left, margin.top], [width + margin.left, height + margin.top]]);
-  const graph = sankey({ nodes: nodes.map(n => Object.assign({}, n)), links: links.map(l => Object.assign({}, l)) });
-  const color = (name) => name === gfName ? "#888888" : (BUCKET_COLORS[name] || "#6F6F6F");
-  const tooltip = d3.select("#sankeyTip");
-
-  svg.append("g").attr("fill", "none").attr("stroke-opacity", 0.4).selectAll("path").data(graph.links).join("path")
-    .attr("d", d3.sankeyLinkHorizontal()).attr("stroke", d => color(d.source.name)).attr("stroke-width", d => Math.max(1, d.width))
-    .on("mousemove", function (event, l) { tooltip.style("display", "block").style("left", (event.pageX + 14) + "px").style("top", (event.pageY - 10) + "px").html(`${l.source.name} → ${l.target.name}: ${fmtMoney(l.value)}`); })
-    .on("mouseout", () => tooltip.style("display", "none"));
-  const node = svg.append("g").selectAll("g").data(graph.nodes).join("g");
-  node.append("rect").attr("x", d => d.x0).attr("y", d => d.y0).attr("height", d => d.y1 - d.y0).attr("width", d => d.x1 - d.x0).attr("fill", d => color(d.name)).attr("rx", 2)
-    .on("mousemove", function (event, n) { tooltip.style("display", "block").style("left", (event.pageX + 14) + "px").style("top", (event.pageY - 10) + "px").html(`${n.name}${n.share != null ? " (" + Math.round(n.share * 100) + "%)" : ""}: ${fmtMoney(n.value)}`); })
-    .on("mouseout", () => tooltip.style("display", "none"));
-  node.append("text").attr("x", d => d.x0 < width / 2 + margin.left ? d.x0 - 6 : d.x1 + 6).attr("y", d => (d.y0 + d.y1) / 2).attr("dy", "0.35em").attr("text-anchor", d => d.x0 < width / 2 + margin.left ? "end" : "start").attr("font-size", 11).text(d => d.name === gfName ? d.name : `${d.name} (${Math.round(d.share * 100)}%)`);
-}
-
-// ---- My Bill ----
-function fillDetails() {
-  if (!COUNTY) return;
-  byId("dActualRate").textContent = COUNTY.r_actual.toFixed(4) + " per $100";
-  byId("dLActual").textContent = "$" + COUNTY.l_actual.toLocaleString();
-  byId("dX").textContent = "$" + COUNTY.x.toLocaleString();
-  byId("dL2016").textContent = "$" + COUNTY.l_2016.toLocaleString();
-  byId("dB").textContent = "$" + Math.round(COUNTY.b_endpoint).toLocaleString();
-  byId("dN").textContent = COUNTY.transitions.length;
-  byId("dLS").textContent = "$" + Math.round(COUNTY.l_scenario).toLocaleString();
-  byId("dScenarioRate2").textContent = COUNTY.r_scenario.toFixed(4);
-  byId("dRec").textContent = (COUNTY.rate_reconciliation_pct >= 0 ? "+" : "") + COUNTY.rate_reconciliation_pct.toFixed(3) + "%";
-  const tb = byId("trBody");
-  tb.innerHTML = "";
-  for (const t of COUNTY.transitions) {
-    const tr = document.createElement("tr");
-    [t.to_year, t.inflation, t.population, t.growth, t.benchmark_levy].forEach((v, i) => {
-      const td = document.createElement("td");
-      if (i === 0) td.textContent = v;
-      else if (i === 4) td.textContent = "$" + (v / 1e6).toFixed(1) + "M";
-      else td.textContent = (v * 100).toFixed(2) + "%";
-      tr.appendChild(td);
+  Object.keys(BENCHMARKS)
+    .sort((a, b) => BENCHMARKS[a].label.localeCompare(BENCHMARKS[b].label))
+    .forEach(k => {
+      const opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = BENCHMARKS[k].label;
+      sel.appendChild(opt);
     });
-    tb.appendChild(tr);
-  }
 }
 
 function setStatus(msg) { byId("status").textContent = msg || ""; }
 
-// Rebuild the county-specific labels in the County Financial Data collapsible
-// (rate context, population source, sources links) for the selected county.
-function updateCountyLabels() {
-  const c = SELECTED ? COUNTIES[SELECTED] : null;
-  const nm = c ? c.label : "this county";
-  byId("rateCtx").textContent = c ? "official " + nm + " rate" : "official county rate";
-  byId("popCtx").textContent = c ? nm : "this county";
-  const src = c && COUNTY && COUNTY.sources ? COUNTY.sources : {};
-  const items = Object.keys(SRC_LABELS)
-    .filter(k => src[k])
-    .map(k => `${SRC_LABELS[k]} (<a href="#" data-src="${k}">${hostOf(src[k])}</a>)`);
-  byId("srcPara").innerHTML = "<b>Sources:</b> " + (c && items.length ? items.join(", ") + "." : "—");
-  bindSourceLinks();
+function clearBill() {
+  byId("billResults").classList.add("hidden");
+  byId("belowSentence").classList.add("hidden");
+  byId("bill").classList.remove("hidden");
 }
 
-function bindSourceLinks() {
-  document.querySelectorAll("a[data-src]").forEach(a => {
-    a.addEventListener("click", e => { e.preventDefault(); const k = a.getAttribute("data-src"); if (COUNTY && COUNTY.sources[k]) window.open(COUNTY.sources[k], "_blank"); });
-  });
+function selectCounty(key) {
+  SELECTED = key || null;
+  COUNTY = key ? BENCHMARKS[key] : null;
+  clearBill();
 }
 
-// Query NC OneMap parcels for an address, optionally scoped to a county fips
-// (3-char cntyfips: e.g. "083"). Returns usable residential parcels.
+function clearAddress() {
+  byId("addrInput").value = "";
+  byId("cands").innerHTML = "";
+  byId("nores").classList.add("hidden");
+  setStatus("");
+  clearBill();
+}
+
+// ---- address search ----
 async function fetchAddressFeatures(q, cntyfips) {
   const where = PT.buildAddressWhere(q);
   if (!where) return [];
@@ -521,21 +242,19 @@ async function fetchAddressFeatures(q, cntyfips) {
   body.append("outFields", "parno,siteadd,parval,parvaltype,parusecode,parusedesc,stcntyfips,cntyfips");
   body.append("f", "pjson");
   body.append("returnGeometry", "false");
-  body.append("resultRecordCount", "12");
+  body.append("resultRecordCount", "40");
   const resp = await fetch(ONEMAP_QUERY, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
   const data = JSON.parse(await resp.text());
   if (data.error) throw new Error(data.error.message || "Service error");
   return (data.features || []).map(f => f.attributes).filter(PT.isUsableResidential);
 }
 
-// Infer the supported county for a raw address by querying all NC parcels and
-// mapping the first residential hit's stcntyfips to a COUNTIES key.
 async function inferCountyKey(q) {
   const feats = await fetchAddressFeatures(q, null);
   for (const f of feats) {
     const sfips = String(f.stcntyfips || "");
-    for (const k in COUNTIES) {
-      if (COUNTIES[k].fips === sfips) return k;
+    for (const k in BENCHMARKS) {
+      if (BENCHMARKS[k].fips === sfips) return k;
     }
   }
   return null;
@@ -553,17 +272,15 @@ async function searchAddress(query) {
     const where = PT.buildAddressWhere(q);
     if (!where) { setStatus(""); return; }
 
-    // Resolve the county: use the current selection, else infer it from the
-    // address and auto-select that county.
-    let key = SELECTED && COUNTIES[SELECTED] ? SELECTED : null;
+    let key = SELECTED && BENCHMARKS[SELECTED] ? SELECTED : null;
     if (!key) {
       key = await inferCountyKey(q);
-      if (!key) { setStatus("No residential matches in a supported county. Try a street name or house number."); return; }
-      byId("countySelect").value = key; // programmatic: does not fire change
-      await selectCounty(key);           // loads + enables county collapsibles
+      if (!key) { setStatus("No residential matches found. Try a street name or house number."); return; }
+      byId("countySelect").value = key;
+      selectCounty(key);
     }
 
-    const feats = await fetchAddressFeatures(q, COUNTIES[key].fips);
+    const feats = await fetchAddressFeatures(q, BENCHMARKS[key].fips);
     if (feats.length === 0) { setStatus(""); byId("nores").classList.remove("hidden"); return; }
     renderCandidates(feats);
     setStatus(feats.length + " residential match" + (feats.length > 1 ? "es" : "") + (feats.length > 8 ? " (showing first 8)." : "."));
@@ -574,8 +291,6 @@ async function searchAddress(query) {
     byId("searchBtn").disabled = false;
   }
 }
-
-function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 function renderCandidates(feats) {
   const list = byId("cands");
@@ -589,75 +304,47 @@ function renderCandidates(feats) {
   });
 }
 
+// ---- bill ----
 function selectParcel(f) {
-  byId("rAddress").textContent = f.siteadd || "No address";
-  byId("rParcel").textContent = f.parno;
-  byId("rValue").textContent = "$" + (f.parval || 0).toLocaleString();
-  byId("rBasis").textContent = f.parvaltype || "assessed";
-  byId("rUse").textContent = (f.parusedesc || f.parusecode || "n/a");
-  byId("billMeta").classList.remove("hidden");
+  byId("bAddress").textContent = f.siteadd || "No address";
+  byId("bMeta").textContent = (COUNTY ? COUNTY.label : "") + " · County-wide tax · FY2025-26 · Parcel " + (f.parno || "—") + " · Assessed $" + Number(f.parval || 0).toLocaleString();
 
-  // Bill comparison needs a benchmark (official county rate/levy/base inputs).
   const sentence = byId("belowSentence");
-  const saved = byId("savedBlock");
+  const bill = byId("bill");
+
   if (!COUNTY) {
     sentence.textContent = "The per-property comparison is unavailable for this county yet.";
     sentence.classList.remove("hidden");
-    saved.classList.add("hidden");
+    bill.classList.add("hidden");
     byId("billResults").classList.remove("hidden");
-    highlightParcel(f.parno);
     return;
   }
 
   const vm = PT.computeComparison(f.parval, COUNTY);
 
-  // When the county as a whole was below the HB 1089 benchmark, a simple
-  // sentence replaces the comparison. Otherwise show the saved line and
-  // the two what-you-paid subheadings.
-  if (vm.below_benchmark) {
-    const c = SELECTED ? COUNTIES[SELECTED] : null;
-    const nm = c ? c.label.replace(/ County$/, "") : "the county";
-    sentence.textContent = "Property tax rate growth in " + nm + " County was below the maximum proposed under HB 1089.";
+  if (!vm.ok) {
+    sentence.textContent = "The per-property comparison is unavailable for this parcel.";
     sentence.classList.remove("hidden");
-    saved.classList.add("hidden");
+    bill.classList.add("hidden");
+    byId("billResults").classList.remove("hidden");
+    return;
+  }
+
+  if (vm.below_benchmark) {
+    const nm = COUNTY.label.replace(/ County$/, "");
+    sentence.textContent = "Property tax rate growth in " + nm + " County was below the maximum allowed under a levy limit, so this property would not have saved anything.";
+    sentence.classList.remove("hidden");
+    bill.classList.add("hidden");
   } else {
     sentence.classList.add("hidden");
-    sentence.textContent = "";
-    saved.classList.remove("hidden");
-    byId("savedAmt").textContent = fmtMoney(vm.difference);
-    byId("sActual").textContent = fmtMoney(vm.tax_actual);
-    byId("sScenario").textContent = fmtMoney(vm.tax_scenario);
+    bill.classList.remove("hidden");
+    byId("bPaid").textContent = fmtMoney(vm.tax_actual);
+    byId("bCould").textContent = fmtMoney(vm.tax_scenario);
+    byId("bSaved").textContent = fmtMoney(vm.difference);
+    const pct = vm.tax_actual > 0 ? Math.round(100 * vm.difference / vm.tax_actual) : 0;
+    byId("bPct").textContent = pct + "% lower";
   }
   byId("billResults").classList.remove("hidden");
-  highlightParcel(f.parno);
-}
-
-async function highlightParcel(parno) {
-  if (!MAP || !parno) return;
-  try {
-    const body = new URLSearchParams();
-    body.append("where", `parno = '${parno}'`);
-    body.append("outFields", "siteadd,parno");
-    body.append("f", "geojson");
-    body.append("outSR", "4326");
-    body.append("returnGeometry", "true");
-    const resp = await fetch(ONEMAP_QUERY, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
-    const gj = await resp.json();
-    if (gj.error) throw new Error(gj.error.message || "Service error");
-    if (!gj.features || !gj.features.length) return;
-    const fc = gj.features.length === 1 ? gj : { type: "FeatureCollection", features: gj.features };
-    if (PARCEL_LAYER) { MAP.removeLayer(PARCEL_LAYER); PARCEL_LAYER = null; }
-    PARCEL_LAYER = L.geoJSON(fc, { style: { fillColor: "#c41230", fillOpacity: 0.55, weight: 3, color: "#7e0b1d" } }).addTo(MAP);
-    PARCEL_LAYER.bindTooltip(`<strong>${featLabel(fc.features[0])}</strong>`);
-    PARCEL_LAYER.getBounds().isValid() && MAP.fitBounds(PARCEL_LAYER.getBounds(), { padding: [30, 30], maxZoom: 18 });
-  } catch (err) {
-    console.error("parcel highlight failed:", err);
-  }
-}
-
-function featLabel(feat) {
-  const p = feat && feat.properties;
-  return p && p.siteadd ? p.siteadd : "Parcel";
 }
 
 // ---- init ----
@@ -666,12 +353,9 @@ document.addEventListener("DOMContentLoaded", () => {
   byId("searchBtn").addEventListener("click", run);
   byId("addrInput").addEventListener("keydown", e => { if (e.key === "Enter") run(); });
   byId("countySelect").addEventListener("change", (e) => {
-    // A user-driven county change clears the address so it does not drift.
     clearAddress();
     selectCounty(e.target.value || null);
   });
-  setCollapsibles(false);
-  updateCountyLabels();
   loadAll();
 });
 </script>
