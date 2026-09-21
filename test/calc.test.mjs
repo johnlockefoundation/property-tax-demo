@@ -7,7 +7,7 @@ import path from "node:path";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PT = (await import(path.join(__dirname, "..", "calc.js"))).default;
 
-// data/benchmarks.json is a faithful mirror of the Data(tax).csv 5-year columns.
+// data/benchmarks.json is a faithful mirror of the Data(tax).csv FY2025-26 columns.
 const BENCHMARKS = JSON.parse(
   readFileSync(path.join(__dirname, "..", "data", "benchmarks.json"), "utf8")
 );
@@ -119,38 +119,39 @@ test("ambiguity: a multi-match search yields a candidate list, not a silent pick
 
 // ---- Data(tax).csv conformance ----
 
-test("benchmarks mirror the CSV 5-year columns for all 100 counties", () => {
+test("benchmarks mirror the Data(tax).csv FY2025-26 columns for all 100 counties", () => {
   const entries = Object.entries(BENCHMARKS);
   assert.equal(entries.length, 100);
   for (const [key, c] of entries) {
     assert.ok(/^[a-z0-9-]+$/.test(key), `slug ${key}`);
-    assert.equal(c.act_5yr, c.l_actual, `${key} act_5yr`);
-    assert.equal(c.hyp_5yr, c.l_benchmark, `${key} hyp_5yr`);
-    assert.equal(c.cnt_diff, c.act_5yr - c.hyp_5yr, `${key} cnt_diff`);
-    assert.equal(c.l_scenario, Math.min(c.act_5yr, c.hyp_5yr), `${key} scenario`);
-    assert.equal(c.below_benchmark, c.act_5yr <= c.hyp_5yr, `${key} below`);
-    assert.ok(["A", "B", "C", "D", "F"].includes(c.grade), `${key} grade ${c.grade}`);
-    assert.equal(c.by_year.length, 5, `${key} by_year`);
-    // The CSV stores savings_rate rounded to 4 decimals.
-    assert.ok(Math.abs(c.savings_rate - (c.act_5yr - c.hyp_5yr) / c.act_5yr) < 1e-4, `${key} savings_rate`);
+    assert.equal(c.period, "FY2025-26", `${key} period`);
+    assert.equal(c.act, c.l_actual, `${key} act`);
+    assert.equal(c.hyp, c.l_benchmark, `${key} hyp`);
+    assert.equal(c.cnt_diff, c.act - c.hyp, `${key} cnt_diff`);
+    assert.equal(c.l_scenario, Math.min(c.act, c.hyp), `${key} scenario`);
+    assert.equal(c.below_benchmark, c.act <= c.hyp, `${key} below`);
+    assert.equal(c.by_year.length, 1, `${key} by_year`);
+    assert.equal(c.by_year[0].fy, "2025-26", `${key} by_year year`);
+    assert.ok(Math.abs(c.savings_rate - (c.act - c.hyp) / c.act) < 1e-9, `${key} savings_rate`);
+    assert.ok(Math.abs(c.pct_diff - (c.act / c.hyp - 1) * 100) < 1e-6, `${key} pct_diff`);
   }
 });
 
-test("receipt percentage equals the CSV savings_rate (Wake ~10.8%)", () => {
-  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 11);
-  assert.equal(BENCHMARKS.wake.pct_diff, 12); // the two CSV percentages differ
+test("receipt percentage is the FY2025-26 savings rate (Wake ~19%)", () => {
+  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 19);
+  assert.equal(Math.round(BENCHMARKS.wake.pct_diff), 24);
 });
 
-test("per-property amounts are the CSV levy columns apportioned by assessed value", () => {
+test("per-property amounts are the FY2025-26 levy columns apportioned by assessed value", () => {
   const V = 291_834;
   const c = BENCHMARKS.wake;
-  const paid = (V * c.act_5yr) / c.x;
-  const could = (V * c.hyp_5yr) / c.x;
-  assert.ok(Math.abs(paid - 6515.09) < 0.01, `paid ${paid}`);
-  assert.ok(Math.abs(paid - could - 703.74) < 0.01, `saved ${paid - could}`);
+  const paid = (V * c.act) / c.x;
+  const could = (V * c.hyp) / c.x;
+  assert.ok(Math.abs(paid - 1509.82) < 0.01, `paid ${paid}`);
+  assert.ok(Math.abs(paid - could - 293.65) < 0.01, `saved ${paid - could}`);
 });
 
-test("four counties are at/below benchmark, matching the CSV", () => {
+test("four counties are at/below benchmark for FY2025-26", () => {
   const names = Object.values(BENCHMARKS).filter(c => c.below_benchmark).map(c => c.label).sort();
   assert.deepEqual(names, ["Alamance County", "Macon County", "Madison County", "Moore County"]);
 });
