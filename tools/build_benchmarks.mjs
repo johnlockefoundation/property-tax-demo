@@ -50,6 +50,10 @@ function parseCsv(text) {
 }
 
 const money = (v) => Number(String(v == null ? "" : v).replace(/[",$]/g, "").trim()) || 0;
+const pctNumber = (v) => {
+  const n = parseFloat(String(v == null ? "" : v).replace("%", "").trim());
+  return Number.isFinite(n) ? n : null;
+};
 const lower = (c) => c.trim().toLowerCase();
 
 function mapByCounty(csvText, valueHeader) {
@@ -78,29 +82,38 @@ for (const row of taxRows.slice(1)) {
     hypothetical: money(rec[HYP_COL[fy]]),
   }));
 
-  const l_actual = byYear.reduce((s, y) => s + y.actual, 0);
-  const l_benchmark = byYear.reduce((s, y) => s + y.hypothetical, 0);
-  const l_scenario = Math.min(l_actual, l_benchmark);
+  // CSV 5-year columns are authoritative.
+  const act5 = money(rec["5-year_act"]);
+  const hyp5 = money(rec["5-year_hyp"]);
+  const l_scenario = Math.min(act5, hyp5);
   const x = money(valuation[lower(name)]);
 
-  const csvTotal = money(rec["5-year_act"]);
-  if (Math.abs(l_actual - csvTotal) > 2) problems.push(`${name}: summed ${l_actual} vs 5-year_act ${csvTotal}`);
+  const summed = byYear.reduce((s, y) => s + y.actual, 0);
+  if (Math.abs(summed - act5) > 2) problems.push(`${name}: summed ${summed} vs 5-year_act ${act5}`);
   if (!x) problems.push(`${name}: missing assessed valuation`);
 
+  // Faithful mirror of the Data(tax).csv columns (authoritative definition).
   out[slug(name)] = {
     label: `${name} County`,
     fips: fips[lower(name)] || null,
     baseline_year: 2019,
     period: "FY2021-22-FY2025-26",
     x,
-    l_actual,
-    b_endpoint: l_benchmark,
-    l_benchmark,
+    // CSV 5-year columns (authoritative definition)
+    act_5yr: act5,
+    hyp_5yr: hyp5,
+    cnt_diff: money(rec["5-year_cnt_diff"]),
+    pct_diff: pctNumber(rec["5-year_pct_diff"]),
+    savings_rate: parseFloat(rec["5-year_savings_rate"]),
+    grade: String(rec["grade"] || "").trim().toUpperCase() || null,
+    // Values the calculation library consumes
+    l_actual: act5,
+    b_endpoint: hyp5,
+    l_benchmark: hyp5,
     l_scenario,
-    r_actual: x ? round6((100 * l_actual) / x) : null,
+    r_actual: x ? round6((100 * act5) / x) : null,
     r_scenario: x ? round6((100 * l_scenario) / x) : null,
-    below_benchmark: l_actual <= l_benchmark,
-    savings_rate: l_actual ? round6((l_actual - l_scenario) / l_actual) : null,
+    below_benchmark: act5 <= hyp5,
     by_year: byYear,
   };
 }

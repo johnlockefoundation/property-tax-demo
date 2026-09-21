@@ -380,9 +380,8 @@ function selectParcel(f) {
     return;
   }
 
-  const vm = PT.computeComparison(f.parval, COUNTY);
-
-  if (!vm.ok) {
+  const value = Number(f.parval);
+  if (!COUNTY.x || !isFinite(value) || value < 0) {
     sentence.textContent = "The per-property comparison is unavailable for this parcel.";
     sentence.classList.remove("hidden");
     bill.classList.add("hidden");
@@ -390,20 +389,24 @@ function selectParcel(f) {
     return;
   }
 
-  if (vm.below_benchmark) {
+  // Amounts are the Data(tax).csv 5-year columns apportioned to this parcel's
+  // assessed value: paid = V * act_5yr / X, etc. The percentage is the CSV
+  // savings_rate so the receipt matches the published figure exactly.
+  if (COUNTY.below_benchmark) {
     const nm = COUNTY.label.replace(/ County$/, "");
     sentence.textContent = "Property tax rate growth in " + nm + " County was below the maximum allowed under a levy limit, so this property would not have saved anything.";
     sentence.classList.remove("hidden");
     bill.classList.add("hidden");
   } else {
+    const paid = (value * COUNTY.act_5yr) / COUNTY.x;
+    const could = (value * COUNTY.hyp_5yr) / COUNTY.x;
     sentence.classList.add("hidden");
     bill.classList.remove("hidden");
     renderYears(f, COUNTY);
-    byId("bPaid").textContent = fmtMoney(vm.tax_actual);
-    byId("bCould").textContent = fmtMoney(vm.tax_scenario);
-    byId("bSaved").textContent = fmtMoney(vm.difference);
-    const pct = vm.tax_actual > 0 ? Math.round(100 * vm.difference / vm.tax_actual) : 0;
-    byId("bPct").textContent = pct + "% lower";
+    byId("bPaid").textContent = fmtMoney(paid);
+    byId("bCould").textContent = fmtMoney(could);
+    byId("bSaved").textContent = fmtMoney(paid - could);
+    byId("bPct").textContent = Math.round(100 * COUNTY.savings_rate) + "% lower";
   }
   byId("billResults").classList.remove("hidden");
 }

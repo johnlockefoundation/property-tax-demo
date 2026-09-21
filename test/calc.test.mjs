@@ -6,9 +6,13 @@ import path from "node:path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PT = (await import(path.join(__dirname, "..", "calc.js"))).default;
-const county = JSON.parse(
-  readFileSync(path.join(__dirname, "..", "data", "mecklenburg_benchmark.json"), "utf8")
+
+// data/benchmarks.json is a faithful mirror of the Data(tax).csv 5-year columns.
+const BENCHMARKS = JSON.parse(
+  readFileSync(path.join(__dirname, "..", "data", "benchmarks.json"), "utf8")
 );
+const county = BENCHMARKS.mecklenburg; // above benchmark
+const below = BENCHMARKS.alamance;     // at/below benchmark (grade A)
 
 test("arithmetic fixture: V=400000, r_actual=0.4927, r_scenario=0.4000", () => {
   const res = PT.computeComparison(400000, {
@@ -25,7 +29,6 @@ test("benchmark fixture: $100m baseline, 2% infl + 1% pop => $103m after one tra
 });
 
 test("benchmark compounds from the prior benchmark, not the baseline", () => {
-  // baseline 100m; two transitions each 3% -> 100*1.03*1.03
   const out = PT.benchmarkEndpoint(100_000_000, [{ growth: 0.03 }, { growth: 0.03 }]);
   assert.equal(out, 100_000_000 * 1.03 * 1.03);
 });
@@ -41,22 +44,13 @@ test("scenarioLevy caps at actual when actual is below ceiling", () => {
 test("two rate equations are equivalent within reconciliation rounding", () => {
   const fromBase = PT.rateFor(county.l_scenario, county.x);
   const fromActual = county.r_actual * (county.l_scenario / county.l_actual);
-  // The two agree only to the extent that L_actual = X*r_actual/100; NC DOR reports
-  // a 0.024% reconciliation gap, so allow a relative tolerance an order looser.
   const rel = Math.abs(fromBase - fromActual) / county.r_actual;
   assert.ok(rel < 0.001, `relative discrepancy ${rel}`);
 });
 
-test("rate reconciliation: X*r_actual/100 reproduces official levy within documented rounding", () => {
+test("rate reconciliation: X*r_actual/100 reproduces the levy within documented rounding", () => {
   const pct = PT.rateReconciliationPct(county.r_actual, county.x, county.l_actual);
   assert.ok(Math.abs(pct) < 0.05, `reconciliation off by ${pct}%`);
-});
-
-test("reported benchmark ceiling equals computed compounding of the 2016 baseline", () => {
-  const computed = PT.benchmarkEndpoint(county.l_2016, county.transitions);
-  // Allow for rounding of the growth factors stored in the JSON data file.
-  const rel = Math.abs(computed - county.b_endpoint) / county.b_endpoint;
-  assert.ok(rel < 1e-5, `${computed} vs ${county.b_endpoint} (rel ${rel})`);
 });
 
 test("Mecklenburg reported r_scenario equals 100*L_scenario/X", () => {
@@ -78,17 +72,17 @@ test("zero actual value does not divide by zero", () => {
   assert.equal(res.percent_difference, 0);
 });
 
-test("unchanged rate when actual is below ceiling", () => {
-  const res = PT.computeComparison(400000, county);
+test("at/below-benchmark county leaves the rate and bill unchanged", () => {
+  const res = PT.computeComparison(400000, below);
   assert.equal(res.below_benchmark, true);
   assert.equal(res.same_rate, true);
-  assert.ok(Math.abs(res.percent_difference) < 0.05);
+  assert.equal(res.tax_scenario, res.tax_actual);
 });
 
 test("address where-clause escapes single quotes (injection safe)", () => {
   const w = PT.buildAddressWhere("O'Brien 100");
   assert.equal(w, "UPPER(siteadd) LIKE UPPER('%O''Brien 100%')");
-  assert.ok(!w.includes("O'Brien'%'")); // no unescaped quote
+  assert.ok(!w.includes("O'Brien'%'"));
   assert.equal(PT.buildAddressWhere("   "), null);
   assert.equal(PT.buildAddressWhere(""), null);
 });
@@ -106,15 +100,12 @@ test("residential filter keeps usable homes and excludes commercial/non-value", 
 });
 
 test("residential filter accepts counties with only a description (e.g. Halifax)", () => {
-  // Halifax leaves parusecode blank and only sets parusedesc="Residential".
   assert.equal(PT.isUsableResidential({ parval: 132700, parusecode: "", parusedesc: "Residential" }), true);
   assert.equal(PT.isUsableResidential({ parval: 132700, parusecode: "R100", parusedesc: "SINGLE FAMILY RESIDENTIAL" }), true);
-  // A commercial description should still be excluded even with a value.
   assert.equal(PT.isUsableResidential({ parval: 500000, parusecode: "", parusedesc: "Commercial" }), false);
 });
 
 test("ambiguity: a multi-match search yields a candidate list, not a silent pick", () => {
-  // Simulation of one OneMap response with several matching residential parcels.
   const mock = [
     { parno: "17103426", parval: 260653, parusecode: "R300" },
     { parno: "17103458", parval: 276968, parusecode: "R300" },
@@ -122,8 +113,44 @@ test("ambiguity: a multi-match search yields a candidate list, not a silent pick
   ];
   const usable = mock.filter(PT.isUsableResidential);
   assert.equal(usable.length, 3);
-  // Each candidate's bill differs with its value; no single value is forced.
   const amounts = new Set(usable.map(p => PT.computeComparison(p.parval, county).tax_actual));
   assert.equal(amounts.size, usable.length);
 });
 
+// ---- Data(tax).csv conformance ----
+
+test("benchmarks mirror the CSV 5-year columns for all 100 counties", () => {
+  const entries = Object.entries(BENCHMARKS);
+  assert.equal(entries.length, 100);
+  for (const [key, c] of entries) {
+    assert.ok(/^[a-z0-9-]+$/.test(key), `slug ${key}`);
+    assert.equal(c.act_5yr, c.l_actual, `${key} act_5yr`);
+    assert.equal(c.hyp_5yr, c.l_benchmark, `${key} hyp_5yr`);
+    assert.equal(c.cnt_diff, c.act_5yr - c.hyp_5yr, `${key} cnt_diff`);
+    assert.equal(c.l_scenario, Math.min(c.act_5yr, c.hyp_5yr), `${key} scenario`);
+    assert.equal(c.below_benchmark, c.act_5yr <= c.hyp_5yr, `${key} below`);
+    assert.ok(["A", "B", "C", "D", "F"].includes(c.grade), `${key} grade ${c.grade}`);
+    assert.equal(c.by_year.length, 5, `${key} by_year`);
+    // The CSV stores savings_rate rounded to 4 decimals.
+    assert.ok(Math.abs(c.savings_rate - (c.act_5yr - c.hyp_5yr) / c.act_5yr) < 1e-4, `${key} savings_rate`);
+  }
+});
+
+test("receipt percentage equals the CSV savings_rate (Wake ~10.8%)", () => {
+  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 11);
+  assert.equal(BENCHMARKS.wake.pct_diff, 12); // the two CSV percentages differ
+});
+
+test("per-property amounts are the CSV levy columns apportioned by assessed value", () => {
+  const V = 291_834;
+  const c = BENCHMARKS.wake;
+  const paid = (V * c.act_5yr) / c.x;
+  const could = (V * c.hyp_5yr) / c.x;
+  assert.ok(Math.abs(paid - 6515.09) < 0.01, `paid ${paid}`);
+  assert.ok(Math.abs(paid - could - 703.74) < 0.01, `saved ${paid - could}`);
+});
+
+test("four counties are at/below benchmark, matching the CSV", () => {
+  const names = Object.values(BENCHMARKS).filter(c => c.below_benchmark).map(c => c.label).sort();
+  assert.deepEqual(names, ["Alamance County", "Macon County", "Madison County", "Moore County"]);
+});
