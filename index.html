@@ -100,6 +100,12 @@
   .receipt-rule { border-top: 1px dashed #b9b4a5; margin: 12px 0; }
   .receipt-meta { text-align: center; text-transform: uppercase; letter-spacing: .03em; font-size: 12px; color: #38352e; }
   .receipt-addr { text-align: center; text-transform: uppercase; letter-spacing: .02em; font-size: 13.5px; font-weight: 700; margin-bottom: 4px; }
+  .receipt-years { font-size: 11.5px; }
+  .receipt-yr { display: flex; justify-content: space-between; gap: 8px; padding: 2.5px 0; }
+  .receipt-yr span { font-variant-numeric: tabular-nums; }
+  .receipt-yr span:first-child { width: 46px; }
+  .receipt-yr span:nth-child(2), .receipt-yr span:nth-child(3) { flex: 1; text-align: right; }
+  .receipt-yr.head { text-transform: uppercase; letter-spacing: .1em; font-size: 9.5px; color: #6b675c; border-bottom: 1px dotted #b9b4a5; padding-bottom: 3px; margin-bottom: 3px; }
   .receipt-line { display: flex; align-items: baseline; gap: 6px; padding: 5px 0; text-transform: uppercase; letter-spacing: .02em; font-size: 12.5px; }
   .receipt-line .leader { flex: 1; min-width: 14px; border-bottom: 2px dotted #9a958a; transform: translateY(-3px); }
   .receipt-line .amt { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
@@ -183,6 +189,8 @@
       <div class="receipt-addr" id="bAddress"></div>
       <div class="receipt-meta" id="bMeta"></div>
       <div class="receipt-rule"></div>
+      <div class="receipt-years" id="bYears"></div>
+      <div class="receipt-rule"></div>
       <div class="receipt-line"><span>What you paid</span><span class="leader"></span><span class="amt" id="bPaid">$0</span></div>
       <div class="receipt-line"><span>What you could have paid</span><span class="leader"></span><span class="amt" id="bCould">$0</span></div>
       <div class="receipt-rule"></div>
@@ -207,13 +215,15 @@
           <dt>The assumed annual limit</dt>
           <dd>Inflation (CPI-U) plus the county's population growth.</dd>
           <dt>When the policy begins</dt>
-          <dd>The 2019 base year; the limit is compounded forward to the current tax year (FY2025-26).</dd>
+          <dd>The 2019 base year; the limit compounds forward from there.</dd>
+          <dt>What this receipt compares</dt>
+          <dd>The five fiscal years FY2021-22 through FY2025-26: the county levy actually collected, summed, versus the summed limit.</dd>
           <dt>Taxes included</dt>
           <dd>County-wide property tax only, not the full bill.</dd>
           <dt>Property value</dt>
           <dd>The parcel's current assessed value from NC OneMap is held constant; reassessment timing is not modeled.</dd>
           <dt>Formula</dt>
-          <dd>actual rate = county levy / assessed valuation; scenario levy = min(actual levy, 2019-base benchmark), so the limit never prescribes an increase.</dd>
+          <dd>5-year actual rate = summed levy / assessed valuation; scenario levy = min(summed actual, summed 2019-base benchmark), so the limit never prescribes an increase.</dd>
         </dl>
         <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, U.S. Census population estimates, and BLS CPI-U.</p>
         <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
@@ -354,9 +364,10 @@ function selectParcel(f) {
   byId("bAddress").textContent = f.siteadd || "No address";
   byId("bMeta").innerHTML =
     (COUNTY ? "<div>" + esc(COUNTY.label) + "</div>" : "") +
-    "<div>Tax year FY2025-26</div>" +
+    "<div>FY2021-22 to FY2025-26</div>" +
     "<div>Parcel " + esc(f.parno || "—") + "</div>" +
     "<div>Assessed value $" + Number(f.parval || 0).toLocaleString() + "</div>";
+  byId("bYears").innerHTML = "";
 
   const sentence = byId("belowSentence");
   const bill = byId("bill");
@@ -387,6 +398,7 @@ function selectParcel(f) {
   } else {
     sentence.classList.add("hidden");
     bill.classList.remove("hidden");
+    renderYears(f, COUNTY);
     byId("bPaid").textContent = fmtMoney(vm.tax_actual);
     byId("bCould").textContent = fmtMoney(vm.tax_scenario);
     byId("bSaved").textContent = fmtMoney(vm.difference);
@@ -394,6 +406,18 @@ function selectParcel(f) {
     byId("bPct").textContent = pct + "% lower";
   }
   byId("billResults").classList.remove("hidden");
+}
+
+function renderYears(f, county) {
+  const value = Number(f.parval || 0);
+  const rows = county.by_year || [];
+  byId("bYears").innerHTML =
+    '<div class="receipt-yr head"><span>FY</span><span>Paid</span><span>Under limit</span></div>' +
+    rows.map(y => {
+      const paid = PT.bill(value, PT.rateFor(y.actual, county.x));
+      const limit = PT.bill(value, PT.rateFor(y.hypothetical, county.x));
+      return '<div class="receipt-yr"><span>' + esc(String(y.fy).slice(2)) + '</span><span>' + fmtMoney(paid) + '</span><span>' + fmtMoney(limit) + '</span></div>';
+    }).join("");
 }
 
 // ---- init ----
