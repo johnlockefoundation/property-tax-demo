@@ -7,11 +7,10 @@
 //   3. nc_county_fips.csv            -- county name -> 5-digit STCOFIPS
 //
 // Methodology: the levy limit is anchored to the 2019 base year. The CSV holds a
-// hypothetical benchmark levy for each fiscal year. The bill compares a single
-// fiscal year, FY2025-26, because parcel assessments shift over time and a
-// multi-year sum would have to assume a fixed share of the county tax base.
-// The scenario levy is min(FY2025-26 actual, FY2025-26 benchmark), so the limit
-// never prescribes an increase. Per $100 rates use the county's assessed valuation X.
+// hypothetical benchmark levy for each fiscal year FY2021-22..FY2025-26. A county's
+// 5-year benchmark is the sum of those yearly benchmarks; the scenario levy is
+// min(5-year actual, 5-year benchmark), so the limit never prescribes an increase.
+// Per $100 rates use the county's assessed valuation X.
 //
 // Usage:
 //   node tools/build_benchmarks.mjs [Data(tax).csv] [valuation.csv] [fips.csv] [out.json]
@@ -51,6 +50,10 @@ function parseCsv(text) {
 }
 
 const money = (v) => Number(String(v == null ? "" : v).replace(/[",$]/g, "").trim()) || 0;
+const pctNumber = (v) => {
+  const n = parseFloat(String(v == null ? "" : v).replace("%", "").trim());
+  return Number.isFinite(n) ? n : null;
+};
 const lower = (c) => c.trim().toLowerCase();
 
 function mapByCounty(csvText, valueHeader) {
@@ -79,35 +82,39 @@ for (const row of taxRows.slice(1)) {
     hypothetical: money(rec[HYP_COL[fy]]),
   }));
 
-  // The bill uses the FY2025-26 columns only (no multi-year sum).
-  const act26 = money(rec["2025-26_act"]);
-  const hyp26 = money(rec["2025_26_hyp"]);
-  const l_scenario = Math.min(act26, hyp26);
+  // CSV 5-year columns are authoritative.
+  const act5 = money(rec["5-year_act"]);
+  const hyp5 = money(rec["5-year_hyp"]);
+  const l_scenario = Math.min(act5, hyp5);
   const x = money(valuation[lower(name)]);
 
+  const summed = byYear.reduce((s, y) => s + y.actual, 0);
+  if (Math.abs(summed - act5) > 2) problems.push(`${name}: summed ${summed} vs 5-year_act ${act5}`);
   if (!x) problems.push(`${name}: missing assessed valuation`);
 
+  // Faithful mirror of the Data(tax).csv columns (authoritative definition).
   out[slug(name)] = {
     label: `${name} County`,
     fips: fips[lower(name)] || null,
     baseline_year: 2019,
-    period: "FY2025-26",
+    period: "FY2021-22-FY2025-26",
     x,
-    // Data(tax).csv FY2025-26 columns (authoritative definition)
-    act: act26,
-    hyp: hyp26,
-    cnt_diff: act26 - hyp26,
-    pct_diff: hyp26 ? round6((act26 / hyp26 - 1) * 100) : null,
-    savings_rate: act26 ? (act26 - hyp26) / act26 : null,
+    // CSV 5-year columns (authoritative definition)
+    act_5yr: act5,
+    hyp_5yr: hyp5,
+    cnt_diff: money(rec["5-year_cnt_diff"]),
+    pct_diff: pctNumber(rec["5-year_pct_diff"]),
+    savings_rate: parseFloat(rec["5-year_savings_rate"]),
+    grade: String(rec["grade"] || "").trim().toUpperCase() || null,
     // Values the calculation library consumes
-    l_actual: act26,
-    b_endpoint: hyp26,
-    l_benchmark: hyp26,
+    l_actual: act5,
+    b_endpoint: hyp5,
+    l_benchmark: hyp5,
     l_scenario,
-    r_actual: x ? round6((100 * act26) / x) : null,
+    r_actual: x ? round6((100 * act5) / x) : null,
     r_scenario: x ? round6((100 * l_scenario) / x) : null,
-    below_benchmark: act26 <= hyp26,
-    by_year: byYear.filter((y) => y.fy === "2025-26"),
+    below_benchmark: act5 <= hyp5,
+    by_year: byYear,
   };
 }
 
