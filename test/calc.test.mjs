@@ -14,6 +14,35 @@ const BENCHMARKS = JSON.parse(
 const county = BENCHMARKS.mecklenburg; // above benchmark
 const below = BENCHMARKS.alamance;     // at/below benchmark (grade A)
 
+// Read the authoritative Data(tax).csv so tests can verify column Q wiring.
+function csvRows(text) {
+  const out = [];
+  for (const line of text.trim().split(/\r?\n/)) {
+    const cells = []; let cur = "", q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (q) {
+        if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+        else if (ch === '"') q = false;
+        else cur += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === ",") { cells.push(cur); cur = ""; }
+      else cur += ch;
+    }
+    cells.push(cur); out.push(cells);
+  }
+  return out;
+}
+const CSV_ROWS = csvRows(readFileSync(path.join(__dirname, "..", "..", "Data(tax).csv"), "utf8"));
+const CSV_HEAD = CSV_ROWS[0].map(h => h.trim());
+const CSV_BY_SLUG = new Map();
+for (const r of CSV_ROWS.slice(1)) {
+  if (!r[0] || r[0].trim().toLowerCase() === "total") continue;
+  const rec = Object.fromEntries(CSV_HEAD.map((h, i) => [h, r[i]]));
+  const slug = r[0].trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  CSV_BY_SLUG.set(slug, rec);
+}
+
 test("arithmetic fixture: V=400000, r_actual=0.4927, r_scenario=0.4000", () => {
   const res = PT.computeComparison(400000, {
     x: 1, l_scenario: 1, r_actual: 0.4927, r_scenario: 0.4000, l_actual: 0, b_endpoint: 0
@@ -132,14 +161,17 @@ test("benchmarks mirror the Data(tax).csv FY2025-26 columns for all 100 counties
     assert.equal(c.below_benchmark, c.act <= c.hyp, `${key} below`);
     assert.equal(c.by_year.length, 1, `${key} by_year`);
     assert.equal(c.by_year[0].fy, "2025-26", `${key} by_year year`);
-    assert.ok(Math.abs(c.savings_rate - (c.act - c.hyp) / c.act) < 1e-9, `${key} savings_rate`);
+    const csv = CSV_BY_SLUG.get(key);
+    assert.ok(csv, `${key} present in Data(tax).csv`);
+    assert.equal(c.savings_rate, parseFloat(csv["5-year_savings_rate"]), `${key} column Q`);
+    assert.ok(Math.abs(c.savings_rate_fy26 - (c.act - c.hyp) / c.act) < 1e-9, `${key} fy26 rate`);
     assert.ok(Math.abs(c.pct_diff - (c.act / c.hyp - 1) * 100) < 1e-6, `${key} pct_diff`);
   }
 });
 
-test("receipt percentage is the FY2025-26 savings rate (Wake ~19%)", () => {
-  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 19);
-  assert.equal(Math.round(BENCHMARKS.wake.pct_diff), 24);
+test("receipt percentage equals Data(tax).csv column Q (Wake ~11%), not the single-year rate", () => {
+  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 11);
+  assert.ok(Math.abs(BENCHMARKS.wake.savings_rate_fy26 - 0.19449565867922175) < 1e-9);
 });
 
 test("per-property amounts are the FY2025-26 levy columns apportioned by assessed value", () => {

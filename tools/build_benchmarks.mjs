@@ -98,7 +98,10 @@ for (const row of taxRows.slice(1)) {
     hyp: hyp26,
     cnt_diff: act26 - hyp26,
     pct_diff: hyp26 ? round6((act26 / hyp26 - 1) * 100) : null,
-    savings_rate: act26 ? (act26 - hyp26) / act26 : null,
+    // Column Q = 5-year_savings_rate from the Data(tax).csv; the receipt's "% lower"
+    // always reflects this published figure.
+    savings_rate: parseFloat(rec["5-year_savings_rate"]),
+    savings_rate_fy26: act26 ? (act26 - hyp26) / act26 : null,
     // Values the calculation library consumes
     l_actual: act26,
     b_endpoint: hyp26,
