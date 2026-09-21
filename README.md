@@ -73,4 +73,4 @@ then open `http://localhost:8000/`.
 
 ## Live site
 
-https://mkale-jlf.github.io/property-tax-demo/
+https://johnlockefoundation.github.io/property-tax-demo/
