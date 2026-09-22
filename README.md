@@ -1,67 +1,80 @@
-# NC Property Tax — Understanding HB 1089 (Static Demo)
+# NC Property Tax — Understanding HB 1089
 
 A static, single-page site hosted on GitHub Pages (no backend required). Enter a North
 Carolina street address, pick the matching parcel, and the page estimates what the
 county-wide property tax would have been under an HB 1089–style **levy limit** anchored
 to a **2019 base year**.
 
-The result is presented as a store receipt: the five fiscal years FY2021-22 through
-FY2025-26 itemized, then **what you paid**, **what you could have paid**, and **you
-could have saved**.
+The result is presented as a store receipt for the single fiscal year **FY2025-26**:
+**what you paid**, **what you could have paid**, and **you could have saved** (with a
+percent figure).
 
 ## How it works
 
-The levy limit is a ceiling that compounds from the 2019 base year by **inflation
-(CPI-U) + population growth**. For each county the CSV holds a hypothetical benchmark
-levy for every fiscal year FY2021-22–FY2025-26, so the comparison is over the five-year
-total:
+For each county a hypothetical benchmark levy is derived that compounds from the FY2020-21
+actual levy by **inflation (BLS South urban CPI) + OSBM certified population growth**, per
+the published research methodology. The published **5-year savings rate** (column Q of
+`Data(tax).csv`) is the cumulative savings over FY2021-22–FY2025-26:
 
 ```
-L_actual   = sum of the five yearly county-wide levies actually collected
-B          = sum of the five yearly 2019-base benchmark levies
-L_scenario = min(L_actual, B)          # the limit is a ceiling, never an increase
-r_actual   = 100 * L_actual   / X      # X = current assessed valuation (NCDOR LG04)
-r_scenario = 100 * L_scenario / X
-paid        = V * r_actual   / 100
-could_have  = V * r_scenario / 100
-savings     = paid - could_have        # as a % of paid = the county's savings rate
+savings_rate = (cumulative actual levy - cumulative hypothetical levy) / cumulative actual levy
 ```
 
-- `V` = parcel assessed value from NC OneMap (ordinary residential parcels only).
-- Assessed value is held constant across the five years; reassessment timing is not
-  modeled.
+The receipt applies that rate to the property's current FY2025-26 county bill:
+
+```
+paid        = V * act / X          # V = parcel assessed value (NC OneMap)
+                                  # act = county-wide FY2025-26 actual levy (NCDOR LG04)
+                                  # X   = county FY2025-26 assessed valuation (LG04)
+could_have  = paid * (1 - savings_rate)
+saved       = paid * savings_rate  # the "percent lower" always matches column Q
+```
+
 - County-wide property tax only — municipal, school, and special district taxes are
   out of scope.
-- Where the county is at or below the benchmark, `L_scenario = L_actual` and the page
-  shows a short "no savings" explanation instead of the receipt.
+- Assessed value is held constant for the year; reassessment timing is not modeled.
+- Where the county is at or below the benchmark, the page shows a short "no savings"
+  explanation instead of a receipt.
 
 Four counties are at or below the benchmark: **Alamance, Macon, Madison, and Moore**.
 
 ## Data
 
 `data/benchmarks.json` holds the per-county inputs (all 100 counties) keyed by county
-slug, with the full 5-digit STCOFIPS, the five yearly actual/benchmark levies, and the
-five-year totals. The headline percentage matches the `5-year_savings_rate` column in
-`Data(tax).csv` (e.g. Wake 10.8% → grade C).
+slug, with the 5-digit STCOFIPS, the FY2025-26 actual/hypothetical levies, the assessed
+valuation base, the column-Q savings rate, and the at/below flag.
 
-Regenerate it with:
+Build inputs are **vendored** under `data/source/`, so the build is fully reproducible
+without any sibling checkout:
 
 ```
-node tools/build_benchmarks.mjs [Data(tax).csv] [valuation.csv] [fips.csv] [out.json]
+data/source/
+  Data(tax).csv                # authoritative yearly levies; column Q = 5-year savings rate
+  lg04_fy2025-26_valuation.csv # NCDOR LG04 assessed valuation (taxable base X)
+  nc_county_fips.csv           # county name -> 5-digit STCOFIPS
 ```
 
-Defaults point at the companion monorepo layout (`../../Data(tax).csv`,
-`../../property-tax-widget/data/...`). The assessed valuation comes from the NCDOR LG04
-FY2025-26 workbook.
+Regenerate `data/benchmarks.json` with:
 
-The shared calculation logic lives in `calc.js` (`PT.computeComparison`), used by both
-the page and the tests.
+```
+node tools/build_benchmarks.mjs
+```
+
+The shared calculation logic lives in `calc.js` (`PT.computeReceipt`,
+`PT.buildAddressWhere`, `PT.isUsableResidential`), used by the page and the tests.
+
+## Methodology notes
+
+See `docs/methodology.html` for the full methodology and data reconciliation notes.
 
 ## Tests
 
 ```
 node --test test/calc.test.mjs
 ```
+
+Tests cover the receipt arithmetic, address/residential filtering, column-Q wiring for
+all 100 counties, the four at/below-benchmark counties, and build reproducibility.
 
 ## Local preview
 

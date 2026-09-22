@@ -215,7 +215,7 @@
           <dt>What "levy limit" means</dt>
           <dd>A cap on how much the county's total property tax levy may grow each year.</dd>
           <dt>The assumed annual limit</dt>
-          <dd>Inflation (CPI-U) plus the county's population growth.</dd>
+          <dd>Inflation (U.S. South urban CPI) plus the county's population growth.</dd>
           <dt>When the policy begins</dt>
           <dd>The 2019 base year; the limit compounds forward from there.</dd>
           <dt>What this receipt compares</dt>
@@ -231,7 +231,7 @@
           <dt>Formula</dt>
           <dd>FY2025-26 bill = assessed value &times; (actual levy / assessed valuation base). Under-limit bill = that bill &times; (1 &minus; savings rate), so the amount saved always matches the published savings rate.</dd>
         </dl>
-        <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, U.S. Census population estimates, and BLS CPI-U.</p>
+        <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, OSBM certified county population estimates, and BLS South urban CPI.</p>
         <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
       </div>
     </details>
@@ -400,26 +400,30 @@ function selectParcel(f) {
     return;
   }
 
-  // Paid is the FY2025-26 actual bill (assessed value x actual rate). The counted
-  // savings rate (Data(tax).csv column Q) is assumed to extend to this property's
-  // bill: could-have = paid x (1 - savings rate) and saved = paid x savings rate,
-  // so the percent saved always matches the published figure.
+  // Paid is the FY2025-26 actual bill (assessed value x actual levy / taxable
+  // base). The counted savings rate (Data(tax).csv column Q) is assumed to
+  // extend to this property's bill: could-have = paid x (1 - savings rate) and
+  // saved = paid x savings rate, so the percent saved always matches the
+  // published figure.
   if (COUNTY.below_benchmark) {
     const nm = COUNTY.label.replace(/ County$/, "");
     sentence.textContent = "Property tax rate growth in " + nm + " County was below the maximum allowed under a levy limit, so this property would not have saved anything.";
     sentence.classList.remove("hidden");
     bill.classList.add("hidden");
   } else {
-    const paid = (value * COUNTY.act) / COUNTY.x;
-    const rate = COUNTY.savings_rate;
-    const could = paid * (1 - rate);
-    const saved = paid * rate;
-    sentence.classList.add("hidden");
-    bill.classList.remove("hidden");
-    byId("bPaid").textContent = fmtMoney(paid);
-    byId("bCould").textContent = fmtMoney(could);
-    byId("bSaved").textContent = fmtMoney(saved);
-    byId("bPct").textContent = Math.round(100 * rate) + "% lower";
+    const receipt = PT.computeReceipt(value, COUNTY);
+    if (!receipt.ok) {
+      sentence.textContent = "The per-property comparison is unavailable for this parcel.";
+      sentence.classList.remove("hidden");
+      bill.classList.add("hidden");
+    } else {
+      sentence.classList.add("hidden");
+      bill.classList.remove("hidden");
+      byId("bPaid").textContent = fmtMoney(receipt.paid);
+      byId("bCould").textContent = fmtMoney(receipt.could_have);
+      byId("bSaved").textContent = fmtMoney(receipt.saved);
+      byId("bPct").textContent = Math.round(100 * receipt.rate) + "% lower";
+    }
   }
   byId("billResults").classList.remove("hidden");
 }

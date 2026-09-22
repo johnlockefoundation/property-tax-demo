@@ -1,17 +1,20 @@
 #!/usr/bin/env node
-// Build data/benchmarks.json for the NC property-tax bill demo.
+// Build data/benchmarks.json for the NC property-tax demo.
 //
-// Inputs (paths relative to this repo by default; override with argv):
-//   1. Data(tax).csv                 -- authoritative yearly levies
+// Inputs are vendored under data/source/ so the build is self-contained
+// (paths overridable with argv):
+//   1. Data(tax).csv                 -- authoritative yearly levies + column Q
 //   2. lg04_fy2025-26_valuation.csv  -- NCDOR LG04 assessed valuation (taxable base X)
 //   3. nc_county_fips.csv            -- county name -> 5-digit STCOFIPS
 //
-// Methodology: the levy limit is anchored to the 2019 base year. The CSV holds a
-// hypothetical benchmark levy for each fiscal year. The bill compares a single
-// fiscal year, FY2025-26, because parcel assessments shift over time and a
-// multi-year sum would have to assume a fixed share of the county tax base.
-// The scenario levy is min(FY2025-26 actual, FY2025-26 benchmark), so the limit
-// never prescribes an increase. Per $100 rates use the county's assessed valuation X.
+// Methodology (mirrors docs/methodology.html): the levy limit is anchored to the
+// 2019 base year. The receipt compares a single fiscal year, FY2025-26, because
+// parcel assessments shift over time and a multi-year sum would have to assume a
+// fixed share of the county tax base.
+//   * paid        = V * act / X            (the actual FY2025-26 bill)
+//   * percent     = column Q               (the published 5-year savings rate)
+//   * could_have  = paid * (1 - Q)         so the dollars always match the rate
+//   * below-benchmark counties (act26 <= hyp26) show a sentence, not a receipt.
 //
 // Usage:
 //   node tools/build_benchmarks.mjs [Data(tax).csv] [valuation.csv] [fips.csv] [out.json]
@@ -21,14 +24,15 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+const SOURCE = resolve(HERE, "../data/source");
 
 const YEARS = ["2021-22", "2022-23", "2023-24", "2024-25", "2025-26"];
 const ACT_COL = { "2021-22": "2021-22_act", "2022-23": "2022-23_act", "2023-24": "2023-24_act", "2024-25": "2024-25_act", "2025-26": "2025-26_act" };
 const HYP_COL = { "2021-22": "2021-22_hyp", "2022-23": "2022-23_hyp", "2023-24": "2023-24_hyp", "2024-25": "2024-25_hyp", "2025-26": "2025_26_hyp" };
 
-const srcCsv = process.argv[2] || resolve(HERE, "../../Data(tax).csv");
-const valCsv = process.argv[3] || resolve(HERE, "../../property-tax-widget/data/lg04_fy2025-26_valuation.csv");
-const fipsCsv = process.argv[4] || resolve(HERE, "../../property-tax-widget/data/nc_county_fips.csv");
+const srcCsv = process.argv[2] || resolve(SOURCE, "Data(tax).csv");
+const valCsv = process.argv[3] || resolve(SOURCE, "lg04_fy2025-26_valuation.csv");
+const fipsCsv = process.argv[4] || resolve(SOURCE, "nc_county_fips.csv");
 const outPath = process.argv[5] || resolve(HERE, "../data/benchmarks.json");
 
 function parseCsv(text) {
@@ -79,7 +83,7 @@ for (const row of taxRows.slice(1)) {
     hypothetical: money(rec[HYP_COL[fy]]),
   }));
 
-  // The bill uses the FY2025-26 columns only (no multi-year sum).
+  // The bill compares the FY2025-26 columns only (no multi-year sum).
   const act26 = money(rec["2025-26_act"]);
   const hyp26 = money(rec["2025_26_hyp"]);
   const l_scenario = Math.min(act26, hyp26);

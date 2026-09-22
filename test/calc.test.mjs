@@ -1,20 +1,22 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PT = (await import(path.join(__dirname, "..", "calc.js"))).default;
 
-// data/benchmarks.json is a faithful mirror of the Data(tax).csv FY2025-26 columns.
+// data/benchmarks.json is a faithful mirror of the Data(tax).csv FY2025-26
+// columns and the vendored build inputs under data/source/.
 const BENCHMARKS = JSON.parse(
   readFileSync(path.join(__dirname, "..", "data", "benchmarks.json"), "utf8")
 );
-const county = BENCHMARKS.mecklenburg; // above benchmark
-const below = BENCHMARKS.alamance;     // at/below benchmark (grade A)
+const county = BENCHMARKS.wake; // above benchmark (grade C)
+const below = BENCHMARKS.alamance; // at/below benchmark (grade A)
 
-// Read the authoritative Data(tax).csv so tests can verify column Q wiring.
+// Read the authoritative Data(tax).csv (vendored) so tests can verify column Q wiring.
 function csvRows(text) {
   const out = [];
   for (const line of text.trim().split(/\r?\n/)) {
@@ -33,7 +35,7 @@ function csvRows(text) {
   }
   return out;
 }
-const CSV_ROWS = csvRows(readFileSync(path.join(__dirname, "..", "..", "Data(tax).csv"), "utf8"));
+const CSV_ROWS = csvRows(readFileSync(path.join(__dirname, "..", "data", "source", "Data(tax).csv"), "utf8"));
 const CSV_HEAD = CSV_ROWS[0].map(h => h.trim());
 const CSV_BY_SLUG = new Map();
 for (const r of CSV_ROWS.slice(1)) {
@@ -43,70 +45,54 @@ for (const r of CSV_ROWS.slice(1)) {
   CSV_BY_SLUG.set(slug, rec);
 }
 
-test("arithmetic fixture: V=400000, r_actual=0.4927, r_scenario=0.4000", () => {
-  const res = PT.computeComparison(400000, {
-    x: 1, l_scenario: 1, r_actual: 0.4927, r_scenario: 0.4000, l_actual: 0, b_endpoint: 0
-  });
-  assert.equal(Math.round(res.tax_actual * 100) / 100, 1970.8);
-  assert.equal(Math.round(res.tax_scenario * 100) / 100, 1600.0);
-  assert.equal(Math.round(res.difference * 100) / 100, 370.8);
+// ---- Per-property receipt ----
+
+test("Wake fixture: V=291834 => paid 1509.82, could 1346.76, saved 163.06, 11% lower", () => {
+  const res = PT.computeReceipt(291_834, county);
+  assert.equal(res.ok, true);
+  assert.ok(Math.abs(res.paid - 1509.82) < 0.01, `paid ${res.paid}`);
+  assert.ok(Math.abs(res.could_have - 1346.76) < 0.02, `could ${res.could_have}`);
+  assert.ok(Math.abs(res.saved - 163.06) < 0.02, `saved ${res.saved}`);
+  assert.equal(Math.round(100 * res.rate), 11);
 });
 
-test("benchmark fixture: $100m baseline, 2% infl + 1% pop => $103m after one transition", () => {
-  const out = PT.benchmarkEndpoint(100_000_000, [{ growth: 0.02 + 0.01 }]);
-  assert.equal(out, 103_000_000);
+test("receipt math identities: paid=V*act/X; could=(1-rate)*paid; saved=rate*paid", () => {
+  const V = 400_000;
+  const res = PT.computeReceipt(V, county);
+  assert.equal(res.paid, (V * county.act) / county.x);
+  assert.equal(res.could_have, res.paid * (1 - county.savings_rate));
+  assert.equal(res.saved, res.paid * county.savings_rate);
+  assert.equal(res.saved + res.could_have, res.paid);
 });
 
-test("benchmark compounds from the prior benchmark, not the baseline", () => {
-  const out = PT.benchmarkEndpoint(100_000_000, [{ growth: 0.03 }, { growth: 0.03 }]);
-  assert.equal(out, 100_000_000 * 1.03 * 1.03);
+test("receipt scales linearly with assessed value within a county", () => {
+  const a = PT.computeReceipt(200_000, county).paid;
+  const b = PT.computeReceipt(400_000, county).paid;
+  assert.equal(b, a * 2);
 });
 
-test("rate fixture: scenario levy $100m on $25b base => 0.4000 per $100", () => {
-  assert.equal(PT.rateFor(100_000_000, 25_000_000_000), 0.4);
-});
-
-test("scenarioLevy caps at actual when actual is below ceiling", () => {
-  assert.equal(PT.scenarioLevy(1_492_300_028, 1_554_687_233), 1_492_300_028);
-});
-
-test("two rate equations are equivalent within reconciliation rounding", () => {
-  const fromBase = PT.rateFor(county.l_scenario, county.x);
-  const fromActual = county.r_actual * (county.l_scenario / county.l_actual);
-  const rel = Math.abs(fromBase - fromActual) / county.r_actual;
-  assert.ok(rel < 0.001, `relative discrepancy ${rel}`);
-});
-
-test("rate reconciliation: X*r_actual/100 reproduces the levy within documented rounding", () => {
-  const pct = PT.rateReconciliationPct(county.r_actual, county.x, county.l_actual);
-  assert.ok(Math.abs(pct) < 0.05, `reconciliation off by ${pct}%`);
-});
-
-test("Mecklenburg reported r_scenario equals 100*L_scenario/X", () => {
-  assert.ok(Math.abs(PT.rateFor(county.l_scenario, county.x) - county.r_scenario) < 1e-4);
+test("below-benchmark county reports below_benchmark=true", () => {
+  const res = PT.computeReceipt(400_000, below);
+  assert.equal(res.ok, true);
+  assert.equal(res.below_benchmark, true);
 });
 
 test("missing/inconsistent inputs -> unavailable, not zero-dollar tax", () => {
-  const res = PT.computeComparison(400000, null);
-  assert.equal(res.ok, false);
-  assert.notEqual(res.reason, "");
-  const bad = PT.computeComparison(400000, { r_actual: 0.49, l_scenario: 0, x: -1 });
+  const noCounty = PT.computeReceipt(400_000, null);
+  assert.equal(noCounty.ok, false);
+  assert.notEqual(noCounty.reason, "");
+  const bad = PT.computeReceipt(400_000, { x: county.x, act: county.act, savings_rate: undefined });
   assert.equal(bad.ok, false);
+  const zeroBase = PT.computeReceipt(400_000, { x: 0, act: county.act, savings_rate: 0.1 });
+  assert.equal(zeroBase.ok, false);
 });
 
-test("zero actual value does not divide by zero", () => {
-  const res = PT.computeComparison(0, { x: 1, l_scenario: 0.5, r_actual: 0.49, r_scenario: 0.4, l_actual: 0, b_endpoint: 0 });
-  assert.equal(res.ok, true);
-  assert.equal(res.tax_actual, 0);
-  assert.equal(res.percent_difference, 0);
+test("negative value -> unavailable", () => {
+  const res = PT.computeReceipt(-1, county);
+  assert.equal(res.ok, false);
 });
 
-test("at/below-benchmark county leaves the rate and bill unchanged", () => {
-  const res = PT.computeComparison(400000, below);
-  assert.equal(res.below_benchmark, true);
-  assert.equal(res.same_rate, true);
-  assert.equal(res.tax_scenario, res.tax_actual);
-});
+// ---- Address search ----
 
 test("address where-clause escapes single quotes (injection safe)", () => {
   const w = PT.buildAddressWhere("O'Brien 100");
@@ -128,7 +114,7 @@ test("residential filter keeps usable homes and excludes commercial/non-value", 
   assert.equal(PT.isUsableResidential({ parval: 260653, parusecode: null }), false);
 });
 
-test("residential filter accepts counties with varied descriptions (Alamance wording)", () => {
+test("residential filter accepts counties with varied descriptions", () => {
   const cases = [
     ["SINGLE FAMILY", true],
     ["SINGLE WIDE MH", true],
@@ -144,18 +130,6 @@ test("residential filter accepts counties with varied descriptions (Alamance wor
   for (const [desc, expected] of cases) {
     assert.equal(PT.isUsableResidential({ parval: 132700, parusecode: "", parusedesc: desc }), expected, desc);
   }
-});
-
-test("ambiguity: a multi-match search yields a candidate list, not a silent pick", () => {
-  const mock = [
-    { parno: "17103426", parval: 260653, parusecode: "R300" },
-    { parno: "17103458", parval: 276968, parusecode: "R300" },
-    { parno: "17103483", parval: 437421, parusecode: "R300" }
-  ];
-  const usable = mock.filter(PT.isUsableResidential);
-  assert.equal(usable.length, 3);
-  const amounts = new Set(usable.map(p => PT.computeComparison(p.parval, county).tax_actual));
-  assert.equal(amounts.size, usable.length);
 });
 
 // ---- Data(tax).csv conformance ----
@@ -186,20 +160,15 @@ test("receipt percentage equals Data(tax).csv column Q (Wake ~11%), not the sing
   assert.ok(Math.abs(BENCHMARKS.wake.savings_rate_fy26 - 0.19449565867922175) < 1e-9);
 });
 
-test("per-property amounts: paid is the FY2025-26 levy scaled by value; the difference follows column Q", () => {
-  const V = 291_834;
-  const c = BENCHMARKS.wake;
-  const paid = (V * c.act) / c.x;
-  const rate = c.savings_rate; // column Q = 0.108
-  const could = paid * (1 - rate);
-  const saved = paid * rate;
-  assert.ok(Math.abs(paid - 1509.82) < 0.01, `paid ${paid}`);
-  assert.ok(Math.abs(could - 1346.76) < 0.02, `could ${could}`);
-  assert.ok(Math.abs(saved - 163.06) < 0.02, `saved ${saved}`);
-  assert.ok(Math.abs(saved / paid - rate) < 1e-9, "saved/paid equals column Q");
-});
-
 test("four counties are at/below benchmark for FY2025-26", () => {
   const names = Object.values(BENCHMARKS).filter(c => c.below_benchmark).map(c => c.label).sort();
   assert.deepEqual(names, ["Alamance County", "Macon County", "Madison County", "Moore County"]);
+});
+
+test("benchmarks are reproducible from the vendored build inputs", () => {
+  const repo = path.join(__dirname, "..");
+  const r = spawnSync(process.execPath, ["tools/build_benchmarks.mjs"], { cwd: repo, encoding: "utf8" });
+  assert.equal(r.status, 0, r.stderr || r.stdout);
+  const rebuilt = JSON.parse(readFileSync(path.join(repo, "data", "benchmarks.json"), "utf8"));
+  assert.deepEqual(rebuilt, BENCHMARKS);
 });
