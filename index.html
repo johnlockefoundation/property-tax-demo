@@ -108,7 +108,7 @@
   .receipt-total { text-align: center; padding: 6px 0 2px; }
   .receipt-total-label { text-transform: uppercase; letter-spacing: .18em; font-size: 11px; color: var(--red); font-weight: 700; }
   .receipt-total-amt { font-size: 36px; font-weight: 700; color: var(--red); letter-spacing: -0.01em; line-height: 1.15; font-variant-numeric: tabular-nums; }
-  .receipt-total-pct { text-transform: uppercase; letter-spacing: .16em; font-size: 11px; color: #55524a; }
+  .receipt-total-pct { text-transform: uppercase; letter-spacing: .16em; font-size: 14px; color: #55524a; }
   .receipt-barcode {
     height: 42px; width: 82%; margin: 16px auto 8px;
     background: repeating-linear-gradient(90deg,
@@ -418,14 +418,14 @@ function selectParcel(f) {
     } else {
       sentence.classList.add("hidden");
       bill.classList.remove("hidden");
-      byId("bCountyHeader").textContent = "2026 " + COUNTY.label + " Property Tax Receipt";
+      byId("bCountyHeader").innerHTML = "2026 " + COUNTY.label + "<br>Property Tax Receipt";
       byId("bCountyHeader").classList.remove("hidden");
       byId("bInstruction").classList.add("hidden");
       byId("addressBody").classList.remove("hidden");
       byId("bPaid").textContent = fmtMoney(receipt.paid);
       byId("bCould").textContent = fmtMoney(receipt.could_have);
       byId("bSaved").textContent = fmtMoney(receipt.saved);
-      byId("bPct").textContent = Math.round(100 * receipt.rate) + "% lower";
+      byId("bPct").textContent = "OR " + Math.round(100 * receipt.rate) + "% lower";
     }
   }
   byId("billResults").classList.remove("hidden");
