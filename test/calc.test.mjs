@@ -47,13 +47,13 @@ for (const r of CSV_ROWS.slice(1)) {
 
 // ---- Per-property receipt ----
 
-test("Wake fixture: V=291834 => paid 1509.82, could 1346.76, saved 163.06, 11% lower", () => {
+test("Wake fixture: V=291834 => paid 1509.82, could 1311.13, saved 198.69, 13% lower", () => {
   const res = PT.computeReceipt(291_834, county);
   assert.equal(res.ok, true);
   assert.ok(Math.abs(res.paid - 1509.82) < 0.01, `paid ${res.paid}`);
-  assert.ok(Math.abs(res.could_have - 1346.76) < 0.02, `could ${res.could_have}`);
-  assert.ok(Math.abs(res.saved - 163.06) < 0.02, `saved ${res.saved}`);
-  assert.equal(Math.round(100 * res.rate), 11);
+  assert.ok(Math.abs(res.could_have - 1311.13) < 0.02, `could ${res.could_have}`);
+  assert.ok(Math.abs(res.saved - 198.69) < 0.02, `saved ${res.saved}`);
+  assert.equal(Math.round(100 * res.rate), 13);
 });
 
 test("receipt math identities: paid=V*act/X; could=(1-rate)*paid; saved=rate*paid", () => {
@@ -62,7 +62,7 @@ test("receipt math identities: paid=V*act/X; could=(1-rate)*paid; saved=rate*pai
   assert.equal(res.paid, (V * county.act) / county.x);
   assert.equal(res.could_have, res.paid * (1 - county.savings_rate));
   assert.equal(res.saved, res.paid * county.savings_rate);
-  assert.equal(res.saved + res.could_have, res.paid);
+  assert.ok(Math.abs(res.saved + res.could_have - res.paid) < 1e-6, `${res.saved} + ${res.could_have} != ${res.paid}`);
 });
 
 test("receipt scales linearly with assessed value within a county", () => {
@@ -155,14 +155,14 @@ test("benchmarks mirror the Data(tax).csv FY2025-26 columns for all 100 counties
   }
 });
 
-test("receipt percentage equals Data(tax).csv column Q (Wake ~11%), not the single-year rate", () => {
-  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 11);
-  assert.ok(Math.abs(BENCHMARKS.wake.savings_rate_fy26 - 0.19449565867922175) < 1e-9);
+test("receipt percentage equals Data(tax).csv column Q (Wake ~13%), not the single-year rate", () => {
+  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 13);
+  assert.ok(Math.abs(BENCHMARKS.wake.savings_rate_fy26 - 0.21582375051269642) < 1e-9);
 });
 
-test("four counties are at/below benchmark for FY2025-26", () => {
+test("two counties are at/below benchmark for FY2025-26", () => {
   const names = Object.values(BENCHMARKS).filter(c => c.below_benchmark).map(c => c.label).sort();
-  assert.deepEqual(names, ["Alamance County", "Macon County", "Madison County", "Moore County"]);
+  assert.deepEqual(names, ["Alamance County", "Moore County"]);
 });
 
 test("benchmarks are reproducible from the vendored build inputs", () => {

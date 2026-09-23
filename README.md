@@ -36,7 +36,7 @@ saved       = paid * savings_rate  # the "percent lower" always matches column Q
 - Where the county is at or below the benchmark, the page shows a short "no savings"
   explanation instead of a receipt.
 
-Four counties are at or below the benchmark: **Alamance, Macon, Madison, and Moore**.
+Two counties are at or below the benchmark: **Alamance and Moore**.
 
 ## Data
 
@@ -74,7 +74,7 @@ node --test test/calc.test.mjs
 ```
 
 Tests cover the receipt arithmetic, address/residential filtering, column-Q wiring for
-all 100 counties, the four at/below-benchmark counties, and build reproducibility.
+all 100 counties, the two at/below-benchmark counties, and build reproducibility.
 
 ## Local preview
 

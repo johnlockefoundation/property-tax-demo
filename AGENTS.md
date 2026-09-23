@@ -28,9 +28,10 @@ Live: https://johnlockefoundation.github.io/property-tax-demo/ (served from `mai
 
 ## Authoritative data
 
-`Data(tax).csv` (the "authoritative levies" export) lives in the parent workspace
-`/Users/mihirkale/repos/locke/property_tax_project/Data(tax).csv`; `data/source/Data(tax).csv`
-is its vendored copy. Column map: A County, ... K `2025-26_act`, L `2025_26_hyp`,
+`Data(tax).csv` (the "authoritative levies" export, exported from the current
+methodology `Data.xlsx` in Afternoon.zip/OneDrive research folder) lives in the parent
+workspace `/Users/mihirkale/repos/locke/property_tax/Data(tax).csv`;
+`data/source/Data(tax).csv` is its vendored copy. Column map: A County, ... K `2025-26_act`, L `2025_26_hyp`,
 M/N/O/P five-year act/hyp/cnt_diff/pct_diff, **Q `5-year_savings_rate`**, R grade.
 The receipt's "percent lower" MUST equal column Q (100 × Q for the display).
 
@@ -44,7 +45,7 @@ percent    = 100 * savings_rate       # rendered as "NN% lower"
 ```
 
 - `below_benchmark` counties (`act26 <= hyp26`) render a "would not have saved anything"
-  sentence, NOT a receipt. There are exactly 4: Alamance, Macon, Madison, Moore.
+  sentence, NOT a receipt. There are exactly 2: Alamance, Moore.
 - County-wide property tax only (no municipal/school/special district).
 
 ## Commands

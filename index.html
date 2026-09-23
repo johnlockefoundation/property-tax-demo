@@ -98,7 +98,7 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 0 L10 10 L20 0 Z' fill='%23fffdf6'/%3E%3C/svg%3E");
   }
   .receipt-brand { text-align: center; font-weight: 700; font-size: 14.5px; letter-spacing: .1em; text-transform: uppercase; }
-  .receipt-title { text-align: center; font-size: 10.5px; letter-spacing: .24em; text-transform: uppercase; color: #6b675c; margin-top: 3px; }
+  .receipt-instruction { text-align: center; font-weight: 700; font-size: 15px; letter-spacing: .04em; padding: 34px 6px; }
   .receipt-rule { border-top: 1px dashed #b9b4a5; margin: 12px 0; }
   .receipt-meta { text-align: center; text-transform: uppercase; letter-spacing: .03em; font-size: 12px; color: #38352e; }
   .receipt-addr { text-align: center; text-transform: uppercase; letter-spacing: .02em; font-size: 13.5px; font-weight: 700; margin-bottom: 4px; }
@@ -109,7 +109,6 @@
   .receipt-total-label { text-transform: uppercase; letter-spacing: .18em; font-size: 11px; color: var(--red); font-weight: 700; }
   .receipt-total-amt { font-size: 36px; font-weight: 700; color: var(--red); letter-spacing: -0.01em; line-height: 1.15; font-variant-numeric: tabular-nums; }
   .receipt-total-pct { text-transform: uppercase; letter-spacing: .16em; font-size: 11px; color: #55524a; }
-  .receipt-note { text-align: center; text-transform: uppercase; letter-spacing: .05em; font-size: 10.5px; line-height: 1.7; color: #6b675c; }
   .receipt-barcode {
     height: 42px; width: 82%; margin: 16px auto 8px;
     background: repeating-linear-gradient(90deg,
@@ -117,7 +116,6 @@
       #1c1c1c 10px 13px, transparent 13px 15px, #1c1c1c 15px 16px, transparent 16px 21px);
   }
   .receipt-thanks { text-align: center; font-weight: 700; letter-spacing: .24em; font-size: 12.5px; }
-  .receipt-foot { text-align: center; text-transform: uppercase; letter-spacing: .18em; font-size: 9.5px; color: #8a857a; margin-top: 10px; }
 
   .below-sentence {
     width: 372px; max-width: 100%; margin: 16px auto 0; padding: 22px;
@@ -152,7 +150,7 @@
 </head>
 <body>
 <header id="header">
-  <div class="brand">NC Property Tax Project<span class="sub">&nbsp;&mdash;&nbsp;Understanding <a href="https://www.johnlocke.org/model-legislation-how-north-carolinas-property-tax-levy-limit-needs-to-be-designed/" target="_blank" rel="noopener">HB 1089</a></span></div>
+  <div class="brand">NC Property Tax Savings Calculator<span class="sub">&nbsp;&mdash;&nbsp;Understanding <a href="https://www.johnlocke.org/model-legislation-how-north-carolinas-property-tax-levy-limit-needs-to-be-designed/" target="_blank" rel="noopener">HB 1089</a></span></div>
   <div class="hdr-right">
     <img class="logo" src="Locke-revised-logo-white.png" alt="John Locke Foundation" />
   </div>
@@ -173,7 +171,7 @@
       <input id="addrInput" type="text" placeholder="Street address, e.g. 1000 E Woodlawn Rd" autocomplete="off" aria-label="Street address" />
       <button id="searchBtn" type="button">Search</button>
     </div>
-    <p class="hint">Partial addresses are OK. Pick a specific property if several match. The county is set automatically from your address.</p>
+    <p class="hint">Partial addresses are ok. Click or tap your address when it appears.</p>
     <div id="status" role="status"></div>
     <ul class="cands" id="cands"></ul>
     <div id="nores" class="hidden">
@@ -181,29 +179,29 @@
     </div>
   </section>
 
-  <section id="billResults" class="hidden" aria-live="polite">
+  <section id="billResults" aria-live="polite">
     <p class="below-sentence hidden" id="belowSentence"></p>
 
     <div class="receipt" id="bill">
-      <div class="receipt-brand">John Locke Foundation</div>
-      <div class="receipt-title">NC Property Tax Receipt</div>
-      <div class="receipt-rule"></div>
-      <div class="receipt-addr" id="bAddress"></div>
-      <div class="receipt-meta" id="bMeta"></div>
-      <div class="receipt-rule"></div>
-      <div class="receipt-line"><span>What you paid</span><span class="leader"></span><span class="amt" id="bPaid">$0</span></div>
-      <div class="receipt-line"><span>What you could have paid</span><span class="leader"></span><span class="amt" id="bCould">$0</span></div>
-      <div class="receipt-rule"></div>
-      <div class="receipt-total">
-        <div class="receipt-total-label">You could have saved</div>
-        <div class="receipt-total-amt" id="bSaved">$0</div>
-        <div class="receipt-total-pct" id="bPct"></div>
+      <div class="receipt-brand hidden" id="bCountyHeader"></div>
+      <div class="receipt-instruction" id="bInstruction">See what you could have saved</div>
+      <div id="addressBody" class="hidden">
+        <div class="receipt-rule"></div>
+        <div class="receipt-addr" id="bAddress"></div>
+        <div class="receipt-meta" id="bMeta"></div>
+        <div class="receipt-rule"></div>
+        <div class="receipt-line"><span>What you paid</span><span class="leader"></span><span class="amt" id="bPaid">$0</span></div>
+        <div class="receipt-line"><span>What you could have paid</span><span class="leader"></span><span class="amt" id="bCould">$0</span></div>
+        <div class="receipt-rule"></div>
+        <div class="receipt-total">
+          <div class="receipt-total-label">You could have saved</div>
+          <div class="receipt-total-amt" id="bSaved">$0</div>
+          <div class="receipt-total-pct" id="bPct"></div>
+        </div>
+        <div class="receipt-rule"></div>
+        <div class="receipt-barcode" aria-hidden="true"></div>
+        <div class="receipt-thanks">*** THANK YOU ***</div>
       </div>
-      <div class="receipt-rule"></div>
-      <div class="receipt-note">County-wide property tax only<br />Excludes municipal, school &amp; special district taxes</div>
-      <div class="receipt-barcode" aria-hidden="true"></div>
-      <div class="receipt-thanks">*** THANK YOU ***</div>
-      <div class="receipt-foot">HB 1089 &middot; Levy Limit Demo</div>
     </div>
   </section>
 </div>
@@ -275,9 +273,12 @@ function populateCountySelect() {
 function setStatus(msg) { byId("status").textContent = msg || ""; }
 
 function clearBill() {
-  byId("billResults").classList.add("hidden");
+  byId("billResults").classList.remove("hidden");
   byId("belowSentence").classList.add("hidden");
   byId("bill").classList.remove("hidden");
+  byId("bCountyHeader").classList.add("hidden");
+  byId("bInstruction").classList.remove("hidden");
+  byId("addressBody").classList.add("hidden");
 }
 
 function selectCounty(key) {
@@ -375,8 +376,6 @@ function renderCandidates(feats) {
 function selectParcel(f) {
   byId("bAddress").textContent = f.siteadd || "No address";
   byId("bMeta").innerHTML =
-    (COUNTY ? "<div>" + esc(COUNTY.label) + "</div>" : "") +
-    "<div>FY2025-26</div>" +
     "<div>Parcel " + esc(f.parno || "—") + "</div>" +
     "<div>Assessed value $" + Number(f.parval || 0).toLocaleString() + "</div>";
 
@@ -419,6 +418,10 @@ function selectParcel(f) {
     } else {
       sentence.classList.add("hidden");
       bill.classList.remove("hidden");
+      byId("bCountyHeader").textContent = "2026 " + COUNTY.label + " Property Tax Receipt";
+      byId("bCountyHeader").classList.remove("hidden");
+      byId("bInstruction").classList.add("hidden");
+      byId("addressBody").classList.remove("hidden");
       byId("bPaid").textContent = fmtMoney(receipt.paid);
       byId("bCould").textContent = fmtMoney(receipt.could_have);
       byId("bSaved").textContent = fmtMoney(receipt.saved);
