@@ -166,7 +166,7 @@
       </select>
     </div>
     <div class="search-row">
-      <input id="addrInput" type="text" placeholder="Street address, e.g. 1000 E Woodlawn Rd" autocomplete="off" aria-label="Street address" />
+      <input id="addrInput" type="text" placeholder="Address, e.g. 1000 E Woodlawn Rd, Charlotte NC" aria-label="Property address" />
       <button id="searchBtn" type="button">Search</button>
     </div>
     <p class="hint">Partial addresses are ok. Click or tap your address when it appears.</p>
@@ -294,29 +294,39 @@ function clearAddress() {
 }
 
 // ---- address search ----
-async function fetchAddressFeatures(q, cntyfips) {
-  const where = PT.buildAddressWhere(q);
-  if (!where) return [];
-  const body = new URLSearchParams();
-  body.append("where", cntyfips ? `(${where}) AND stcntyfips = '${cntyfips}'` : `(${where}) AND stcntyfips LIKE '37%'`);
-  body.append("outFields", "parno,siteadd,parval,parvaltype,parusecode,parusedesc,improvval,stcntyfips,cntyfips");
-  body.append("f", "pjson");
-  body.append("returnGeometry", "false");
-  body.append("resultRecordCount", "40");
-  const resp = await fetch(ONEMAP_QUERY, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
-  const data = JSON.parse(await resp.text());
-  if (data.error) throw new Error(data.error.message || "Service error");
-  const feats = (data.features || []).map(f => f.attributes);
-  // Counties like Macon ship no land-use code OR description at all, so there is
-  // nothing to classify by; there, fall back to "a building stands on it"
-  // (improvement value > 0) so residences stay searchable.
-  const hasUseData = feats.some(a => String(a.parusecode || "").trim() || String(a.parusedesc || "").trim());
-  if (!hasUseData) return feats.filter(a => Number(a.improvval) > 0 && Number(a.parval) > 0);
-  return feats.filter(PT.isUsableResidential);
+// Tries each form in turn and returns the first set of parcels that survives
+// the residential filter, so a narrow miss falls through to a broader form
+// instead of reporting "no matches". A service error is not a miss and still
+// propagates, so the failure copy stays honest.
+async function fetchAddressFeatures(queries, cntyfips) {
+  const list = Array.isArray(queries) ? queries : [queries];
+  for (const q of list) {
+    const where = PT.buildAddressWhere(q);
+    if (!where) continue;
+    const body = new URLSearchParams();
+    body.append("where", cntyfips ? `(${where}) AND stcntyfips = '${cntyfips}'` : `(${where}) AND stcntyfips LIKE '37%'`);
+    body.append("outFields", "parno,siteadd,parval,parvaltype,parusecode,parusedesc,improvval,stcntyfips,cntyfips");
+    body.append("f", "pjson");
+    body.append("returnGeometry", "false");
+    body.append("resultRecordCount", "40");
+    const resp = await fetch(ONEMAP_QUERY, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
+    const data = JSON.parse(await resp.text());
+    if (data.error) throw new Error(data.error.message || "Service error");
+    const feats = (data.features || []).map(f => f.attributes);
+    // Counties like Macon ship no land-use code OR description at all, so there is
+    // nothing to classify by; there, fall back to "a building stands on it"
+    // (improvement value > 0) so residences stay searchable.
+    const hasUseData = feats.some(a => String(a.parusecode || "").trim() || String(a.parusedesc || "").trim());
+    const kept = hasUseData
+      ? feats.filter(PT.isUsableResidential)
+      : feats.filter(a => Number(a.improvval) > 0 && Number(a.parval) > 0);
+    if (kept.length) return kept;
+  }
+  return [];
 }
 
-async function inferCountyKey(q) {
-  const feats = await fetchAddressFeatures(q, null);
+async function inferCountyKey(queries) {
+  const feats = await fetchAddressFeatures(queries, null);
   for (const f of feats) {
     const sfips = String(f.stcntyfips || "");
     for (const k in BENCHMARKS) {
@@ -335,18 +345,18 @@ async function searchAddress(query) {
   byId("nores").classList.add("hidden");
   clearBill();
   try {
-    const where = PT.buildAddressWhere(q);
-    if (!where) { setStatus(""); return; }
+    const variants = PT.buildQueryVariants(q);
+    if (!variants.length) { setStatus(""); return; }
 
     let key = SELECTED && BENCHMARKS[SELECTED] ? SELECTED : null;
     if (!key) {
-      key = await inferCountyKey(q);
+      key = await inferCountyKey(variants);
       if (!key) { setStatus("No residential matches found. Try a street name or house number."); return; }
       byId("countySelect").value = key;
       selectCounty(key);
     }
 
-    const feats = await fetchAddressFeatures(q, BENCHMARKS[key].fips);
+    const feats = await fetchAddressFeatures(variants, BENCHMARKS[key].fips);
     if (feats.length === 0) { setStatus(""); byId("nores").classList.remove("hidden"); return; }
     renderCandidates(feats);
     setStatus(feats.length + " residential match" + (feats.length > 1 ? "es" : "") + (feats.length > 8 ? " (showing first 8)." : "."));

@@ -43,11 +43,191 @@
   // Build a safe OneMap where-clause for a free-text NC address search.
   // Escapes single quotes (SQL injection safe) and uses a case-insensitive
   // substring match on the site address. Prefix-free; the service matches %...%.
+  // Applied once per candidate form by buildQueryVariants below.
   function buildAddressWhere(query) {
     const q = String(query == null ? "" : query).trim();
     if (!q) return null;
     const escaped = q.replace(/'/g, "''");
     return "UPPER(siteadd) LIKE UPPER('%" + escaped + "%')";
+  }
+
+  // Reduce whatever a person typed into a short ladder of street-line forms,
+  // narrowest first, for the search to try in turn. OneMap stores a standardised
+  // street line ("1000 E WOODLAWN RD") but the field receives a whole postal
+  // address from browser autofill ("1000 E Woodlawn Rd, Charlotte, NC 28203")
+  // and suffix spellings vary ("Road" where the record says "RD"), so a single
+  // whole-string match cannot hit either. The last rung is the raw string, so
+  // nothing that worked before stops working.
+  var SUFFIXES = {
+    ALLEY: "ALY", AVENUE: "AVE", BOULEVARD: "BLVD", BYPASS: "BYP", CIRCLE: "CIR",
+    CORNER: "COR", CROSSING: "XING", DRIVE: "DR", ESTATE: "EST", EXPRESSWAY: "EXPY",
+    EXTENSION: "EXT", FREEWAY: "FWY", GARDEN: "GDN", GREEN: "GRN", GROVE: "GRV",
+    HEIGHTS: "HTS", HIGHWAY: "HWY", HOLLOW: "HLLW", ISLAND: "IS", JUNCTION: "JCT",
+    LAKE: "LK", LANDING: "LNDG", LANE: "LN", LOOP: "LOOP", MEADOWS: "MDWS",
+    PARKWAY: "PKWY", PASS: "PASS", PATH: "PATH", PLACE: "PL", PLATEAU: "PLT",
+    POINT: "PT", RAMP: "RAMP", RANCH: "RNCH", RESERVE: "RSV", RIDGE: "RDG",
+    RIVER: "RIV", ROAD: "RD", ROUTE: "RTE", ROW: "ROW", RUN: "RUN", SHOAL: "SHL",
+    SHORE: "SHR", SPRING: "SPG", SPUR: "SPUR", SQUARE: "SQ", STATION: "STA",
+    STRAVEN: "STR", STREAM: "STM", STREET: "ST", TERRACE: "TER", TRACE: "TRCE",
+    TRACK: "TRK", TRAIL: "TRL", TURNPIKE: "TPKE", VALLEY: "VLY", VIADUCT: "VDCT",
+    VIEW: "VW", VILLAGE: "VLG", WALK: "WALK", WALL: "WALL", WAY: "WAY", WEND: "WND",
+    // Spellings the USPS also accepts, and short forms people actually type.
+    AV: "AVE", AVEN: "AVE", PKY: "PKWY", STRT: "ST", TRN: "TRN", CIRCL: "CIR",
+    MTD: "MTD", BCH: "BCH", BLF: "BLF", BRG: "BRG", PRT: "PRT", RST: "RST",
+    VST: "VST", KEY: "KEY", CRK: "CRK"
+  };
+
+  // The abbreviation maps to itself, so an already-abbreviated street is left
+  // alone and "Road" and "Rd" converge on the same stored token.
+  var SUFFIX_LOOKUP = {};
+  for (var sfx in SUFFIXES) {
+    if (Object.prototype.hasOwnProperty.call(SUFFIXES, sfx)) {
+      SUFFIX_LOOKUP[sfx] = SUFFIXES[sfx];
+      SUFFIX_LOOKUP[SUFFIXES[sfx]] = SUFFIXES[sfx];
+    }
+  }
+
+  var DIRECTIONS = {
+    NORTH: "N", SOUTH: "S", EAST: "E", WEST: "W",
+    NORTHEAST: "NE", NORTHWEST: "NW", SOUTHEAST: "SE", SOUTHWEST: "SW",
+    N: "N", S: "S", E: "E", W: "W", NE: "NE", NW: "NW", SE: "SE", SW: "SW"
+  };
+
+  // Designators whose trailing value is a unit, not part of the street name.
+  var UNIT_WORDS = {
+    APARTMENT: 1, APT: 1, UNIT: 1, SUITE: 1, STE: 1, ROOM: 1, RM: 1, BLDG: 1,
+    BUILDING: 1, LOT: 1, SPACE: 1, SPC: 1, TRAILER: 1, TRLR: 1, DEPARTMENT: 1,
+    DEPT: 1, FLOOR: 1, FL: 1, NUMBER: 1, NO: 1
+  };
+
+  var STATE_NAMES = [
+    "District of Columbia", "New Hampshire", "New Jersey", "New Mexico", "New York",
+    "North Carolina", "North Dakota", "Rhode Island", "South Carolina", "South Dakota",
+    "West Virginia", "Alabama", "Alaska", "Arizona", "Arkansas", "California",
+    "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho",
+    "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
+    "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri",
+    "Montana", "Nebraska", "Nevada", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
+    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "Wisconsin",
+    "Wyoming"
+  ];
+
+  var STATE_CODES = [
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID",
+    "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO",
+    "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA",
+    "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+  ];
+
+  // Longest name first, so "North Carolina" is never read as "North".
+  var STATE_TAIL_RE = new RegExp(
+    "\\s+(?:" +
+      STATE_NAMES.slice().sort(function (a, b) { return b.length - a.length; })
+        .join("|").replace(/ /g, "\\s+") +
+      "|" + STATE_CODES.join("|") +
+    ")\\.?\\s*$",
+    "i"
+  );
+
+  var ZIP_TAIL_RE = /\s+\d{5}(-\d{4})?\s*$/;
+
+  // Drop the city, but stop as soon as the tail looks like the end of a street
+  // rather than the end of a city. Stripping a fixed number of words does not
+  // work -- a city is one or two words, so "... Rd Charlotte" would lose the
+  // suffix too and query "1000 E Woodlawn".
+  function dropCity(tail) {
+    var parts = String(tail).split(/\s+/).filter(Boolean);
+    while (parts.length > 2) {
+      var last = parts[parts.length - 1].toUpperCase();
+      if (SUFFIX_LOOKUP[last] || DIRECTIONS[last]) break;
+      parts.pop();
+    }
+    return parts.join(" ");
+  }
+
+  // "1000 E Woodlawn Rd, Charlotte, NC 28203" -> "1000 E Woodlawn Rd". The comma
+  // case is what autocomplete produces. With no commas, only strip a trailing
+  // ZIP (and the state and city in front of it) so that a plain "1000 E
+  // Woodlawn Rd" is left exactly as typed.
+  function streetLine(text) {
+    var line = String(text == null ? "" : text);
+    var comma = line.indexOf(",");
+    if (comma !== -1) return line.slice(0, comma);
+    if (!ZIP_TAIL_RE.test(line)) return line;
+    return dropCity(line.replace(ZIP_TAIL_RE, "").replace(STATE_TAIL_RE, ""));
+  }
+
+  // Uppercase the street line and fold the spellings OneMap abbreviates. "#"
+  // is kept as its own token so a unit can be recognised and dropped later,
+  // and "'" survives so "O'Brien" is not mangled into "O Brien".
+  function tokenize(line) {
+    var out = [];
+    String(line == null ? "" : line)
+      .replace(/#/g, " # ")
+      .replace(/[^A-Za-z0-9#'-]/g, " ")
+      .toUpperCase()
+      .split(/\s+/)
+      .forEach(function (t) {
+        if (!t) return;
+        var next = DIRECTIONS[t] || SUFFIX_LOOKUP[t] || t;
+        // "123 Main Road Rd" would otherwise become "123 MAIN RD RD".
+        if (out.length && out[out.length - 1] === next) return;
+        out.push(next);
+      });
+    return out;
+  }
+
+  // "1000 MAIN ST APT 4B", "1000 MAIN ST # 4B" and "1000 MAIN ST 4" all fall
+  // back to "1000 MAIN ST", because siteadd usually carries the street line
+  // only and the unit lives in another field.
+  function dropUnitTail(tokens) {
+    var out = tokens.slice();
+    var last = out[out.length - 1];
+    if (!last || last === "#") return out;
+    if (!UNIT_WORDS[last] && !/^\d+[A-Z-]*$/.test(last)) return out;
+    out.pop();
+    var word = out[out.length - 1];
+    if (word === "#" || (word && UNIT_WORDS[word])) out.pop();
+    return out;
+  }
+
+  // The ladder, narrowest first. Matching is already case-insensitive, so
+  // variants are deduped case-insensitively to avoid a pointless extra request.
+  function buildQueryVariants(raw) {
+    var text = String(raw == null ? "" : raw).replace(/\s+/g, " ").trim();
+    if (!text) return [];
+
+    var variants = [];
+    var seen = {};
+    var add = function (value) {
+      var s = (value || []).join(" ").trim();
+      if (!s) return;
+      var key = s.toUpperCase();
+      if (seen[key]) return;
+      seen[key] = true;
+      variants.push(s);
+    };
+
+    var full = tokenize(streetLine(text));
+    if (!full.length) return variants;   // punctuation only, nothing to search
+
+    add(full);
+
+    var noUnit = dropUnitTail(full);
+    add(noUnit);
+
+    // Drop the suffix so "1000 E Woodlawn" also finds "... RD" or "... AVE".
+    if (noUnit.length && SUFFIX_LOOKUP[noUnit[noUnit.length - 1]]) {
+      add(noUnit.slice(0, -1));
+    }
+    // And a suffix we have no mapping for ("AV", "TRN"): drop whatever trails
+    // the street name, provided a house number and name both survive.
+    if (noUnit.length >= 3) {
+      add(noUnit.slice(0, -1));
+    }
+
+    add([text]);   // exactly what was typed, which is all the demo ever sent
+    return variants;
   }
 
   // True if a parcel attribute object is a usable ordinary residential parcel.
@@ -70,6 +250,7 @@
   return {
     computeReceipt: computeReceipt,
     buildAddressWhere: buildAddressWhere,
+    buildQueryVariants: buildQueryVariants,
     isUsableResidential: isUsableResidential
   };
 });

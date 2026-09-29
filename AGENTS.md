@@ -3,7 +3,7 @@
 ## Project
 
 Static, single-page GitHub Pages site — "NC Property Tax: Understanding HB 1089". A user
-enters a NC street address, picks a parcel from NC OneMap, and sees a receipt estimating
+enters a NC address, picks a parcel from NC OneMap, and sees a receipt estimating
 what the county property tax bill would have been under an HB 1089-style levy limit
 anchored to the FY2020-21 county levy and compounded by OSBM population growth + South
 urban CPI.

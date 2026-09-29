@@ -107,6 +107,109 @@ test("partial address where clause matches OneMap substring form", () => {
   assert.equal(w, "UPPER(siteadd) LIKE UPPER('%1000 E Woodlawn%')");
 });
 
+/* --------------------------------------------------------------------------
+ * Address normalisation. OneMap stores a standardised street line, but the
+ * field receives whole postal addresses from browser autofill and people
+ * spell suffixes out. These forms are tried narrowest-first; the last is
+ * always the raw string, so nothing that worked before stops working.
+ * ------------------------------------------------------------------------ */
+
+const first = (s) => PT.buildQueryVariants(s)[0];
+
+test("autofill output is reduced to the street line", () => {
+  assert.equal(first("1000 E Woodlawn Rd, Charlotte, NC 28203"), "1000 E WOODLAWN RD");
+  assert.equal(first("1000 E Woodlawn Rd, Charlotte, North Carolina 28203-1234"), "1000 E WOODLAWN RD");
+});
+
+test("a pasted address with no commas still drops city, state and ZIP", () => {
+  assert.equal(first("1000 E Woodlawn Rd Charlotte NC 28203"), "1000 E WOODLAWN RD");
+  assert.equal(first("123 Main St Winston-Salem NC 27101"), "123 MAIN ST");
+  assert.equal(first("123 Main St Winston Salem NC 27101"), "123 MAIN ST");
+});
+
+test("a plain street address is left exactly as typed", () => {
+  assert.equal(first("1000 E Woodlawn Rd"), "1000 E WOODLAWN RD");
+  assert.equal(first("Home Rd"), "HOME RD");
+  // No city, state or ZIP, so nothing is stripped off the end.
+  assert.equal(first("1000 Woodlawn"), "1000 WOODLAWN");
+});
+
+test("spelled-out suffixes and directions fold to the stored abbreviation", () => {
+  assert.equal(first("1000 East Woodlawn Road"), "1000 E WOODLAWN RD");
+  assert.equal(first("1000 East Woodlawn Rd"), "1000 E WOODLAWN RD");
+  assert.equal(first("12 North Main Street"), "12 N MAIN ST");
+  assert.equal(first("7 Oak Avenue"), "7 OAK AVE");
+  assert.equal(first("9 Ridge Parkway"), "9 RDG PKWY");
+  // A county that spells the suffix out is still reachable: the suffix-free
+  // rung, and the raw text last, cover both storage conventions.
+  assert.equal(PT.buildQueryVariants("9 Ridge Parkway").at(-1), "9 Ridge Parkway");
+});
+
+test("a unit designator gets its own rung, then the bare street line", () => {
+  assert.deepEqual(PT.buildQueryVariants("1000 E Woodlawn Rd Apt 4B"),
+    ["1000 E WOODLAWN RD APT 4B", "1000 E WOODLAWN RD", "1000 E WOODLAWN"]);
+  assert.deepEqual(PT.buildQueryVariants("1000 E Woodlawn Rd #4B"),
+    ["1000 E WOODLAWN RD # 4B", "1000 E WOODLAWN RD", "1000 E WOODLAWN", "1000 E Woodlawn Rd #4B"]);
+  assert.deepEqual(PT.buildQueryVariants("1000 E Woodlawn Rd 4"),
+    ["1000 E WOODLAWN RD 4", "1000 E WOODLAWN RD", "1000 E WOODLAWN"]);
+  // A street number alone is a house number, not a unit.
+  assert.deepEqual(PT.buildQueryVariants("1000 E Woodlawn Rd"), ["1000 E WOODLAWN RD", "1000 E WOODLAWN"]);
+});
+
+test("dropping the suffix makes the query match any suffix", () => {
+  const forms = PT.buildQueryVariants("1000 E Woodlawn Road");
+  assert.ok(forms.includes("1000 E WOODLAWN"), "street plus name is reachable");
+  // The suffix-free form is a substring of every suffixed spelling OneMap holds.
+  for (const stored of ["1000 E WOODLAWN RD", "1000 E WOODLAWN AVE", "1000 E WOODLAWN WAY"]) {
+    assert.ok(stored.includes("1000 E WOODLAWN"), `${stored} is reachable`);
+  }
+});
+
+test("an unknown suffix still falls through to the suffix-free form", () => {
+  assert.deepEqual(PT.buildQueryVariants("1000 Woodlawn Turn"), ["1000 WOODLAWN TURN", "1000 WOODLAWN"]);
+});
+
+test("the ladder never widens past house number plus street name", () => {
+  for (const q of ["1000 Woodlawn", "1000 E Woodlawn", "1000 E Woodlawn Rd", "1000 Woodlawn Turn"]) {
+    for (const v of PT.buildQueryVariants(q)) {
+      assert.ok(v.split(/\s+/).length >= 2, `"${v}" is too broad to search`);
+    }
+  }
+  // A bare house number is still searchable, which the status copy advertises.
+  assert.deepEqual(PT.buildQueryVariants("1000"), ["1000"]);
+});
+
+test("every rung is quoted, and the raw text is the last resort", () => {
+  const forms = PT.buildQueryVariants("O'Brien Rd, Raleigh, NC 27601");
+  assert.equal(forms[0], "O'BRIEN RD", "the apostrophe survives normalisation");
+  assert.equal(
+    PT.buildAddressWhere(forms[0]),
+    "UPPER(siteadd) LIKE UPPER('%O''BRIEN RD%')",
+    "and is escaped exactly once, by buildAddressWhere"
+  );
+  for (const v of forms) {
+    const w = PT.buildAddressWhere(v);
+    // Quotes only ever appear as the pattern delimiters or as a doubled pair.
+    assert.equal((w.match(/'/g) || []).length % 2, 0, `odd quote count in ${w}`);
+  }
+  assert.equal(forms.at(-1), "O'Brien Rd, Raleigh, NC 27601", "raw text is last");
+});
+
+test("variants are deduplicated case-insensitively, and empty input yields none", () => {
+  assert.deepEqual(PT.buildQueryVariants("1000 woodlawn rd"), ["1000 WOODLAWN RD", "1000 WOODLAWN"]);
+  assert.deepEqual(PT.buildQueryVariants(""), []);
+  assert.deepEqual(PT.buildQueryVariants("   "), []);
+  assert.deepEqual(PT.buildQueryVariants(null), []);
+  assert.deepEqual(PT.buildQueryVariants("***"), [], "nothing searchable left after stripping");
+  // Hyphens are kept, for hyphenated street and city names.
+  assert.deepEqual(PT.buildQueryVariants("123 Main St, Winston-Salem NC"),
+    ["123 MAIN ST", "123 MAIN", "123 Main St, Winston-Salem NC"]);
+});
+
+test("a doubled-up spelling does not produce a repeated token", () => {
+  assert.equal(first("123 Main Road Rd"), "123 MAIN RD");
+});
+
 test("residential filter keeps usable homes and excludes commercial/non-value", () => {
   assert.equal(PT.isUsableResidential({ parval: 260653, parusecode: "R100" }), true);
   assert.equal(PT.isUsableResidential({ parval: 2754300, parusecode: "C700" }), false);
