@@ -243,6 +243,95 @@ test("every county-level-only county still has a publishable savings rate", () =
   }
 });
 
+/* --------------------------------------------------------------------------
+ * The six counties the statewide parcel layer cannot search. Each resolves an
+ * address through its own service and then reads the value from the statewide
+ * layer by parcel number.
+ * ------------------------------------------------------------------------ */
+
+const SERVED = {
+  orange: "37135", bladen: "37017", franklin: "37069",
+  cabarrus: "37025", guilford: "37081", avery: "37011",
+};
+
+test("each served county has a usable source pointing at a real endpoint", () => {
+  for (const [slug, fips] of Object.entries(SERVED)) {
+    assert.equal(BENCHMARKS[slug].fips, fips, `${slug} fips`);
+    const src = PT.parcelSource(fips);
+    assert.ok(src, `${slug} has a parcel source`);
+    assert.equal(src.county, BENCHMARKS[slug].label.replace(/ County$/, ""), `${slug} source names the county`);
+    assert.ok(["key", "point"].includes(src.mode), `${slug} has a known mode`);
+    assert.ok(src.address.startsWith("https://"), `${slug} endpoint is absolute`);
+    assert.ok(src.field, `${slug} names an address field`);
+    if (src.mode === "key") {
+      assert.ok(src.key, `${slug} names a parcel key field`);
+    } else {
+      assert.ok(src.lon && src.lat, `${slug} names coordinate fields`);
+      assert.ok(src.srs === 4326 || src.srs === 102719, `${slug} declares a known spatial reference`);
+    }
+  }
+});
+
+test("a county the statewide layer can search has no parcel source", () => {
+  for (const slug of ["mecklenburg", "wake", "durham", "alamance", "moore", "rowan", "onslow"]) {
+    assert.equal(PT.parcelSource(BENCHMARKS[slug].fips), null, `${slug} uses the direct search`);
+  }
+  assert.equal(PT.parcelSource(null), null);
+  assert.equal(PT.parcelSource("nonsense"), null);
+});
+
+test("the statewide parcel number is reformatted only where the county differs", () => {
+  // Cabarrus writes PINs with a decimal tail and the statewide layer pads them.
+  assert.equal(PT.oneMapParno("37025", "5552051850.00000000"), "55520518500000");
+  // Everywhere else the two agree and the value passes through untouched.
+  for (const [fips, value] of [["37135", "9872416580"], ["37017", "026918412138"], ["37069", "2809-23-4743"]]) {
+    assert.equal(PT.oneMapParno(fips, value), value);
+    assert.equal(PT.oneMapParno(fips, ` ${value} `), value, "surrounding space is trimmed");
+  }
+  assert.equal(PT.oneMapParno("37025", ""), "");
+  assert.equal(PT.oneMapParno("37025", null), "");
+});
+
+test("county variants try the county's own spelling first, then the other", () => {
+  const abbr = PT.buildCountyVariants("1000 N Main St", false);
+  const long = PT.buildCountyVariants("1000 N Main St", true);
+  assert.equal(abbr[0], "1000 N MAIN ST", "abbreviated county gets the short form first");
+  assert.equal(long[0], "1000 NORTH MAIN STREET", "spelled-out county gets the long form first");
+  // Both spellings are always tried, so a county that changes convention still works.
+  for (const list of [abbr, long]) {
+    assert.ok(list.includes("1000 N MAIN ST"), "the short form is tried");
+    assert.ok(list.includes("1000 NORTH MAIN STREET"), "the long form is tried");
+    assert.ok(list.includes("1000 N MAIN"), "the suffix-free form is tried");
+    // The raw text is the last resort, unless an earlier form already matches it
+    // case-insensitively, in which case there is nothing to gain by sending it.
+    assert.ok(
+      list.some((v) => v.toUpperCase() === "1000 N MAIN ST"),
+      "the raw text is covered"
+    );
+  }
+});
+
+test("county variants strip a city, state and ZIP from every derived form", () => {
+  const raw = "1000 Woodlawn Rd, Charlotte, NC 28203";
+  const list = PT.buildCountyVariants(raw, false);
+  assert.equal(list[0], "1000 WOODLAWN RD");
+  // Only the raw fallback keeps what the reader typed; nothing derived from it
+  // carries the city or the ZIP.
+  for (const v of list.slice(0, -1)) {
+    assert.ok(!/28203/.test(v), `${v} should not carry the ZIP`);
+    assert.ok(!/CHARLOTTE/.test(v), `${v} should not carry the city`);
+  }
+  assert.ok(list.some((v) => v.toUpperCase() === raw.toUpperCase()), "the raw text is still tried last");
+});
+
+test("a residential code override exists only for the county that needs one", () => {
+  assert.deepEqual(PT.residentialCodes("37069"), ["D", "LWMH", "MHP"]);
+  for (const slug of ["orange", "bladen", "cabarrus", "guilford", "avery", "mecklenburg"]) {
+    assert.equal(PT.residentialCodes(BENCHMARKS[slug].fips), null, `${slug} uses the shared rule`);
+  }
+  assert.equal(PT.residentialCodes(null), null);
+});
+
 test("residential filter keeps usable homes and excludes commercial/non-value", () => {
   assert.equal(PT.isUsableResidential({ parval: 260653, parusecode: "R100" }), true);
   assert.equal(PT.isUsableResidential({ parval: 2754300, parusecode: "C700" }), false);

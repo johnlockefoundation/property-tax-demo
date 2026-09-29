@@ -259,11 +259,148 @@
     return NO_PARCEL_ADDRESS_FIPS.indexOf(String(county.fips)) === -1;
   }
 
+  // Counties the state parcel service cannot search, because it publishes no
+  // site address for them. Each resolves an address through the county's own
+  // service instead, and then reads the assessed value from the statewide
+  // parcel layer by parcel number, so every receipt's value comes from one
+  // dataset.
+  //
+  //   mode "key"   the address record carries the parcel number
+  //   mode "point" the address record is a point; the parcel is the one that
+  //                contains it
+  //
+  // `spelling` says how that county writes street suffixes and directions, so
+  // the query is tried in the right form first. `pin` reformats the county's
+  // parcel number into the statewide one where the two differ.
+  var NC_PARCELS = "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/MapServer";
+  var ADDRESS_NC = "https://services.nconemap.gov/secure/rest/services/AddressNC/NC1Map_Addresses/MapServer/0/query";
+
+  var PARCEL_SOURCES = {
+    "37135": { mode: "key", spelling: "abbr", county: "Orange",
+      address: "https://gis.orangecountync.gov/arcgis/rest/services/WebBetaPortal/MapServer/1/query", field: "Add_St", key: "PIN" },
+    "37017": { mode: "key", spelling: "abbr", county: "Bladen",
+      address: "https://gis.bladenco.org/server/rest/services/BladenCounty/MapServer/0/query", field: "Full_Address", key: "PIN" },
+    "37069": { mode: "key", spelling: "long", county: "Franklin",
+      address: "https://franklincountymaps.net/arcgis/rest/services/Aed_Loacations1/MapServer/0/query", field: "FullAddress", key: "PIN" },
+    "37025": { mode: "key", spelling: "abbr", county: "Cabarrus",
+      address: "https://location.cabarruscounty.us/arcgisservices/rest/services/DataExplorerSearch/FeatureServer/0/query", field: "Full_con_cat", key: "PIN",
+      pin: function (v) { return v.split(".")[0] + "0000"; } },
+    "37081": { mode: "point", spelling: "long", county: "Guilford",
+      address: "https://gcgis.guilfordcountync.gov/arcgis/rest/services/SiteStructureAddressPoints/FeatureServer/0/query", field: "FullAddress",
+      lon: "Long", lat: "Lat", srs: 4326 },
+    "37011": { mode: "point", spelling: "long", county: "Avery",
+      address: ADDRESS_NC, field: "full_address", lon: "long", lat: "lat", srs: 102719,
+      countyField: "countyfips" },
+  };
+
+  function parcelSource(fips) {
+    return PARCEL_SOURCES[String(fips == null ? "" : fips)] || null;
+  }
+
+  // Franklin is the one county among these whose parcels carry a land-use code
+  // but never a description, and its residential codes do not begin with R, so
+  // the shared rule cannot classify them. D is a dwelling, LWMH a light-weight
+  // manufactured home and MHP a manufactured home park; V (vacant), OBY
+  // (outbuilding), O and C are not. Held per county rather than folded into the
+  // shared set, because the same letter means something different in another
+  // county's scheme.
+  var COUNTY_RESIDENTIAL_CODES = { "37069": ["D", "LWMH", "MHP"] };
+
+  function residentialCodes(fips) {
+    return COUNTY_RESIDENTIAL_CODES[String(fips == null ? "" : fips)] || null;
+  }
+
+  // Cabarrus writes PINs as a number with a decimal tail ("5552051850.00000000")
+  // where the statewide layer writes the same parcel without a dot and padded
+  // out to fourteen characters. Everywhere else the two agree.
+  function oneMapParno(fips, key) {
+    var src = parcelSource(fips);
+    var value = String(key == null ? "" : key).trim();
+    if (!value) return "";
+    if (src && typeof src.pin === "function") return src.pin(value);
+    return value;
+  }
+
+  // The reverse of SUFFIX_LOOKUP, for counties that spell the type out
+  // ("ROAD") where the statewide layer abbreviates it ("RD").
+  var LONG_SUFFIX = {};
+  for (var sname in SUFFIXES) {
+    if (Object.prototype.hasOwnProperty.call(SUFFIXES, sname)) {
+      var short = SUFFIXES[sname];
+      // A short form maps back to the longest spelling that abbreviates to it,
+      // so "RD" becomes "ROAD" rather than some other source word.
+      if (!LONG_SUFFIX[short] || LONG_SUFFIX[short].length < sname.length) {
+        LONG_SUFFIX[short] = sname;
+      }
+    }
+  }
+
+  var LONG_DIRECTION = { N: "NORTH", S: "SOUTH", E: "EAST", W: "WEST", NE: "NORTHEAST", NW: "NORTHWEST", SE: "SOUTHEAST", SW: "SOUTHWEST" };
+
+  function spellOut(tokens) {
+    return tokens.map(function (t) {
+      if (LONG_SUFFIX[t]) return LONG_SUFFIX[t];
+      if (LONG_DIRECTION[t]) return LONG_DIRECTION[t];
+      return t;
+    });
+  }
+
+  /**
+   * The ladder of address forms to try against a county's own address layer.
+   *
+   * Counties disagree about how they write an address: some abbreviate the
+   * suffix and direction, some spell both out, some append the city, state and
+   * ZIP and some do not. Rather than encode every combination, each candidate is
+   * generated in the spelling that county prefers and then in the other one, so
+   * "1000 N Main St" finds both "1000 NORTH MAIN STREET" and "1000 N MAIN ST".
+   */
+  function buildCountyVariants(query, preferLong) {
+    var text = String(query == null ? "" : query).replace(/\s+/g, " ").trim();
+    if (!text) return [];
+
+    var out = [];
+    var seen = {};
+    var add = function (parts) {
+      var s = (parts || []).join(" ").trim();
+      if (!s) return;
+      var k = s.toUpperCase();
+      if (seen[k]) return;
+      seen[k] = true;
+      out.push(s);
+    };
+
+    var full = tokenize(streetLine(text));
+    if (!full.length) return out;
+
+    var abbr = full;
+    var long = spellOut(full);
+    if (preferLong) { add(long); add(abbr); } else { add(abbr); add(long); }
+
+    // The same pair again without a unit, then with the suffix dropped, which
+    // matches whatever the county calls the type.
+    [abbr, long].forEach(function (tokens) {
+      var noUnit = dropUnitTail(tokens);
+      add(noUnit);
+      if (noUnit.length) add(spellOut(noUnit));
+    });
+    if (full.length) {
+      add(full.slice(0, -1));
+      add(spellOut(full.slice(0, -1)));
+    }
+
+    add([text]);
+    return out;
+  }
+
   return {
     computeReceipt: computeReceipt,
     buildAddressWhere: buildAddressWhere,
     buildQueryVariants: buildQueryVariants,
     isUsableResidential: isUsableResidential,
-    hasParcelAddress: hasParcelAddress
+    hasParcelAddress: hasParcelAddress,
+    parcelSource: parcelSource,
+    residentialCodes: residentialCodes,
+    oneMapParno: oneMapParno,
+    buildCountyVariants: buildCountyVariants
   };
 });
