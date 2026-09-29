@@ -3,10 +3,16 @@
 ## Project
 
 Static, single-page GitHub Pages site — "NC Property Tax: Understanding HB 1089". A user
-enters a NC address, picks a parcel from NC OneMap, and sees a receipt estimating
-what the county property tax bill would have been under an HB 1089-style levy limit
-anchored to the FY2020-21 county levy and compounded by OSBM population growth + South
-urban CPI.
+enters a NC address, picks a parcel, and sees a receipt estimating what the county
+property tax bill would have been under an HB 1089-style levy limit anchored to the
+FY2020-21 county levy and compounded by OSBM population growth + South urban CPI.
+
+Parcel data comes from NC OneMap, which publishes no site address for nine counties.
+Five of those (Orange, Bladen, Cabarrus, Guilford, Avery) resolve the address through the
+county's own service and are then read from NC OneMap by parcel number, so the assessed
+value still comes from one place; the per-county sources live in `calc.js`. The other
+four (Franklin, Hoke, Perquimans, Richmond) have no address the tool can rely on and
+report the county's savings rate instead.
 
 Live: https://johnlockefoundation.github.io/property-tax-demo/ (served from `main`, root).
 

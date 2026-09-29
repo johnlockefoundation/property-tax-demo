@@ -1,9 +1,8 @@
 # NC Property Tax — Understanding HB 1089
 
-A static, single-page site hosted on GitHub Pages (no backend required). Enter a North
-Carolina street address, pick the matching parcel, and the page estimates what the
-county-wide property tax would have been under an HB 1089–style **levy limit** anchored
-to a **2019 base year**.
+A static, single-page site hosted on GitHub Pages (no backend required). Enter your
+address, pick the matching parcel, and the page estimates what the county-wide property
+tax would have been under an HB 1089–style **levy limit** enacted five years ago.
 
 The result is presented as a store receipt for the single fiscal year **FY2025-26**:
 **what you paid**, **what you could have paid**, and **you could have saved** (with a
@@ -74,7 +73,9 @@ node --test test/calc.test.mjs
 ```
 
 Tests cover the receipt arithmetic, address/residential filtering, column-Q wiring for
-all 100 counties, the two at/below-benchmark counties, and build reproducibility.
+all 100 counties, the two at/below-benchmark counties, the per-county address sources
+used for the counties the statewide parcel layer cannot search, and build
+reproducibility.
 
 ## Local preview
 
