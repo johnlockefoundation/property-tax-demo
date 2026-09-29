@@ -380,12 +380,39 @@
     add([text]);
     return out;
   }
+  /**
+   * The residential filter.
+   *
+   * `exact` records how the parcel was found. The direct search matches free
+   * text, so a commercial lot can answer to a house number and the improvement
+   * value is what tells the two apart. A county route resolves one exact parcel
+   * number from the county's own address layer, which only lists addresses that
+   * exist, so there is nothing to weed out there — and requiring an improvement
+   * value would discard parcels the county lists but the statewide layer has no
+   * improvement figure for. Three of the six counties the statewide layer cannot
+   * search publish no land-use code at all, and for them the improvement figure
+   * is the only test available, so a house with a value and a blank improvement
+   * field was being reported as no match.
+   */
+  function keepResidential(feats, exact) {
+    var hasUseData = feats.some(function (a) {
+      return String(a.parusecode || "").trim() || String(a.parusedesc || "").trim();
+    });
+    if (hasUseData) {
+      return feats.filter(isUsableResidential);
+    }
+    return feats.filter(function (a) {
+      return Number(a.parval) > 0 && (exact || Number(a.improvval) > 0);
+    });
+  }
 
   return {
+
     computeReceipt: computeReceipt,
     buildAddressWhere: buildAddressWhere,
     buildQueryVariants: buildQueryVariants,
     isUsableResidential: isUsableResidential,
+    keepResidential: keepResidential,
     hasParcelAddress: hasParcelAddress,
     parcelSource: parcelSource,
     oneMapParno: oneMapParno,

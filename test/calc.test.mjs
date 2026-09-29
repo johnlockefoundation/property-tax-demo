@@ -325,6 +325,36 @@ test("county variants strip a city, state and ZIP from every derived form", () =
 });
 
 
+test("the residential filter needs an improvement value only on a text search", () => {
+  // OneMap has no improvement figure for some houses, which is the whole reason
+  // the two paths differ. Both fixtures are houses the county lists.
+  const houseNoImprov = { parval: 260020, improvval: 0, parusecode: "", parusedesc: "" };
+  const bareLand = { parval: 50000, improvval: 0, parusecode: "", parusedesc: "" };
+  const noValue = { parval: 0, improvval: 0, parusecode: "", parusedesc: "" };
+
+  // A free-text search cannot tell that parcel from a lot, so it needs the
+  // improvement figure and rejects the house it cannot confirm.
+  assert.deepEqual(PT.keepResidential([houseNoImprov], false), []);
+  // An exact parcel from the county's own address layer is taken on the
+  // county's word that the address exists there, so the value is the only test.
+  assert.deepEqual(PT.keepResidential([houseNoImprov], true), [houseNoImprov]);
+  // Land the county also lists at that address is still shown, which is the
+  // deliberate cost of not having a land-use code to read.
+  assert.deepEqual(PT.keepResidential([bareLand], true), [bareLand]);
+  // A parcel with no value is never shown, either way.
+  assert.deepEqual(PT.keepResidential([noValue], true), []);
+  assert.deepEqual(PT.keepResidential([noValue], false), []);
+});
+
+test("where the county publishes a land-use code, both routes use it", () => {
+  const home = { parval: 500000, improvval: 400000, parusecode: "R300", parusedesc: "RESIDENTIAL" };
+  const flats = { parval: 27000000, improvval: 22000000, parusecode: "C", parusedesc: "APART" };
+  for (const exact of [false, true]) {
+    assert.deepEqual(PT.keepResidential([home, flats], exact), [home],
+      `an apartment block is not an ordinary residence (exact=${exact})`);
+  }
+});
+
 test("residential filter keeps usable homes and excludes commercial/non-value", () => {
   assert.equal(PT.isUsableResidential({ parval: 260653, parusecode: "R100" }), true);
   assert.equal(PT.isUsableResidential({ parval: 2754300, parusecode: "C700" }), false);
