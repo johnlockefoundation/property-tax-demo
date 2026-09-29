@@ -247,10 +247,23 @@
     return isFinite(v) && v > 0 && residential;
   }
 
+  // Counties where the state parcel service publishes no site address, so a
+  // reader cannot be matched to an individual parcel and no receipt can be
+  // printed. The county-level savings rate is published for all 100 counties,
+  // so the tool still answers with that rather than a dead end. Keyed on FIPS
+  // rather than county name so a rename cannot silently drop a county.
+  var NO_PARCEL_ADDRESS_FIPS = ["37093", "37143", "37153"]; // Hoke, Perquimans, Richmond
+
+  function hasParcelAddress(county) {
+    if (!county || !county.fips) return true;
+    return NO_PARCEL_ADDRESS_FIPS.indexOf(String(county.fips)) === -1;
+  }
+
   return {
     computeReceipt: computeReceipt,
     buildAddressWhere: buildAddressWhere,
     buildQueryVariants: buildQueryVariants,
-    isUsableResidential: isUsableResidential
+    isUsableResidential: isUsableResidential,
+    hasParcelAddress: hasParcelAddress
   };
 });

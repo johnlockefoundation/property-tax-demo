@@ -124,6 +124,8 @@
     color: var(--green); font-size: 13px; font-weight: 700; line-height: 1.6;
   }
 
+  .below-sentence-note { text-transform: none; font-size: 12.5px; line-height: 1.55; }
+
   .method { margin-top: 18px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; }
   .method summary { cursor: pointer; font-weight: 800; font-size: 15px; list-style: none; }
   .method summary::-webkit-details-marker { display: none; }
@@ -314,6 +316,7 @@ function setStatus(msg) { byId("status").textContent = msg || ""; }
 function clearBill() {
   byId("billResults").classList.remove("hidden");
   byId("belowSentence").classList.add("hidden");
+  byId("belowSentence").classList.remove("below-sentence-note");
   byId("bill").classList.remove("hidden");
   byId("bCountyHeader").classList.add("hidden");
   byId("bInstruction").classList.remove("hidden");
@@ -324,6 +327,27 @@ function selectCounty(key) {
   SELECTED = key || null;
   COUNTY = key ? BENCHMARKS[key] : null;
   clearBill();
+  showCountyLevel();
+}
+
+// Counties with no site address in the state parcel service cannot be matched
+// to an individual parcel, so no receipt can be printed. The county-level
+// savings rate is published for every county, so the reader still gets the
+// finding rather than a dead end.
+function showCountyLevel() {
+  if (!COUNTY || PT.hasParcelAddress(COUNTY)) return;
+  const nm = COUNTY.label.replace(/ County$/, "");
+  const pct = Math.round(COUNTY.savings_rate * 100);
+  const sentence = byId("belowSentence");
+  sentence.textContent = "We do not have individual parcel data for " + nm +
+    " County, so we cannot print a receipt for your property. Our county-level " +
+    "analysis estimates that a property tax levy limit would have lowered property " +
+    "tax bills across " + nm + " County by about " + pct +
+    "% over the five years to " + COUNTY.period + ".";
+  sentence.classList.add("below-sentence-note");
+  sentence.classList.remove("hidden");
+  byId("bill").classList.add("hidden");
+  byId("billResults").classList.remove("hidden");
 }
 
 function clearAddress() {

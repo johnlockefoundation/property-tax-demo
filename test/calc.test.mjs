@@ -210,6 +210,39 @@ test("a doubled-up spelling does not produce a repeated token", () => {
   assert.equal(first("123 Main Road Rd"), "123 MAIN RD");
 });
 
+/* --------------------------------------------------------------------------
+ * Counties with no site address in the state parcel service. They cannot be
+ * matched to a parcel, so no receipt is printed, but the county-level
+ * savings rate is published for every county and is still reported.
+ * ------------------------------------------------------------------------ */
+
+test("counties with no published site address are identified by FIPS", () => {
+  for (const slug of ["hoke", "perquimans", "richmond"]) {
+    assert.equal(PT.hasParcelAddress(BENCHMARKS[slug]), false, `${slug} has no parcel address`);
+  }
+  // Orange is in the same situation in the parcel service but is expected to
+  // be served, so the flag must not simply mirror the no-address list.
+  for (const slug of ["orange", "guilford", "mecklenburg", "wake", "alamance", "moore"]) {
+    assert.equal(PT.hasParcelAddress(BENCHMARKS[slug]), true, `${slug} should be served`);
+  }
+});
+
+test("a missing or malformed county is treated as served rather than blocked", () => {
+  assert.equal(PT.hasParcelAddress(null), true);
+  assert.equal(PT.hasParcelAddress(undefined), true);
+  assert.equal(PT.hasParcelAddress({}), true);
+});
+
+test("every county-level-only county still has a publishable savings rate", () => {
+  for (const slug of ["hoke", "perquimans", "richmond"]) {
+    const c = BENCHMARKS[slug];
+    assert.ok(c.savings_rate > 0, `${slug} has a savings rate to report`);
+    assert.equal(c.below_benchmark, false, `${slug} is not a below-benchmark county`);
+    assert.ok(c.period, `${slug} has a period to cite`);
+    assert.ok(Math.round(c.savings_rate * 100) >= 1, `${slug} rounds to a whole percent`);
+  }
+});
+
 test("residential filter keeps usable homes and excludes commercial/non-value", () => {
   assert.equal(PT.isUsableResidential({ parval: 260653, parusecode: "R100" }), true);
   assert.equal(PT.isUsableResidential({ parval: 2754300, parusecode: "C700" }), false);
