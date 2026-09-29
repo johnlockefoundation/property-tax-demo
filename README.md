@@ -2,7 +2,8 @@
 
 A static, single-page site hosted on GitHub Pages (no backend required). Enter your
 address, pick the matching parcel, and the page estimates what the county-wide property
-tax would have been under an HB 1089–style **levy limit** enacted five years ago.
+tax would have been if levy growth had been limited to inflation plus population growth
+over the past five years.
 
 The result is presented as a store receipt for the single fiscal year **FY2025-26**:
 **what you paid**, **what you could have paid**, and **you could have saved** (with a
