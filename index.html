@@ -366,18 +366,11 @@ function clearAddress() {
 const PARCEL_FIELDS = "parno,siteadd,parval,parvaltype,parusecode,parusedesc,improvval,stcntyfips,cntyfips";
 const ONEMAP_POLY = "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query";
 
-function keepResidential(feats, codes) {
+function keepResidential(feats) {
   const hasUseData = feats.some(a => String(a.parusecode || "").trim() || String(a.parusedesc || "").trim());
-  if (!hasUseData) return feats.filter(a => Number(a.improvval) > 0 && Number(a.parval) > 0);
-  // A county whose codes mean something other than the shared scheme supplies
-  // its own set, rather than the shared rule guessing.
-  if (codes && codes.length) {
-    return feats.filter(a => {
-      const code = String(a.parusecode || "").trim().toUpperCase();
-      return code ? codes.includes(code) : PT.isUsableResidential(a);
-    });
-  }
-  return feats.filter(PT.isUsableResidential);
+  return hasUseData
+    ? feats.filter(PT.isUsableResidential)
+    : feats.filter(a => Number(a.improvval) > 0 && Number(a.parval) > 0);
 }
 
 async function postForm(url, body) {
@@ -395,7 +388,7 @@ async function queryOneMap(where, cntyfips) {
   body.append("f", "pjson");
   body.append("returnGeometry", "false");
   body.append("resultRecordCount", "40");
-  return keepResidential(await postForm(ONEMAP_QUERY, body.toString()), PT.residentialCodes(cntyfips));
+  return keepResidential(await postForm(ONEMAP_QUERY, body.toString()));
 }
 
 // Tries each form in turn and returns the first set of parcels that survives
@@ -442,7 +435,7 @@ async function parcelAtPoint(fips, attrs, source) {
   body.append("f", "pjson");
   body.append("returnGeometry", "false");
   const hits = await postForm(ONEMAP_POLY, body.toString());
-  return hits.length === 1 ? keepResidential(hits, PT.residentialCodes(fips)) : [];
+  return hits.length === 1 ? keepResidential(hits) : [];
 }
 
 async function resolveCountyParcel(source, fips, variants) {

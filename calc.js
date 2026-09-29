@@ -252,7 +252,11 @@
   // printed. The county-level savings rate is published for all 100 counties,
   // so the tool still answers with that rather than a dead end. Keyed on FIPS
   // rather than county name so a rename cannot silently drop a county.
-  var NO_PARCEL_ADDRESS_FIPS = ["37093", "37143", "37153"]; // Hoke, Perquimans, Richmond
+  // Franklin is here too: it does publish addresses, but its service sits behind
+  // a bot challenge and answers a browser's request with an interstitial often
+  // enough that a receipt would be unreliable, so it reports the county rate
+  // like the three that publish no address at all.
+  var NO_PARCEL_ADDRESS_FIPS = ["37069", "37093", "37143", "37153"]; // Franklin, Hoke, Perquimans, Richmond
 
   function hasParcelAddress(county) {
     if (!county || !county.fips) return true;
@@ -280,8 +284,6 @@
       address: "https://gis.orangecountync.gov/arcgis/rest/services/WebBetaPortal/MapServer/1/query", field: "Add_St", key: "PIN" },
     "37017": { mode: "key", spelling: "abbr", county: "Bladen",
       address: "https://gis.bladenco.org/server/rest/services/BladenCounty/MapServer/0/query", field: "Full_Address", key: "PIN" },
-    "37069": { mode: "key", spelling: "long", county: "Franklin",
-      address: "https://franklincountymaps.net/arcgis/rest/services/Aed_Loacations1/MapServer/0/query", field: "FullAddress", key: "PIN" },
     "37025": { mode: "key", spelling: "abbr", county: "Cabarrus",
       address: "https://location.cabarruscounty.us/arcgisservices/rest/services/DataExplorerSearch/FeatureServer/0/query", field: "Full_con_cat", key: "PIN",
       pin: function (v) { return v.split(".")[0] + "0000"; } },
@@ -295,19 +297,6 @@
 
   function parcelSource(fips) {
     return PARCEL_SOURCES[String(fips == null ? "" : fips)] || null;
-  }
-
-  // Franklin is the one county among these whose parcels carry a land-use code
-  // but never a description, and its residential codes do not begin with R, so
-  // the shared rule cannot classify them. D is a dwelling, LWMH a light-weight
-  // manufactured home and MHP a manufactured home park; V (vacant), OBY
-  // (outbuilding), O and C are not. Held per county rather than folded into the
-  // shared set, because the same letter means something different in another
-  // county's scheme.
-  var COUNTY_RESIDENTIAL_CODES = { "37069": ["D", "LWMH", "MHP"] };
-
-  function residentialCodes(fips) {
-    return COUNTY_RESIDENTIAL_CODES[String(fips == null ? "" : fips)] || null;
   }
 
   // Cabarrus writes PINs as a number with a decimal tail ("5552051850.00000000")
@@ -399,7 +388,6 @@
     isUsableResidential: isUsableResidential,
     hasParcelAddress: hasParcelAddress,
     parcelSource: parcelSource,
-    residentialCodes: residentialCodes,
     oneMapParno: oneMapParno,
     buildCountyVariants: buildCountyVariants
   };

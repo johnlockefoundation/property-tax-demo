@@ -216,12 +216,12 @@ test("a doubled-up spelling does not produce a repeated token", () => {
  * savings rate is published for every county and is still reported.
  * ------------------------------------------------------------------------ */
 
-test("counties with no published site address are identified by FIPS", () => {
-  for (const slug of ["hoke", "perquimans", "richmond"]) {
+test("counties that cannot be served per-parcel are identified by FIPS", () => {
+  for (const slug of ["franklin", "hoke", "perquimans", "richmond"]) {
     assert.equal(PT.hasParcelAddress(BENCHMARKS[slug]), false, `${slug} has no parcel address`);
   }
-  // Orange is in the same situation in the parcel service but is expected to
-  // be served, so the flag must not simply mirror the no-address list.
+  // Orange has no site address in the parcel service either, but its own
+  // service answers reliably, so the flag must not simply mirror that list.
   for (const slug of ["orange", "guilford", "mecklenburg", "wake", "alamance", "moore"]) {
     assert.equal(PT.hasParcelAddress(BENCHMARKS[slug]), true, `${slug} should be served`);
   }
@@ -234,7 +234,7 @@ test("a missing or malformed county is treated as served rather than blocked", (
 });
 
 test("every county-level-only county still has a publishable savings rate", () => {
-  for (const slug of ["hoke", "perquimans", "richmond"]) {
+  for (const slug of ["franklin", "hoke", "perquimans", "richmond"]) {
     const c = BENCHMARKS[slug];
     assert.ok(c.savings_rate > 0, `${slug} has a savings rate to report`);
     assert.equal(c.below_benchmark, false, `${slug} is not a below-benchmark county`);
@@ -250,7 +250,7 @@ test("every county-level-only county still has a publishable savings rate", () =
  * ------------------------------------------------------------------------ */
 
 const SERVED = {
-  orange: "37135", bladen: "37017", franklin: "37069",
+  orange: "37135", bladen: "37017",
   cabarrus: "37025", guilford: "37081", avery: "37011",
 };
 
@@ -284,7 +284,7 @@ test("the statewide parcel number is reformatted only where the county differs",
   // Cabarrus writes PINs with a decimal tail and the statewide layer pads them.
   assert.equal(PT.oneMapParno("37025", "5552051850.00000000"), "55520518500000");
   // Everywhere else the two agree and the value passes through untouched.
-  for (const [fips, value] of [["37135", "9872416580"], ["37017", "026918412138"], ["37069", "2809-23-4743"]]) {
+  for (const [fips, value] of [["37135", "9872416580"], ["37017", "026918412138"]]) {
     assert.equal(PT.oneMapParno(fips, value), value);
     assert.equal(PT.oneMapParno(fips, ` ${value} `), value, "surrounding space is trimmed");
   }
@@ -324,13 +324,6 @@ test("county variants strip a city, state and ZIP from every derived form", () =
   assert.ok(list.some((v) => v.toUpperCase() === raw.toUpperCase()), "the raw text is still tried last");
 });
 
-test("a residential code override exists only for the county that needs one", () => {
-  assert.deepEqual(PT.residentialCodes("37069"), ["D", "LWMH", "MHP"]);
-  for (const slug of ["orange", "bladen", "cabarrus", "guilford", "avery", "mecklenburg"]) {
-    assert.equal(PT.residentialCodes(BENCHMARKS[slug].fips), null, `${slug} uses the shared rule`);
-  }
-  assert.equal(PT.residentialCodes(null), null);
-});
 
 test("residential filter keeps usable homes and excludes commercial/non-value", () => {
   assert.equal(PT.isUsableResidential({ parval: 260653, parusecode: "R100" }), true);
