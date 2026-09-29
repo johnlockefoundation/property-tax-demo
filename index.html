@@ -55,6 +55,7 @@
   #searchBtn:hover { background: var(--jlf-dark); }
   #searchBtn:disabled { background: #9AA7B5; cursor: default; }
   .hint { font-size: 12.5px; color: var(--muted); margin: 9px 0 0; line-height: 1.45; }
+  .privacy { font-size: 12px; color: var(--muted); margin: 6px 0 0; line-height: 1.45; }
   #status { font-size: 13px; color: #555; margin: 12px 0 0; min-height: 18px; }
   .cands { list-style: none; margin: 10px 0 0; padding: 0; }
   .cands li { width: 100%; text-align: left; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa; padding: 10px 12px; margin-bottom: 7px; cursor: pointer; font-size: 13px; }
@@ -132,6 +133,15 @@
   .method-body dt { font-weight: 700; color: var(--ink); margin-top: 12px; }
   .method-body dd { margin: 2px 0 0; }
   .method-body .sources a { color: var(--jlf); }
+  .method-body h3 { font-size: 14px; margin: 16px 0 6px; color: var(--ink); }
+  .method-body h4 { font-size: 13.5px; margin: 12px 0 4px; color: var(--ink); }
+  .method-body ul { margin: 4px 0 8px; padding-left: 20px; }
+  .method-body li { margin: 0 0 6px; }
+  .method-body p { margin: 6px 0 10px; }
+  .method-table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 12.5px; line-height: 1.45; }
+  .method-table th, .method-table td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; }
+  .method-table th { background: var(--bg); font-weight: 700; }
+  .method-formula { font-family: "Courier Prime", "Courier New", monospace; font-size: 12.5px; background: var(--bg); padding: 8px 10px; border-left: 3px solid var(--jlf); }
 
   @media (max-width: 900px) {
     .cols { flex-direction: column; }
@@ -155,8 +165,8 @@
 </header>
 
 <main class="wrap">
-  <h1>See what a property tax levy limit could have saved you</h1>
-  <p class="lede">Enter a North Carolina address to compare the county property tax you paid with what you would have paid if a levy limit had been enacted on the 2019 base year.</p>
+  <h1>How much could a property tax levy limit save you?</h1>
+  <p class="lede">Enter your address to see how much lower your county property tax bill could have been this year if a levy limit had been enacted five years ago.</p>
 
   <div class="cols">
   <section class="card">
@@ -169,7 +179,8 @@
       <input id="addrInput" type="text" placeholder="Address, e.g. 1000 E Woodlawn Rd, Charlotte NC" aria-label="Property address" />
       <button id="searchBtn" type="button">Search</button>
     </div>
-    <p class="hint">Partial addresses are ok. Click or tap your address when it appears.</p>
+    <p class="hint">Partial addresses are OK. Click or tap your address when it appears.</p>
+    <p class="privacy">We do not collect, store or remember your address. Your search is sent straight to NC OneMap, the state's official parcel mapping service.</p>
     <div id="status" role="status"></div>
     <ul class="cands" id="cands"></ul>
     <div id="nores" class="hidden">
@@ -207,26 +218,50 @@
 <details class="method">
       <summary>How we calculated this</summary>
       <div class="method-body">
-        <dl>
-          <dt>What "levy limit" means</dt>
-          <dd>A cap on how much the county's total property tax levy may grow each year.</dd>
-          <dt>The assumed annual limit</dt>
-          <dd>Inflation (U.S. South urban CPI) plus the county's population growth.</dd>
-          <dt>When the policy begins</dt>
-          <dd>The 2019 base year; the limit compounds forward from there.</dd>
-          <dt>What this receipt compares</dt>
-          <dd>A single fiscal year, FY2025-26: the county property tax actually paid versus what it would have been under the limit.</dd>
-          <dt>The "percent lower" figure</dt>
-          <dd>The county's 5-year savings rate published in Data(tax).csv (the last column before grade); the bill assumes that rate extends to the property, so what you could have paid = what you paid &times; (1 &minus; rate).</dd>
-          <dt>Why one year, not the five-year sum</dt>
-          <dd>A parcel's assessment can shift relative to the county tax base over time, so summing years would assume a fixed share. FY2025-26 is compared on the current assessment.</dd>
-          <dt>Taxes included</dt>
-          <dd>County-wide property tax only, not the full bill.</dd>
-          <dt>Property value</dt>
-          <dd>The parcel's current assessed value from NC OneMap; reassessment timing is not modeled.</dd>
-          <dt>Formula</dt>
-          <dd>FY2025-26 bill = assessed value &times; (actual levy / assessed valuation base). Under-limit bill = that bill &times; (1 &minus; savings rate), so the amount saved always matches the published savings rate.</dd>
-        </dl>
+        <h3>Data:</h3>
+        <table class="method-table">
+          <thead>
+            <tr><th>Category</th><th>Dataset</th><th>Source</th><th>Years</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Property tax levy</td>
+              <td>Total Property Tax Levied by All Local Jurisdictions (LG04)</td>
+              <td>N.C. Department of Revenue</td>
+              <td>FY21&ndash;FY26</td>
+            </tr>
+            <tr>
+              <td>Population</td>
+              <td>Certified County Population Estimates</td>
+              <td>N.C. Office of State Budget and Management</td>
+              <td>2019&ndash;2024</td>
+            </tr>
+            <tr>
+              <td>Inflation</td>
+              <td>Consumer Price Index for All Urban Consumers: All Items in the South (CUUR0300SA0)</td>
+              <td>Federal Reserve Bank of St. Louis</td>
+              <td>2019&ndash;2024</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Method:</h3>
+        <h4>Inputs:</h4>
+        <ul>
+          <li><b>Isolate county property tax levy:</b> We included only countywide property tax levies, excluding county special district levies and all municipal levies.</li>
+          <li><b>Calculate population growth:</b> For each county, we calculated the year-over-year percentage change in population for each year from 2020 through 2024, using 2019 as the starting year.</li>
+          <li><b>Calculate inflation:</b> We calculated the year-over-year percentage change in the South CPI for each year from 2020 through 2024, using 2019 as the starting year.</li>
+        </ul>
+        <h4>Outputs:</h4>
+        <ul>
+          <li><b>Calculate hypothetical property tax levy:</b> We estimated the amount each county could have levied under a population-plus-inflation levy limit. Beginning with the FY2020&ndash;21 actual levy, each subsequent year's hypothetical levy equals the previous year's hypothetical levy multiplied by one plus that year's population growth rate and inflation rate:</li>
+        </ul>
+        <p class="method-formula">(hypothetical levy = previous hypothetical levy &times; (1 + population growth + inflation))</p>
+        <p>Because each year's calculation uses the previous year's hypothetical levy rather than the actual levy, the limit compounds over the five-year period.</p>
+        <ul>
+          <li><b>Compare actual and hypothetical levies:</b> For FY2021&ndash;22 through FY2025&ndash;26, we calculated the cumulative actual levy and cumulative hypothetical levy. We then calculated the dollar difference, percentage difference, and savings rate between the two totals.</li>
+          <li><b>Estimate address-level savings:</b> We multiplied each property's FY2025&ndash;26 county property tax bill by its county's five-year savings rate to estimate how much lower the bill would be if the county's levy had been limited to population growth plus inflation over the previous five years.</li>
+        </ul>
         <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, OSBM certified county population estimates, and BLS South urban CPI.</p>
         <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
       </div>
