@@ -17,8 +17,14 @@ report the county's savings rate instead.
 A further 59 counties publish a site address that no search pattern can match,
 because they pad it with more than one space ("5223␣␣LONE␣EAGLE␣CT"). The tool
 falls back to the statewide NG9-1 address layer and resolves the parcel from the
-point, so the assessed value still comes from one place. See
-`docs/address-search-whitespace.md` for the per-county scan.
+point, so the assessed value still comes from one place.
+
+Nine counties publish a land-use field the residential filter cannot read —
+numeric codes with no legend (Mitchell, Catawba, Transylvania), the county's own
+abbreviations (Nash, Union, Cherokee), or a single label applied to every parcel
+(Duplin, Surry). Those fall back to the improvement figure, or are keyed out by
+FIPS, so the counties stay searchable. See `docs/address-search-whitespace.md`
+for the per-county scans.
 
 Live: https://johnlockefoundation.github.io/property-tax-demo/ (served from `main`, root).
 

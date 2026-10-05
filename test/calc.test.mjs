@@ -494,6 +494,67 @@ test("residential filter keeps usable homes and excludes commercial/non-value", 
   assert.equal(PT.isUsableResidential({ parval: 260653, parusecode: null }), false);
 });
 
+test("a county whose codes cannot be read still yields its houses", () => {
+  // Mitchell writes "561" and Catawba writes "03" with no legend in the layer,
+  // so the label cannot be tested and the improvement figure is the only signal
+  // that a house was built on the parcel. Without this, every address in both
+  // counties was reported as "no matches found".
+  const house = { parval: 77900, improvval: 42700, parusecode: "", parusedesc: "561" };
+  const bareLand = { parval: 8913, improvval: 0, parusecode: "", parusedesc: "500" };
+  assert.deepEqual(PT.keepResidential([house], false), [house], "a house with an improvement");
+  assert.deepEqual(PT.keepResidential([bareLand], false), [], "bare land still rejected");
+  assert.deepEqual(PT.keepResidential([{ ...house, improvval: 0 }], true), [{ ...house, improvval: 0 }],
+    "an exact county route needs no improvement figure");
+});
+
+test("a county's own vocabulary is read, including its abbreviations", () => {
+  // Values captured from the live service.
+  const cases = [
+    ["D-Dwelling", 180000, 120000, true],   // Nash
+    ["V-Vacant", 40000, 0, false],
+    ["C-Commercial", 500000, 400000, false],
+    ["RES", 607800, 0, true],               // Union
+    ["COM", 900000, 0, false],
+    ["Improved", 88820, 62790, true],       // Cherokee
+    ["Vacant", 263180, 163180, false],
+  ];
+  for (const [desc, parval, improvval, expected] of cases) {
+    const p = { parval, improvval, parusecode: "", parusedesc: desc };
+    assert.equal(PT.keepResidential([p], false).length, expected ? 1 : 0,
+      `${desc} ${expected ? "is" : "is not"} a house`);
+  }
+});
+
+test("a land-use label the county applies to every parcel is not a classification", () => {
+  // Duplin writes "VACANT LAND" on all 43,273 of its addressed parcels and Surry
+  // "Vacant" on all 44,417, six-figure houses included. Read as a classification
+  // that constant empties the county, so it must not veto a house. Cherokee, which
+  // really does distinguish "Improved" from "Vacant", is unaffected.
+  const duplin = [
+    { stcntyfips: "37061", parval: 214830, improvval: 208230, parusecode: "", parusedesc: "VACANT LAND" },
+    { stcntyfips: "37061", parval: 135700, improvval: 98000, parusecode: "", parusedesc: "VACANT LAND" },
+  ];
+  assert.deepEqual(PT.keepResidential(duplin, false), duplin, "both are houses");
+  const cherokee = [
+    { parval: 88820, improvval: 62790, parusecode: "", parusedesc: "Improved" },
+    { parval: 263180, improvval: 163180, parusecode: "", parusedesc: "Vacant" },
+  ];
+  assert.deepEqual(PT.keepResidential(cherokee, false), [cherokee[0]], "only the improved one");
+  // A county with no land-use data at all behaves as it always has.
+  const blank = [{ parval: 260020, improvval: 0, parusecode: "", parusedesc: "" }];
+  assert.deepEqual(PT.keepResidential(blank, false), []);
+  assert.deepEqual(PT.keepResidential(blank, true), blank);
+});
+
+test("an apartment block is not an ordinary residence", () => {
+  // Several counties abbreviate it to "APART", which is not the "APARTMENT" a
+  // single home is labelled.
+  const flats = { parval: 27000000, improvval: 22000000, parusecode: "", parusedesc: "APART" };
+  const offices = { parval: 900000, improvval: 800000, parusecode: "", parusedesc: "OFFICES" };
+  assert.deepEqual(PT.keepResidential([flats], false), []);
+  assert.deepEqual(PT.keepResidential([offices], false), []);
+});
+
 test("residential filter accepts counties with varied descriptions", () => {
   const cases = [
     ["SINGLE FAMILY", true],

@@ -237,14 +237,38 @@
   var RESIDENTIAL_DESC = [
     /\bRESID/, /\bFAMILY/, /\bTOWNHOUS/, /\bCONDO/, /\bAPARTMENT/, /\bMULTI-FAMILY/,
     /\bDUPLEX/, /\bTRIPLEX/, /\bMOBILE HOME/, /\bMANUFACTURED HOME/, /\bSINGLE WIDE/,
-    /\bDOUBLE WIDE/, /\bCOTTAGE/, /\bBUNGALOW/, /\bTRAILER/
+    /\bDOUBLE WIDE/, /\bCOTTAGE/, /\bBUNGALOW/, /\bTRAILER/,
+    // Counties that lead the label with their own initial, so "D-Dwelling" and
+    // "RES" have to be read as the house and the vacancy they stand for.
+    /\bD-?DWELLING/, /^RES$/
   ];
+
+  // Wording that identifies a parcel as something other than a house. Only used
+  // to tell "this county's vocabulary is one we know" from "this county writes
+  // codes we cannot interpret" -- isUsableResidential decides what is kept.
+  var NON_RESIDENTIAL_DESC = [
+    /\bVACANT/, /\bAGRICULT/, /\bFARM/, /\bCOMMERCIAL/, /\bCOM\b/, /\bINDUSTR/,
+    /\bEXEMPT/, /\bUTIL/, /\bOTHER\b/, /\bCAMP/, /\bLAND\b/,
+    // "APART" is how several counties abbreviate an apartment block, and it is
+    // not the same thing as the "APARTMENT" a single residence is labelled.
+    /\bAPART\b/, /\bOFFICE/
+  ];
+
+  function readsAsResidential(attrs) {
+    var code = String((attrs && attrs.parusecode) || "").toUpperCase().trim();
+    var desc = String((attrs && attrs.parusedesc) || "").toUpperCase();
+    return code.indexOf("R") === 0 || RESIDENTIAL_DESC.some(function (re) { return re.test(desc); });
+  }
+
+  function readsAsNonResidential(attrs) {
+    var desc = String((attrs && attrs.parusedesc) || "").toUpperCase();
+    if (!desc.trim()) return false;
+    return NON_RESIDENTIAL_DESC.some(function (re) { return re.test(desc); });
+  }
+
   function isUsableResidential(attrs) {
     var v = Number(attrs && attrs.parval);
-    var code = String((attrs && attrs.parusecode) || "").toUpperCase();
-    var desc = String((attrs && attrs.parusedesc) || "").toUpperCase();
-    var residential = code.indexOf("R") === 0 || RESIDENTIAL_DESC.some(function (re) { return re.test(desc); });
-    return isFinite(v) && v > 0 && residential;
+    return isFinite(v) && v > 0 && readsAsResidential(attrs);
   }
 
   // Counties where the state parcel service publishes no site address, so a
@@ -514,15 +538,32 @@
    * is the only test available, so a house with a value and a blank improvement
    * field was being reported as no match.
    */
+  // Counties whose land-use field is a constant rather than a classification.
+  // Duplin writes "VACANT LAND" on all 43,273 of its addressed parcels and Surry
+  // "Vacant" on all 44,417, houses with six-figure improvements included, so the
+  // field distinguishes nothing and cannot be used to reject anything. Reading it
+  // as a classification empties the county: every address in both was reported as
+  // "no matches found". These fall back to the improvement figure like the
+  // counties that publish no land-use data at all. Keyed on FIPS so a rename
+  // cannot silently change it.
+  var UNUSABLE_LAND_USE_FIPS = ["37061", "37171"];   // Duplin, Surry
+
   function keepResidential(feats, exact) {
-    var hasUseData = feats.some(function (a) {
-      return String(a.parusecode || "").trim() || String(a.parusedesc || "").trim();
-    });
-    if (hasUseData) {
-      return feats.filter(isUsableResidential);
-    }
     return feats.filter(function (a) {
-      return Number(a.parval) > 0 && (exact || Number(a.improvval) > 0);
+      if (Number(a.parval) <= 0) return false;
+      var fips = String((a && a.stcntyfips) || "");
+      if (fips && UNUSABLE_LAND_USE_FIPS.indexOf(fips) !== -1) {
+        return exact || Number(a.improvval) > 0;
+      }
+      // A label we can read settles it: a house is kept, anything the lists
+      // identify as commercial, vacant or exempt is not.
+      if (readsAsResidential(a) || readsAsNonResidential(a)) return isUsableResidential(a);
+      // A label we cannot read is the county's, not ours. Mitchell writes "511"
+      // and Catawba writes "03" with no legend anywhere in the layer, so there is
+      // nothing to test the parcel against and the improvement figure is the only
+      // signal left that a house was built on it. A county route is already exact,
+      // so the county having listed the address is enough there.
+      return exact || Number(a.improvval) > 0;
     });
   }
 
@@ -531,6 +572,7 @@
     computeReceipt: computeReceipt,
     buildAddressWhere: buildAddressWhere,
     buildQueryVariants: buildQueryVariants,
+    readsAsResidential: readsAsResidential,
     ADDRESS_NC: ADDRESS_NC,
     ADDRESS_NC_FIELDS: ADDRESS_NC_FIELDS,
     parseAddressParts: parseAddressParts,

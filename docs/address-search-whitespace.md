@@ -302,15 +302,74 @@ The four counties in `NO_PARCEL_ADDRESS_FIPS` are deliberately left out: the
 address layer does hold addresses for them, but printing a receipt there would
 contradict the message the tool already shows them.
 
+## A second, separate bug: land-use codes the filter cannot read
+
+Mitchell is **not** a whitespace county. Its `siteadd` is clean. The problem is
+one layer down, in `keepResidential`: the parcel's land-use label is a bare
+number.
+
+```
+stcntyfips='37121'   parcel 0856-00-20-5318
+  siteadd  = '175 WHITE DOGWOOD LN'     <- no padding, this address matches
+  parval   = 77,900   improvval = 42,700
+  parusecode = ''    parusedesc = '561'
+```
+
+Mitchell publishes **99 distinct numeric land-use codes** and no legend anywhere
+in the layer, so `isUsableResidential` reads `"561"` as neither residential nor
+anything else, keeps nothing, and the tool reports *every* Mitchell address as
+"no residential matches found". `parusecode` is empty for the county, so the
+code test never fires either.
+
+A scan of all 100 counties for "publishes a land-use field the filter cannot
+read" found **9**, and each fails differently:
+
+| County | FIPS | What it publishes | Effect before |
+| --- | --- | --- | --- |
+| Mitchell | 37121 | 99 numeric codes (`511`, `500`, `561`), `parusecode` empty | no address findable |
+| Catawba | 37035 | 86 codes (`03`, `04`, `C301`), no descriptions | no address findable |
+| Transylvania | 37175 | 23 codes (`0100`, `0120`), no descriptions | no address findable |
+| Nash | 37127 | `-Dwelling`, `-Vacant`, `-Agricultural`, `-Commercial` | no address findable |
+| Union | 37179 | `RES`, `FARM`, `COM`, `IND`, `EXEMPT` | no address findable |
+| Cherokee | 37039 | `Vacant`, `Improved` | no address findable |
+| Duplin | 37061 | **`VACANT LAND` on all 43,273** parcels | no address findable |
+| Surry | 37171 | **`Vacant` on all 44,417** parcels | no address findable |
+| Franklin | 37069 | `D`, `V`, `OBY`, `LWMH` | already county-level |
+
+Two distinct failure modes, and the second is the more interesting one:
+
+- **Unreadable vocabulary** (Mitchell, Catawba, Transylvania). Nothing can be
+  tested against the label, so the improvement figure is the only signal left.
+  Same position as the counties that publish no land-use data at all.
+- **A constant masquerading as a classification** (Duplin, Surry). These label
+  **every** parcel `VACANT LAND` / `Vacant`, houses with six-figure improvements
+  included. Treating that as a classification empties the county — which is
+  exactly what happened. A field with one value for every parcel distinguishes
+  nothing and must not veto anything.
+
+Nash, Union and Cherokee read fine once their own wording is added to the
+descriptor lists (`D-Dwelling`, `RES`, `Improved` are houses; `V-Vacant`,
+`COM`, `Vacant` are not). Duplin and Surry are keyed by FIPS in
+`UNUSABLE_LAND_USE_FIPS` rather than by pattern, because the defect is that the
+label is constant, which no per-parcel test can see.
+
+A negative label only counts where the county demonstrably distinguishes between
+uses. Verified after the fix: Mitchell, Duplin, Nash and Catawba each resolve a
+real address to the right parcel, Cherokee's `Improved`/`Vacant` distinction
+still works, and the control counties (Wake, Mecklenburg, Buncombe, New Hanover,
+Durham, Iredell) are unchanged.
+
 ### Still open, and separate
 
 - **Henderson's `parusecode` is a description, not a code.** It holds
-  `RESTAURANTS`, `OFFICES`, `RETAIL BUILDINGS`, and `isUsableResidential` reads
-  any code starting with `R` as residential, so a restaurant passes the filter.
-  This is pre-existing and affects the `siteadd` route identically; it was left
-  alone because the fix needs a survey of which counties' codes are codes, and
-  it changes which parcels every county offers.
+  `RESTAURANTS`, `OFFICES`, `RETAIL BUILDINGS`, and the code test reads any value
+  starting with `R` as residential, so a restaurant passes the filter. Now the
+  only remaining gap in the descriptor lists; it wants `parusedesc` to win over
+  `parusecode` where both are populated, which changes which parcels several
+  counties offer.
 - **`saddno`/`saddstr`/`saddsttyp`** on the parcel layer remain unusable as a
   search source, for the reasons above.
 - **Henderson (37089)** still shows 75,373 "padded" records that are actually
   `'       '` — blank addresses, not a formatting problem. Separate issue.
+- **Franklin (37069)** is doubly broken: its land-use codes are unreadable *and*
+  it is already a county-level county, so nothing reaches the filter.
