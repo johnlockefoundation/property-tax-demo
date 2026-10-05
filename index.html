@@ -178,10 +178,10 @@
       </select>
     </div>
     <div class="search-row">
-      <input id="addrInput" type="text" placeholder="Address, e.g. 1000 E Woodlawn Rd, Charlotte NC" aria-label="Property address" />
-      <button id="searchBtn" type="button">Search</button>
+      <input id="addrInput" type="text" placeholder="Address, e.g. 1000 E Woodlawn Rd, Charlotte NC" aria-label="Property address" disabled />
+      <button id="searchBtn" type="button" disabled>Search</button>
     </div>
-    <p class="hint">Partial addresses are OK. <b>Click or tap your address when it appears.</b> We may not be able to access data on recently built homes.</p>
+    <p class="hint">Choose your county first, then enter your address. Partial addresses are OK. <b>Click or tap your address when it appears.</b> We may not be able to access data on recently built homes.</p>
     <p class="privacy"><strong>We do not collect, store, or share your address in any way.</strong></p>
     <div id="status" role="status"></div>
     <ul class="cands" id="cands"></ul>
@@ -325,9 +325,21 @@ function clearBill() {
   byId("addressBody").classList.add("hidden");
 }
 
+// A county has to be chosen before an address can be entered. The tool used to
+// infer the county from the address itself, but a plain street name is not
+// unique — 25 counties carry a Dandelion Lane and 10 carry an Asher Lane — and a
+// wrong guess would print a receipt at the wrong county's levy rate. Requiring
+// the choice removes that risk, so the address bar stays locked until there is
+// one. The hint under the bar says so.
+function setAddressEnabled(on) {
+  byId("addrInput").disabled = !on;
+  byId("searchBtn").disabled = !on;
+}
+
 function selectCounty(key) {
   SELECTED = key || null;
   COUNTY = key ? BENCHMARKS[key] : null;
+  setAddressEnabled(!!key);
   clearBill();
   showCountyLevel();
 }
@@ -541,6 +553,14 @@ async function inferCountyKey(queries) {
 async function searchAddress(query) {
   const q = (query || "").trim();
   if (!q) { setStatus(""); return; }
+  // The address bar is locked until a county is chosen, but never rely on the
+  // lock alone: Enter in a disabled box still reaches this handler in some
+  // browsers, and searching statewide is how a receipt ends up on the wrong
+  // county's rate.
+  if (!SELECTED || !BENCHMARKS[SELECTED]) {
+    setStatus("Choose your county above before entering an address.");
+    return;
+  }
   byId("searchBtn").disabled = true;
   setStatus("Searching…");
   byId("cands").innerHTML = "";
