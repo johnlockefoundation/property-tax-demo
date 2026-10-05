@@ -359,14 +359,40 @@ real address to the right parcel, Cherokee's `Improved`/`Vacant` distinction
 still works, and the control counties (Wake, Mecklenburg, Buncombe, New Hanover,
 Durham, Iredell) are unchanged.
 
-### Still open, and separate
+## Henderson: the two fields contradict each other
 
-- **Henderson's `parusecode` is a description, not a code.** It holds
-  `RESTAURANTS`, `OFFICES`, `RETAIL BUILDINGS`, and the code test reads any value
-  starting with `R` as residential, so a restaurant passes the filter. Now the
-  only remaining gap in the descriptor lists; it wants `parusedesc` to win over
-  `parusecode` where both are populated, which changes which parcels several
-  counties offer.
+Fixed. Henderson populates `parusecode` **and** `parusedesc`, and they disagree on
+the same row — 366 distinct pairs, including:
+
+| `parusecode` | `parusedesc` | n |
+| --- | --- | ---: |
+| `INDUSTRIAL` | `RES-SINGLE FAMILY` | 4 |
+| `RESTAURANTS` | `RES-SINGLE FAMILY` | 2 |
+| `OFFICES` | `RES-SINGLE FAMILY` | 18 |
+| `GARAGE` | `RES-SINGLE FAMILY` | 20 |
+| `RETAIL BUILDINGS` | `COMMERCIAL` | 321 |
+| `RESTAURANTS` | `COMMERCIAL` | 65 |
+| *(blank)* | `RES-SINGLE FAMILY` | 39,794 |
+
+`parusedesc` is the classification; `parusecode` records what stands on the
+parcel. Reading the code as a code is what let a restaurant through — it starts
+with an `R`.
+
+Two rules now:
+
+- **A populated description decides.** The code is only read when the description
+  is blank, and then it is read as a *label* rather than a code, so `RESTAURANTS`
+  is a restaurant rather than an `R`.
+- **A commercial prefix outranks the word inside it.** `COMM-CONDO` and
+  `APT-CONDO` contain `CONDO`, which is how a house is labelled; the prefix wins.
+
+Henderson's own vocabulary is in the lists: `RES-` prefixed labels and the
+abbreviated manufactured-home wording are houses, and `COMM-`, `VACANT LAND`,
+`RELIGIOUS`, `GOVERNMENTAL`, `MEDICAL`, `CEMETERY`, `AGRICULTURE-HORTICUL`,
+`UTILITIES`, `PARKING LOT`, `CAMPS` are not. Verified against every class the
+county publishes.
+
+### Still open, and separate
 - **`saddno`/`saddstr`/`saddsttyp`** on the parcel layer remain unusable as a
   search source, for the reasons above.
 - **Henderson (37089)** still shows 75,373 "padded" records that are actually

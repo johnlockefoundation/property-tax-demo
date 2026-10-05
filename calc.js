@@ -240,7 +240,11 @@
     /\bDOUBLE WIDE/, /\bCOTTAGE/, /\bBUNGALOW/, /\bTRAILER/,
     // Counties that lead the label with their own initial, so "D-Dwelling" and
     // "RES" have to be read as the house and the vacancy they stand for.
-    /\bD-?DWELLING/, /^RES$/
+    /\bD-?DWELLING/, /^RES$/,
+    // Henderson writes its own prefix on both sides of a hyphen: "RES-CONDO" and
+    // "RES-MODULAR" are houses, "COMM-CONDO" and "COMM-LI" are not. The
+    // manufactured-home wording there is abbreviated to "MANF"/"MANU" too.
+    /^RES-/, /\bMAN[FU] HOME/, /\bPERSONAL PROPERTY MH\b/, /\bMODULAR/, /\bLEASEHOLD/, /\bMULTI RE\b/
   ];
 
   // Wording that identifies a parcel as something other than a house. Only used
@@ -251,19 +255,46 @@
     /\bEXEMPT/, /\bUTIL/, /\bOTHER\b/, /\bCAMP/, /\bLAND\b/,
     // "APART" is how several counties abbreviate an apartment block, and it is
     // not the same thing as the "APARTMENT" a single residence is labelled.
-    /\bAPART\b/, /\bOFFICE/
+    /\bAPART\b/, /\bOFFICE/,
+    /^COMM-/, /^APT-/, /\bRELIGIOUS/, /\bGOVERNMENT/, /\bCEMETERY/, /\bPARKING\b/,
+    /\bSOLAR FARM/, /\bSOLAR\b/, /\bCONSERVATION\b/, /\bFIRE DEPT\b/,
+    /\bEDUCATIONAL/, /\bHOSPITAL/, /\bMEDICAL\b/, /\bBANK/, /\bHOTEL\b/, /\bMOTEL\b/,
+    /\bWAREHOUSE/, /\bRESTAURANT/, /\bRETAIL\b/, /\bSTRIP\b/, /\bSUPERMARKET/,
+    /\bGROCERY/, /\bCONVENIENCE/, /\bGOLF\b/, /\bTRAILER PARK/, /\bKENNEL/,
+    /\bRESTAURANT\b/, /\bRETAIL\b/, /\bSHOPPING/, /\bMARKET/, /\bAUTOMOTIVE/,
+    /\bLOW INCOME\b/, /\bFAST FOOD\b/, /\bAUTO DEALER/, /\bPACKING HOUSE/, /\bLUMBER\b/,
+    /\bGARAGE/, /\bWINERY/, /\bLODGING/, /\bWAREHOUSE/
   ];
 
   function readsAsResidential(attrs) {
-    var code = String((attrs && attrs.parusecode) || "").toUpperCase().trim();
+    // Where a county populates both fields they can contradict each other, and
+    // Henderson's `parusecode` is the odd one out: it pairs "INDUSTRIAL" and
+    // "RESTAURANTS" with "RES-SINGLE FAMILY", so it records what is on the parcel
+    // rather than what the parcel is. `parusedesc` is the classification, so a
+    // description that says anything at all settles it and the code is only read
+    // when the county leaves the description blank.
     var desc = String((attrs && attrs.parusedesc) || "").toUpperCase();
-    return code.indexOf("R") === 0 || RESIDENTIAL_DESC.some(function (re) { return re.test(desc); });
+    if (desc.trim()) {
+      // A commercial or affordable-housing prefix outranks whatever the rest of
+      // the label says, or "COMM-CONDO" would be read as a house on the strength
+      // of the CONDO in it.
+      if (/^(COMM|APT)-|^LOW INCOME\b/.test(desc)) return false;
+      return RESIDENTIAL_DESC.some(function (re) { return re.test(desc); });
+    }
+    var code = String((attrs && attrs.parusecode) || "").toUpperCase().trim();
+    // The code is read as a label, not as a code, so a word that happens to start
+    // with R ("RESTAURANTS", "RETAIL BUILDINGS") is not a house.
+    return code.indexOf("R") === 0 && !NON_RESIDENTIAL_DESC.some(function (re) { return re.test(code); });
   }
 
   function readsAsNonResidential(attrs) {
-    var desc = String((attrs && attrs.parusedesc) || "").toUpperCase();
-    if (!desc.trim()) return false;
-    return NON_RESIDENTIAL_DESC.some(function (re) { return re.test(desc); });
+    // Same vocabulary, whichever field the county put it in: Henderson's
+    // parusecode carries "RESTAURANTS", "RETAIL BUILDINGS" and "OFFICES", so a
+    // parcel with a blank description is still readable.
+    var desc = String((attrs && attrs.parusedesc) || "").toUpperCase().trim();
+    if (desc) return NON_RESIDENTIAL_DESC.some(function (re) { return re.test(desc); });
+    var code = String((attrs && attrs.parusecode) || "").toUpperCase().trim();
+    return !!code && NON_RESIDENTIAL_DESC.some(function (re) { return re.test(code); });
   }
 
   function isUsableResidential(attrs) {

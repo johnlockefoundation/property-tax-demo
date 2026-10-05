@@ -546,6 +546,51 @@ test("a land-use label the county applies to every parcel is not a classificatio
   assert.deepEqual(PT.keepResidential(blank, true), blank);
 });
 
+test("a description the county wrote settles the parcel, whatever the code says", () => {
+  // Henderson populates both fields and they contradict each other: its
+  // parusecode pairs "INDUSTRIAL", "RESTAURANTS" and "OFFICES" with
+  // "RES-SINGLE FAMILY" on the same row. The description is the classification
+  // and the code records what stands on the parcel, so the description decides
+  // and the code is only read when the description is blank.
+  const house = { stcntyfips: "37089", parval: 386300, improvval: 300000, parusecode: "OFFICES", parusedesc: "RES-TOWNHOUSE" };
+  assert.deepEqual(PT.keepResidential([house], false), [house], "the code does not veto the description");
+  // A restaurant has a description that says so.
+  const shop = { stcntyfips: "37089", parval: 260000, improvval: 250000, parusecode: "RESTAURANTS", parusedesc: "COMMERCIAL" };
+  assert.deepEqual(PT.keepResidential([shop], false), [], "rejected on the description, not the R");
+  // With no description the code is all there is, and it is still not a code.
+  assert.deepEqual(PT.keepResidential([{ ...shop, parusedesc: "" }], false), [],
+    "a description-less parcel falls back to the improvement figure, not to an R");
+});
+
+test("Henderson's own residential and commercial wording is read", () => {
+  // Values captured from the live service.
+  const houses = ["RES-SINGLE FAMILY", "RES-CONDO", "RES-TOWNHOUSE", "RES-DUPLEX", "RES-MODULAR",
+                  "RES-MULTI RE", "RES-LEASEHOLD", "RES-TRIPLEX", "REAL PROP MANF HOME",
+                  "PERSONAL PROPERTY MH", "MANU HOME PARK"];
+  for (const desc of houses) {
+    const p = { stcntyfips: "37089", parval: 200000, improvval: 150000, parusecode: "", parusedesc: desc };
+    assert.deepEqual(PT.keepResidential([p], false), [p], `${desc} is a house`);
+  }
+  const notHouses = ["VACANT LAND", "COMM VACANT LAND", "IND VACANT LAND", "COMMERCIAL", "RELIGIOUS",
+                     "GOVERNMENTAL", "INDUSTRIAL", "COMM-CONDO", "APT-CONDO", "MEDICAL", "CEMETERY",
+                     "AGRICULTURE-HORTICUL", "UTILITIES", "PARKING LOT", "CAMPS", "LOW INCOME APARTMENT"];
+  for (const desc of notHouses) {
+    const p = { stcntyfips: "37089", parval: 200000, improvval: 150000, parusecode: "", parusedesc: desc };
+    assert.deepEqual(PT.keepResidential([p], false), [], `${desc} is not a house`);
+  }
+});
+
+test("a commercial prefix outranks the residential word inside it", () => {
+  // "COMM-CONDO" and "APT-CONDO" contain CONDO, which is how a house is labelled.
+  for (const desc of ["COMM-CONDO", "APT-CONDO", "COMM-LI"]) {
+    const p = { stcntyfips: "37089", parval: 200000, improvval: 150000, parusecode: "", parusedesc: desc };
+    assert.deepEqual(PT.keepResidential([p], false), [], desc);
+  }
+  // And a plain residential condo is still a house.
+  const own = { stcntyfips: "37089", parval: 200000, improvval: 150000, parusecode: "", parusedesc: "RES-CONDO" };
+  assert.deepEqual(PT.keepResidential([own], false), [own]);
+});
+
 test("an apartment block is not an ordinary residence", () => {
   // Several counties abbreviate it to "APART", which is not the "APARTMENT" a
   // single home is labelled.
