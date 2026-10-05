@@ -211,6 +211,138 @@ test("a doubled-up spelling does not produce a repeated token", () => {
 });
 
 /* --------------------------------------------------------------------------
+ * Counties whose site address is padded. 59 of them write `siteadd` with a run
+ * of two or more spaces, which no LIKE pattern built from single-spaced input
+ * can match, so the address is looked up in the statewide NG9-1 layer instead and
+ * the parcel found from its point. docs/address-search-whitespace.md has the
+ * per-county scan.
+ * ------------------------------------------------------------------------ */
+
+const nh = (q, fips = "37129") => PT.buildAddressNcQueries(PT.parseAddressParts(q), fips);
+
+test("the reported address parses into the parts the address layer stores", () => {
+  // "5223  LONE  EAGLE  CT" is New Hanover's siteadd; typed with any suffix
+  // spelling it still has to come out as house number 5223 and the street name.
+  for (const typed of ["5223 Lone Eagle Lane", "5223 Lone Eagle Ln", "5223 Lone Eagle Ct",
+                       "5223  LONE  EAGLE  CT", "5223 LONE EAGLE COURT, Wilmington NC 28409"]) {
+    const p = PT.parseAddressParts(typed);
+    assert.deepEqual(p, { number: "5223", digits: "5223", predir: null, name: "LONE EAGLE" }, typed);
+  }
+  assert.deepEqual(nh("5223 Lone Eagle Lane"),
+    ["countyfips='129' AND add_number='5223' AND UPPER(st_name) LIKE UPPER('%LONE EAGLE%')"]);
+});
+
+test("an address with no house number or no street name cannot use this route", () => {
+  // The layer matches the number exactly and the name as a substring, so either
+  // one missing would be an unconstrained scan. The `siteadd` ladder is what
+  // serves partial addresses.
+  for (const typed of ["1000", "Lone Eagle", "Main", "O'Brien Rd", "", "   ", "***", null]) {
+    assert.equal(PT.parseAddressParts(typed), null, String(typed));
+    assert.deepEqual(PT.buildAddressNcQueries(PT.parseAddressParts(typed), "37129"), [], String(typed));
+  }
+});
+
+test("a query is scoped to the county, and a statewide search is left unscoped", () => {
+  assert.ok(nh("5223 Lone Eagle Ln").every((w) => w.startsWith("countyfips='129' AND ")));
+  // AddressNC keys the county on three digits.
+  assert.ok(nh("36 Asher Ln", "37021").every((w) => w.startsWith("countyfips='021' AND ")));
+  assert.ok(PT.buildAddressNcQueries(PT.parseAddressParts("5223 Lone Eagle Ln")).every((w) => !w.includes("countyfips")));
+  assert.ok(PT.buildAddressNcQueries(null, "37129").length === 0, "nothing parsed, nothing to ask");
+});
+
+test("the pre-direction is asked for in both spellings, then dropped", () => {
+  // Mecklenburg writes EAST where New Hanover leaves the field blank, so an exact
+  // match on one spelling would miss the other.
+  const rungs = nh("1000 E Woodlawn Rd", "37119");
+  assert.deepEqual(rungs, [
+    "countyfips='119' AND add_number='1000' AND st_predir IN ('E','EAST') AND UPPER(st_name) = UPPER('WOODLAWN')",
+    "countyfips='119' AND add_number='1000' AND st_predir IN ('E','EAST') AND UPPER(st_name) LIKE UPPER('%WOODLAWN%')",
+    "countyfips='119' AND add_number='1000' AND UPPER(st_name) LIKE UPPER('%WOODLAWN%')",
+  ]);
+  // Narrowest first: the exact street name is asked for before the substring.
+  assert.ok(rungs[0].includes("= UPPER('WOODLAWN')"));
+  assert.ok(rungs.at(-1).includes("LIKE UPPER('%WOODLAWN%')"));
+});
+
+test("a street named after a direction or a type is asked for by name, spelled out", () => {
+  // New Hanover's "3811 NORTHEAST AVE" is Northeast Avenue, and Chatham's
+  // "111 LANE ST" is Lane Street. Searching the abbreviation as a pre-direction,
+  // or stripping the type off the front of the name, would look for a street
+  // called "AVE" or "LN".
+  for (const typed of ["3811 Northeast Ave", "3811 Northeast"]) {
+    assert.deepEqual(PT.parseAddressParts(typed),
+      { number: "3811", digits: "3811", predir: null, name: "NORTHEAST" }, typed);
+  }
+  assert.deepEqual(PT.parseAddressParts("111 Lane St"),
+    { number: "111", digits: "111", predir: null, name: "LANE" });
+  // "N Ave" is not knowable: N could be any of the four quadrants, so it is
+  // asked for as typed rather than guessed at.
+  assert.deepEqual(PT.parseAddressParts("3811 N Ave"),
+    { number: "3811", digits: "3811", predir: null, name: "NORTH" });
+  // An ordinary street keeps its pre-direction and its name folded.
+  assert.deepEqual(PT.parseAddressParts("12 N Main St"),
+    { number: "12", digits: "12", predir: "N", name: "MAIN" });
+  assert.deepEqual(PT.parseAddressParts("1000 E Woodlawn Rd"),
+    { number: "1000", digits: "1000", predir: "E", name: "WOODLAWN" });
+  // A name that merely ends in a folded word keeps the fold, since the layer
+  // holds "FOX WOOD" rather than a spelled-out variant of it.
+  assert.deepEqual(PT.parseAddressParts("70 Fox Wood Ln"),
+    { number: "70", digits: "70", predir: null, name: "FOX WOOD" });
+});
+
+test("a letter on the house number gets a looser rung, after the exact one", () => {
+  const rungs = nh("123A Oak St", null);
+  assert.deepEqual(rungs, [
+    "add_number='123A' AND UPPER(st_name) LIKE UPPER('%OAK%')",
+    "add_number LIKE '123%' AND UPPER(st_name) = UPPER('OAK')",
+    "add_number LIKE '123%' AND UPPER(st_name) LIKE UPPER('%OAK%')",
+  ]);
+  // A plain number needs no looser rung, so the ladder stays short.
+  assert.equal(nh("5223 Lone Eagle Ln").length, 1);
+});
+
+test("patterns are upper-cased and quotes doubled", () => {
+  // This layer's LIKE is case-sensitive even through UPPER(), and a quote in a
+  // street name must not be able to end the literal.
+  const w = nh("5223 Lone Eagle Ln").at(-1);
+  assert.ok(w.includes("UPPER('%LONE EAGLE%')"), w);
+  const quoted = nh("123 O'Brien Rd", null);
+  assert.ok(quoted.every((q) => !q.includes("O'Brien'")), "quotes are doubled");
+  assert.ok(quoted.every((q) => (q.match(/'/g) || []).length % 2 === 0), quoted.join(" | "));
+});
+
+test("the street type is never filtered on, because counties disagree about it", () => {
+  // The same address is CT in New Hanover's siteadd and COURT in the address
+  // layer, so a query that asked for the typed type would miss it.
+  for (const typed of ["5223 Lone Eagle Ct", "5223 Lone Eagle Lane", "5223 Lone Eagle Court"]) {
+    assert.deepEqual(nh(typed), nh("5223 Lone Eagle Ln"), typed);
+  }
+});
+
+test("the layer is queried for fields the point resolution needs", () => {
+  assert.equal(PT.ADDRESS_NC, "https://services.nconemap.gov/secure/rest/services/AddressNC/NC1Map_Addresses/MapServer/0/query");
+  const fields = PT.ADDRESS_NC_FIELDS.split(",");
+  for (const f of ["add_number", "st_name", "countyfips", "long", "lat"]) {
+    assert.ok(fields.includes(f), `${f} is requested`);
+  }
+});
+
+test("the counties that report a county-level rate stay out of the parcel route", () => {
+  // The address layer does hold addresses for all four, but printing a receipt
+  // there would contradict the message the tool already shows them.
+  for (const slug of ["franklin", "hoke", "perquimans", "richmond"]) {
+    assert.equal(PT.hasParcelAddress(BENCHMARKS[slug]), false, slug);
+  }
+  assert.equal(PT.hasParcelAddress(BENCHMARKS["new-hanover"]), true, "New Hanover is served per parcel");
+});
+
+test("COURT folds to CT, which is how the parcel layer writes it", () => {
+  assert.equal(first("5223 Lone Eagle Court"), "5223 LONE EAGLE CT");
+  // ...and dropping the type still reaches a county that pads the street name.
+  assert.ok(PT.buildQueryVariants("5223 Lone Eagle Ct").includes("5223 LONE EAGLE"));
+});
+
+/* --------------------------------------------------------------------------
  * Counties with no site address in the state parcel service. They cannot be
  * matched to a parcel, so no receipt is printed, but the county-level
  * savings rate is published for every county and is still reported.

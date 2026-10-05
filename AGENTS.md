@@ -14,6 +14,12 @@ value still comes from one place; the per-county sources live in `calc.js`. The 
 four (Franklin, Hoke, Perquimans, Richmond) have no address the tool can rely on and
 report the county's savings rate instead.
 
+A further 59 counties publish a site address that no search pattern can match,
+because they pad it with more than one space ("5223␣␣LONE␣EAGLE␣CT"). The tool
+falls back to the statewide NG9-1 address layer and resolves the parcel from the
+point, so the assessed value still comes from one place. See
+`docs/address-search-whitespace.md` for the per-county scan.
+
 Live: https://johnlockefoundation.github.io/property-tax-demo/ (served from `main`, root).
 
 ## Layout

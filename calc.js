@@ -60,7 +60,7 @@
   // nothing that worked before stops working.
   var SUFFIXES = {
     ALLEY: "ALY", AVENUE: "AVE", BOULEVARD: "BLVD", BYPASS: "BYP", CIRCLE: "CIR",
-    CORNER: "COR", CROSSING: "XING", DRIVE: "DR", ESTATE: "EST", EXPRESSWAY: "EXPY",
+    CORNER: "COR", COURT: "CT", CROSSING: "XING", DRIVE: "DR", ESTATE: "EST", EXPRESSWAY: "EXPY",
     EXTENSION: "EXT", FREEWAY: "FWY", GARDEN: "GDN", GREEN: "GRN", GROVE: "GRV",
     HEIGHTS: "HTS", HIGHWAY: "HWY", HOLLOW: "HLLW", ISLAND: "IS", JUNCTION: "JCT",
     LAKE: "LK", LANDING: "LNDG", LANE: "LN", LOOP: "LOOP", MEADOWS: "MDWS",
@@ -380,6 +380,126 @@
     add([text]);
     return out;
   }
+
+  // ---- the statewide NG9-1 address layer -------------------------------------
+  //
+  // `siteadd` is one free-text field, and 59 counties pad it with a run of two or
+  // more spaces -- New Hanover writes "5223␣␣LONE␣EAGLE␣CT" -- which no LIKE
+  // pattern built from single-spaced input can match, because a pattern cannot
+  // reach across a wider gap. ArcGIS refuses REPLACE() and TRIM() in a where
+  // clause, so the gap cannot be closed in the query either.
+  //
+  // AddressNC holds the same addresses as separate, whitespace-free fields, so
+  // the address is matched there and the parcel is then found by point-in-polygon
+  // against the parcel polygons. docs/address-search-whitespace.md has the
+  // per-county scan. This route is only reached once the `siteadd` ladder has
+  // missed, so nothing that answers today changes path, and `siteadd` remains the
+  // address shown on the receipt.
+  var ADDRESS_NC_FIELDS = "add_number,st_predir,st_name,countyfips,long,lat";
+
+  // The layer's LIKE is case-sensitive even through UPPER() -- 'LONE EAGLE'
+  // matches, 'lone eagle' does not -- so every pattern it is given is upper-cased.
+  // Single quotes are doubled, so a name containing one cannot end the literal.
+  function upperLiteral(value) {
+    return String(value == null ? "" : value).toUpperCase().replace(/'/g, "''");
+  }
+
+  // The pre-direction as the layer may spell it. Counties disagree: Mecklenburg
+  // writes EAST where New Hanover leaves the field blank, so both are asked for.
+  function predirSpellings(token) {
+    var short = upperLiteral(token);
+    var long = LONG_DIRECTION[token];
+    return long ? [short, upperLiteral(long)] : [short];
+  }
+
+  /**
+   * Split a typed street line into the parts the address layer holds separately.
+   *
+   * `add_number` is matched exactly and `st_name` as a substring, so a query
+   * missing either one is either meaningless or an unconstrained scan: nothing is
+   * returned unless a house number and a street name both survive. The street type
+   * is taken off the end because the layer keeps it in its own field, and the
+   * house number is returned with its leading digits alone so a letter suffix can
+   * be absorbed by a looser rung.
+   */
+  function parseAddressParts(raw) {
+    var text = String(raw == null ? "" : raw).replace(/\s+/g, " ").trim();
+    if (!text) return null;
+
+    var tokens = dropUnitTail(tokenize(streetLine(text)));
+    if (tokens.length < 2) return null;
+    var number = tokens[0];
+    if (!/^\d+[A-Z-]*$/.test(number)) return null;
+
+    var rest = tokens.slice(1);
+    var predir = rest.length > 1 && DIRECTIONS[rest[0]] ? rest[0] : null;
+    if (predir) rest = rest.slice(1);
+    // The street type only comes off a name with something in front of it, and
+    // what is left alone is spelled out, because a street can be named after a
+    // word the abbreviation table folds and the address layer stores the name
+    // spelled out: New Hanover's "3811 NORTHEAST AVE" is Northeast Avenue, and
+    // Chatham's "111 LANE ST" is Lane Street.
+    if (predir && rest.length === 1 && SUFFIX_LOOKUP[rest[0]]) {
+      rest = [LONG_DIRECTION[predir]];
+      predir = null;
+    }
+    if (rest.length > 1 && SUFFIX_LOOKUP[rest[rest.length - 1]]) rest = rest.slice(0, -1);
+    if (rest.length === 1) rest = [spellOut(rest)[0]];
+    if (!rest.length) return null;
+
+    return {
+      number: number,
+      digits: number.match(/^\d+/)[0],
+      predir: predir,
+      name: rest.join(" ")
+    };
+  }
+
+  /**
+   * The rungs to try against the address layer, narrowest first: the street name
+   * as stored, then as a substring, then without the pre-direction, then with the
+   * house number matched loosely enough to absorb a letter suffix.
+   *
+   * Nothing filters on the street type, because the counties disagree about it as
+   * well -- the same address is CT in `siteadd` and COURT in the address layer --
+   * and a house number plus a street name is narrow enough that the candidate list
+   * can separate one answer from another. `countyFips` is the five-digit code, or
+   * nothing to search statewide.
+   */
+  function buildAddressNcQueries(parts, countyFips) {
+    if (!parts) return [];
+    var scope = countyFips
+      ? "countyfips='" + upperLiteral(String(countyFips).slice(2)) + "' AND "
+      : "";
+    var numberEq = "add_number='" + upperLiteral(parts.number) + "'";
+    var numberLike = "add_number LIKE '" + upperLiteral(parts.digits) + "%'";
+    var nameEq = "UPPER(st_name) = UPPER('" + upperLiteral(parts.name) + "')";
+    var nameLike = "UPPER(st_name) LIKE UPPER('%" + upperLiteral(parts.name) + "%')";
+    var dir = parts.predir
+      ? "st_predir IN (" + predirSpellings(parts.predir).map(function (d) {
+          return "'" + d + "'";
+        }).join(",") + ") AND "
+      : "";
+
+    var queries = [];
+    var seen = {};
+    var add = function (sql) {
+      if (seen[sql]) return;
+      seen[sql] = true;
+      queries.push(scope + sql);
+    };
+    if (dir) {
+      add(numberEq + " AND " + dir + nameEq);
+      add(numberEq + " AND " + dir + nameLike);
+    }
+    add(numberEq + " AND " + nameLike);
+    if (parts.digits !== parts.number) {
+      add(numberLike + " AND " + nameEq);
+      add(numberLike + " AND " + nameLike);
+    }
+    return queries;
+  }
+
   /**
    * The residential filter.
    *
@@ -411,6 +531,10 @@
     computeReceipt: computeReceipt,
     buildAddressWhere: buildAddressWhere,
     buildQueryVariants: buildQueryVariants,
+    ADDRESS_NC: ADDRESS_NC,
+    ADDRESS_NC_FIELDS: ADDRESS_NC_FIELDS,
+    parseAddressParts: parseAddressParts,
+    buildAddressNcQueries: buildAddressNcQueries,
     isUsableResidential: isUsableResidential,
     keepResidential: keepResidential,
     hasParcelAddress: hasParcelAddress,

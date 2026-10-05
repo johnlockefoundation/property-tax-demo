@@ -61,8 +61,18 @@ school, and special district taxes are out of scope.
     <tr><td>FY2025&#8211;26 taxable base <code>x</code></td><td>NCDOR LG04 (total assessed valuation)</td><td>Scaled &#8220;what you paid&#8221;</td></tr>
     <tr><td>5-year savings rate <code>s</code></td><td>Derived; column Q of <code>Data(tax).csv</code></td><td>Percent lower on the receipt</td></tr>
     <tr><td>Parcel assessed value <code>V</code></td><td>NC OneMap parcel point service</td><td>Per-property bill</td></tr>
+    <tr><td>Address point, where the parcel&#8217;s own address cannot be searched</td><td>AddressNC, the statewide NG&#8239;9-1 address file</td><td>Finding the parcel</td></tr>
   </tbody>
 </table>
+<p>
+The parcel is found by matching the typed address against the parcel record&#8217;s own address field. Fifty-nine
+counties write that field with a run of two or more spaces inside the address &mdash; New Hanover writes
+<code>5223&#8195;LONE&#8195;EAGLE&#8195;CT</code> &mdash; and a search pattern built from single-spaced input
+cannot reach across a wider gap, so for those counties the address is matched in the NG&#8239;9-1 file instead,
+whose fields are clean, and the parcel is the one whose polygon contains that point. The point is only ever a
+way to identify the parcel: <code>V</code> and every other figure on the receipt still come from the one parcel
+record in the parcel layer, and the address shown is still the parcel&#8217;s own.
+</p>
 
 <h2>3. Benchmark construction (research methodology)</h2>
 <p>
@@ -128,6 +138,9 @@ have saved anything&#8221;) instead of a receipt. As of this version the flagged
   <li><b>Parcel values.</b> NC OneMap parcel data is a live snapshot and may predate the 2025 tax year.
   The county levy and rate figures are the official FY2025&#8211;26 records.</li>
   <li><b>Residential only.</b> Relief/exemption cases and non-residential parcels are out of scope.</li>
+  <li><b>Ambiguous addresses.</b> Where an address point falls on a shared boundary or inside a condominium
+  stack, or where a county&#8217;s address file lists the same point for several units, no single parcel can be
+  identified and the tool offers the candidate list rather than guessing.</li>
   <li><b>Build inputs.</b> <code>Data(tax).csv</code>, the LG04 valuation, and the FIPS map are vendored
   under <code>data/source/</code> in this repository; <code>node tools/build_benchmarks.mjs</code>
   regenerates <code>data/benchmarks.json</code>.</li>

@@ -267,8 +267,10 @@
         <dl>
           <dt>Why one year, not the five-year sum</dt>
           <dd>The savings rate above is measured across five years, but your receipt is a single year. A parcel's assessment can shift relative to the county tax base over time, so adding up five years would assume a fixed share of a bill you never paid. FY2025&ndash;26 is compared on the current assessment.</dd>
-          <dt>Property value</dt>
+<dt>Property value</dt>
           <dd>Your receipt uses the parcel's current assessed value from NC OneMap. Reassessment timing is not modeled: where a county has revalued since the base year, the figure moves with the county's newer assessment.</dd>
+          <dt>Finding your parcel</dt>
+          <dd>We match what you type against the address stored on the parcel record. Fifty-nine counties store that address with extra spaces in it, which no search can match, so in those counties we look the address up in the state's NG 9-1 address file instead and take the parcel that sits at that point. Either way the value, and the address printed on your receipt, come from the one parcel record.</dd>
         </dl>
         <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, OSBM certified county population estimates, and BLS South urban CPI.</p>
         <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
@@ -394,6 +396,72 @@ async function fetchAddressFeatures(queries, cntyfips) {
   return [];
 }
 
+// ---- counties whose site address cannot be matched by pattern ---------------
+//
+// 59 counties pad `siteadd` with a run of two or more spaces — New Hanover writes
+// "5223␣␣LONE␣EAGLE␣CT" — so no LIKE pattern built from single-spaced input can
+// reach them and an address that plainly exists is reported as no match. The
+// state parcel service refuses REPLACE() and TRIM() in a where clause, so the gap
+// cannot be closed in the query either. The statewide NG9-1 address layer holds
+// the same addresses in separate, whitespace-free fields, so the address is
+// matched there and the parcel is then found by point-in-polygon. The value still
+// comes from the parcel layer, and `siteadd` still supplies the address displayed.
+// docs/address-search-whitespace.md has the per-county scan.
+
+// Its coordinates are in the state plane, the same reference the Avery route
+// already resolves a parcel with.
+const ADDRESS_NC_POINT = { lon: "long", lat: "lat", srs: 102719 };
+// A condominium stack lists one address row per unit, all at the same point, so
+// distinct points are counted rather than rows.
+const MAX_NG91_POINTS = 6;
+
+function countyKeyFromFips(fips) {
+  const sfips = String(fips || "");
+  for (const k in BENCHMARKS) if (BENCHMARKS[k].fips === sfips) return k;
+  return null;
+}
+
+// The counties that report a county-level figure instead of a parcel keep doing
+// so: the address layer does hold addresses for them, but printing a receipt
+// there would contradict the message the tool already shows them.
+function servesParcels(fips) {
+  return PT.hasParcelAddress({ fips: String(fips || "") });
+}
+
+// `fips` scopes the search to one county; without it the same-named street comes
+// back from every county that has one, and each point is resolved in its own.
+async function resolveAddressNc(fips, raw) {
+  const parts = PT.parseAddressParts(raw);
+  if (!parts) return [];
+  for (const where of PT.buildAddressNcQueries(parts, fips)) {
+    const body = new URLSearchParams();
+    body.append("where", where);
+    body.append("outFields", PT.ADDRESS_NC_FIELDS);
+    body.append("f", "pjson");
+    body.append("returnGeometry", "false");
+    body.append("resultRecordCount", "40");
+    body.append("orderByFields", "countyfips");
+    const rows = await postForm(PT.ADDRESS_NC, body.toString());
+
+    const seen = {};
+    const found = [];
+    for (const row of rows) {
+      const countyFips = "37" + String(row.countyfips || "");
+      if (!servesParcels(countyFips)) continue;
+      const x = Number(row.long), y = Number(row.lat);
+      const point = `${x},${y}`;
+      if (!isFinite(x) || !isFinite(y) || seen[point]) continue;
+      seen[point] = true;
+      found.push(...await parcelAtPoint(countyFips, row, ADDRESS_NC_POINT));
+      // One parcel answers the question; the rest of the points are only worth
+      // asking when that one did not fall inside a single parcel.
+      if (found.length || Object.keys(seen).length >= MAX_NG91_POINTS) break;
+    }
+    if (found.length) return found;
+  }
+  return [];
+}
+
 // ---- counties the statewide layer cannot search -----------------------------
 //
 // Nine counties publish no site address in the statewide parcel layer, so a
@@ -464,10 +532,8 @@ async function resolveCountyParcel(source, fips, variants) {
 async function inferCountyKey(queries) {
   const feats = await fetchAddressFeatures(queries, null);
   for (const f of feats) {
-    const sfips = String(f.stcntyfips || "");
-    for (const k in BENCHMARKS) {
-      if (BENCHMARKS[k].fips === sfips) return k;
-    }
+    const key = countyKeyFromFips(f.stcntyfips);
+    if (key) return key;
   }
   return null;
 }
@@ -484,22 +550,36 @@ async function searchAddress(query) {
     const variants = PT.buildQueryVariants(q);
     if (!variants.length) { setStatus(""); return; }
 
+    let feats = null;
     let key = SELECTED && BENCHMARKS[SELECTED] ? SELECTED : null;
     if (!key) {
       key = await inferCountyKey(variants);
+      // A county that pads `siteadd` cannot be inferred from `siteadd`, so when
+      // that search finds nothing the statewide address layer is asked for the
+      // address itself, which also says which county it is in.
+      if (!key) feats = await resolveAddressNc(null, q);
+      if (!key && feats.length) {
+        key = countyKeyFromFips(feats[0].stcntyfips);
+        if (key) {
+          byId("countySelect").value = key;
+          selectCounty(key);
+        }
+      }
       if (!key) { setStatus("No residential matches found. Try a street name or house number, or choose your county above."); return; }
-      byId("countySelect").value = key;
-      selectCounty(key);
     }
 
     const fips = BENCHMARKS[key].fips;
     const source = PT.parcelSource(fips);
     // A county the statewide layer cannot search answers from its own service,
     // and needs the raw query because the ladder is built for that county's own
-    // spelling of a street.
-    const feats = source
-      ? await resolveCountyParcel(source, fips, PT.buildCountyVariants(q, source.spelling === "long"))
-      : await fetchAddressFeatures(variants, fips);
+    // spelling of a street. Where the parcel layer does publish an address but
+    // pads it, the address layer is the second try.
+    if (!feats) {
+      feats = source
+        ? await resolveCountyParcel(source, fips, PT.buildCountyVariants(q, source.spelling === "long"))
+        : await fetchAddressFeatures(variants, fips);
+      if (!feats.length && !source) feats = await resolveAddressNc(fips, q);
+    }
     if (feats.length === 0) { setStatus(""); byId("nores").classList.remove("hidden"); return; }
     renderCandidates(feats);
     setStatus(feats.length + " residential match" + (feats.length > 1 ? "es" : "") + (feats.length > 8 ? " (showing first 8)." : "."));

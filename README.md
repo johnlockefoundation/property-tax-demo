@@ -75,8 +75,8 @@ node --test test/calc.test.mjs
 
 Tests cover the receipt arithmetic, address/residential filtering, column-Q wiring for
 all 100 counties, the two at/below-benchmark counties, the per-county address sources
-used for the counties the statewide parcel layer cannot search, and build
-reproducibility.
+used for the counties the statewide parcel layer cannot search, the statewide address
+lookup used for the counties that pad `siteadd`, and build reproducibility.
 
 ## Local preview
 
