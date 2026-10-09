@@ -13,7 +13,7 @@ const PT = (await import(path.join(__dirname, "..", "calc.js"))).default;
 const BENCHMARKS = JSON.parse(
   readFileSync(path.join(__dirname, "..", "data", "benchmarks.json"), "utf8")
 );
-const county = BENCHMARKS.wake; // above benchmark (grade C)
+const county = BENCHMARKS.wake; // above benchmark (grade B)
 const below = BENCHMARKS.alamance; // at/below benchmark (grade A)
 
 // Read the authoritative Data(tax).csv (vendored) so tests can verify column Q wiring.
@@ -36,9 +36,11 @@ function csvRows(text) {
   return out;
 }
 const CSV_ROWS = csvRows(readFileSync(path.join(__dirname, "..", "data", "source", "Data(tax).csv"), "utf8"));
-const CSV_HEAD = CSV_ROWS[0].map(h => h.trim());
+// Row 1 is a methodology note; the header row names the columns.
+const CSV_HEAD_INDEX = CSV_ROWS.findIndex((r) => (r[0] || "").trim().toLowerCase() === "county");
+const CSV_HEAD = CSV_ROWS[CSV_HEAD_INDEX].map(h => h.trim());
 const CSV_BY_SLUG = new Map();
-for (const r of CSV_ROWS.slice(1)) {
+for (const r of CSV_ROWS.slice(CSV_HEAD_INDEX + 1)) {
   if (!r[0] || r[0].trim().toLowerCase() === "total") continue;
   const rec = Object.fromEntries(CSV_HEAD.map((h, i) => [h, r[i]]));
   const slug = r[0].trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -47,13 +49,13 @@ for (const r of CSV_ROWS.slice(1)) {
 
 // ---- Per-property receipt ----
 
-test("Wake fixture: V=291834 => paid 1509.82, could 1311.13, saved 198.69, 13% lower", () => {
+test("Wake fixture: V=291834 => paid 1509.82, could 1486.87, saved 22.95, 2% lower", () => {
   const res = PT.computeReceipt(291_834, county);
   assert.equal(res.ok, true);
   assert.ok(Math.abs(res.paid - 1509.82) < 0.01, `paid ${res.paid}`);
-  assert.ok(Math.abs(res.could_have - 1311.13) < 0.02, `could ${res.could_have}`);
-  assert.ok(Math.abs(res.saved - 198.69) < 0.02, `saved ${res.saved}`);
-  assert.equal(Math.round(100 * res.rate), 13);
+  assert.ok(Math.abs(res.could_have - 1486.87) < 0.02, `could ${res.could_have}`);
+  assert.ok(Math.abs(res.saved - 22.95) < 0.02, `saved ${res.saved}`);
+  assert.equal(Math.round(100 * res.rate), 2);
 });
 
 test("receipt math identities: paid=V*act/X; could=(1-rate)*paid; saved=rate*paid", () => {
@@ -328,9 +330,11 @@ test("the layer is queried for fields the point resolution needs", () => {
 });
 
 test("the counties that report a county-level rate stay out of the parcel route", () => {
-  // The address layer does hold addresses for all four, but printing a receipt
-  // there would contradict the message the tool already shows them.
-  for (const slug of ["franklin", "hoke", "perquimans", "richmond"]) {
+  // The address layer holds addresses for all seven, but printing a receipt
+  // there would contradict the message the tool already shows them: for Camden,
+  // Chowan and Yancey the parcel layer carries no assessed value, and the other
+  // four cannot be matched to an address the tool can rely on.
+  for (const slug of ["camden", "chowan", "franklin", "hoke", "perquimans", "richmond", "yancey"]) {
     assert.equal(PT.hasParcelAddress(BENCHMARKS[slug]), false, slug);
   }
   assert.equal(PT.hasParcelAddress(BENCHMARKS["new-hanover"]), true, "New Hanover is served per parcel");
@@ -343,14 +347,15 @@ test("COURT folds to CT, which is how the parcel layer writes it", () => {
 });
 
 /* --------------------------------------------------------------------------
- * Counties with no site address in the state parcel service. They cannot be
- * matched to a parcel, so no receipt is printed, but the county-level
- * savings rate is published for every county and is still reported.
+ * Counties the tool cannot serve per parcel — no usable site address, or an
+ * address with no assessed value in the parcel layer. No receipt can be
+ * printed, but the county-level savings rate is published for every county
+ * and is still reported.
  * ------------------------------------------------------------------------ */
 
 test("counties that cannot be served per-parcel are identified by FIPS", () => {
-  for (const slug of ["franklin", "hoke", "perquimans", "richmond"]) {
-    assert.equal(PT.hasParcelAddress(BENCHMARKS[slug]), false, `${slug} has no parcel address`);
+  for (const slug of ["camden", "chowan", "franklin", "hoke", "perquimans", "richmond", "yancey"]) {
+    assert.equal(PT.hasParcelAddress(BENCHMARKS[slug]), false, `${slug} is a county-level county`);
   }
   // Orange has no site address in the parcel service either, but its own
   // service answers reliably, so the flag must not simply mirror that list.
@@ -365,14 +370,24 @@ test("a missing or malformed county is treated as served rather than blocked", (
   assert.equal(PT.hasParcelAddress({}), true);
 });
 
-test("every county-level-only county still has a publishable savings rate", () => {
-  for (const slug of ["franklin", "hoke", "perquimans", "richmond"]) {
+test("every county-level-only county has a rate to report or is at/below benchmark", () => {
+  for (const slug of ["camden", "chowan", "franklin", "hoke", "perquimans", "richmond", "yancey"]) {
     const c = BENCHMARKS[slug];
-    assert.ok(c.savings_rate > 0, `${slug} has a savings rate to report`);
-    assert.equal(c.below_benchmark, false, `${slug} is not a below-benchmark county`);
     assert.ok(c.period, `${slug} has a period to cite`);
-    assert.ok(Math.round(c.savings_rate * 100) >= 1, `${slug} rounds to a whole percent`);
+    if (c.below_benchmark) {
+      // A negative rate cannot be spoken as "NN% lower"; the site shows the
+      // no-savings sentence for these instead.
+      assert.ok(c.savings_rate <= 0, `${slug} at/below benchmark has no positive rate`);
+    } else {
+      assert.ok(c.savings_rate > 0, `${slug} has a savings rate to report`);
+      assert.ok(Math.round(c.savings_rate * 100) >= 1, `${slug} rounds to a whole percent`);
+    }
   }
+  // Franklin and Richmond joined the at/below set once inflation was applied
+  // to every county; the other five still report a positive county rate.
+  const atBelow = ["camden", "chowan", "franklin", "hoke", "perquimans", "richmond", "yancey"]
+    .filter((s) => BENCHMARKS[s].below_benchmark).sort();
+  assert.deepEqual(atBelow, ["franklin", "richmond"]);
 });
 
 /* --------------------------------------------------------------------------
@@ -630,25 +645,65 @@ test("benchmarks mirror the Data(tax).csv FY2025-26 columns for all 100 counties
     assert.equal(c.hyp, c.l_benchmark, `${key} hyp`);
     assert.equal(c.cnt_diff, c.act - c.hyp, `${key} cnt_diff`);
     assert.equal(c.l_scenario, Math.min(c.act, c.hyp), `${key} scenario`);
-    assert.equal(c.below_benchmark, c.act <= c.hyp, `${key} below`);
+    assert.equal(c.below_benchmark, c.savings_rate <= 0, `${key} below`);
     assert.equal(c.by_year.length, 1, `${key} by_year`);
     assert.equal(c.by_year[0].fy, "2025-26", `${key} by_year year`);
     const csv = CSV_BY_SLUG.get(key);
     assert.ok(csv, `${key} present in Data(tax).csv`);
-    assert.equal(c.savings_rate, parseFloat(csv["5-year_savings_rate"]), `${key} column Q`);
+    assert.equal(c.savings_rate, parseFloat(csv["savings_rate"]), `${key} column Q`);
     assert.ok(Math.abs(c.savings_rate_fy26 - (c.act - c.hyp) / c.act) < 1e-9, `${key} fy26 rate`);
     assert.ok(Math.abs(c.pct_diff - (c.act / c.hyp - 1) * 100) < 1e-6, `${key} pct_diff`);
   }
 });
 
-test("receipt percentage equals Data(tax).csv column Q (Wake ~13%), not the single-year rate", () => {
-  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 13);
-  assert.ok(Math.abs(BENCHMARKS.wake.savings_rate_fy26 - 0.21582375051269642) < 1e-9);
+test("receipt percentage equals Data(tax).csv column Q (Wake ~2%), not the single-year rate", () => {
+  assert.equal(Math.round(100 * BENCHMARKS.wake.savings_rate), 2);
+  assert.ok(Math.abs(BENCHMARKS.wake.savings_rate_fy26 - 0.03405157437744774) < 1e-9);
 });
 
-test("two counties are at/below benchmark for FY2025-26", () => {
+test("39 counties are at/below benchmark (five-year savings rate)", () => {
   const names = Object.values(BENCHMARKS).filter(c => c.below_benchmark).map(c => c.label).sort();
-  assert.deepEqual(names, ["Alamance County", "Moore County"]);
+  assert.deepEqual(names, [
+    "Alamance County",
+    "Anson County",
+    "Avery County",
+    "Beaufort County",
+    "Bertie County",
+    "Bladen County",
+    "Brunswick County",
+    "Burke County",
+    "Cabarrus County",
+    "Carteret County",
+    "Catawba County",
+    "Clay County",
+    "Cleveland County",
+    "Craven County",
+    "Cumberland County",
+    "Dare County",
+    "Duplin County",
+    "Edgecombe County",
+    "Forsyth County",
+    "Franklin County",
+    "Gaston County",
+    "Henderson County",
+    "Johnston County",
+    "Macon County",
+    "Madison County",
+    "Martin County",
+    "Mecklenburg County",
+    "Montgomery County",
+    "Moore County",
+    "New Hanover County",
+    "Pamlico County",
+    "Pasquotank County",
+    "Pitt County",
+    "Richmond County",
+    "Rutherford County",
+    "Sampson County",
+    "Union County",
+    "Washington County",
+    "Wilkes County"
+  ]);
 });
 
 test("benchmarks are reproducible from the vendored build inputs", () => {

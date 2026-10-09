@@ -302,16 +302,19 @@
     return isFinite(v) && v > 0 && readsAsResidential(attrs);
   }
 
-  // Counties where the state parcel service publishes no site address, so a
-  // reader cannot be matched to an individual parcel and no receipt can be
-  // printed. The county-level savings rate is published for all 100 counties,
-  // so the tool still answers with that rather than a dead end. Keyed on FIPS
-  // rather than county name so a rename cannot silently drop a county.
-  // Franklin is here too: it does publish addresses, but its service sits behind
-  // a bot challenge and answers a browser's request with an interstitial often
-  // enough that a receipt would be unreliable, so it reports the county rate
-  // like the three that publish no address at all.
-  var NO_PARCEL_ADDRESS_FIPS = ["37069", "37093", "37143", "37153"]; // Franklin, Hoke, Perquimans, Richmond
+  // Counties reported at the county level rather than per parcel. Four publish
+  // no site address a reader can be matched to: Hoke, Perquimans and Richmond
+  // list none, and Franklin's answers a browser with a bot-challenge
+  // interstitial often enough that a receipt would be unreliable, even though it
+  // does publish addresses. Three more — Camden, Chowan and Yancey — do publish
+  // an address the search can match, but the parcel layer carries no assessed
+  // value for them, so every parcel fails the residential filter and no receipt
+  // can be printed either way. The county-level savings rate is published for
+  // all 100 counties, so the tool still answers with that rather than a dead
+  // end. Keyed on FIPS rather than county name so a rename cannot silently drop
+  // a county.
+  var NO_PARCEL_ADDRESS_FIPS = ["37029", "37041", "37069", "37093", "37143", "37153", "37199"];
+  // Camden, Chowan, Franklin, Hoke, Perquimans, Richmond, Yancey
 
   function hasParcelAddress(county) {
     if (!county || !county.fips) return true;

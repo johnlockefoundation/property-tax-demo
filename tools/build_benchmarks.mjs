@@ -14,7 +14,8 @@
 //   * paid        = V * act / X            (the actual FY2025-26 bill)
 //   * percent     = column Q               (the published 5-year savings rate)
 //   * could_have  = paid * (1 - Q)         so the dollars always match the rate
-//   * below-benchmark counties (act26 <= hyp26) show a sentence, not a receipt.
+//   * below-benchmark counties (five-year savings_rate <= 0) show a sentence,
+//     not a receipt.
 //
 // Usage:
 //   node tools/build_benchmarks.mjs [Data(tax).csv] [valuation.csv] [fips.csv] [out.json]
@@ -68,11 +69,14 @@ const valuation = mapByCounty(readFileSync(valCsv, "utf8"), "assessed_valuation"
 const fips = mapByCounty(readFileSync(fipsCsv, "utf8"), "fips");
 
 const taxRows = parseCsv(readFileSync(srcCsv, "utf8"));
-const head = taxRows[0].map((h) => h.trim());
+// Row 1 is a methodology note; the header row names the columns.
+const headerRow = taxRows.findIndex((r) => (r[0] || "").trim().toLowerCase() === "county");
+if (headerRow === -1) throw new Error("Data(tax).csv header row (County, ...) not found");
+const head = taxRows[headerRow].map((h) => h.trim());
 
 const out = {};
 const problems = [];
-for (const row of taxRows.slice(1)) {
+for (const row of taxRows.slice(headerRow + 1)) {
   const name = (row[0] || "").trim();
   if (!name || name.toLowerCase() === "total") continue;
   const rec = Object.fromEntries(head.map((h, i) => [h, row[i]]));
@@ -102,9 +106,9 @@ for (const row of taxRows.slice(1)) {
     hyp: hyp26,
     cnt_diff: act26 - hyp26,
     pct_diff: hyp26 ? round6((act26 / hyp26 - 1) * 100) : null,
-    // Column Q = 5-year_savings_rate from the Data(tax).csv; the receipt's "% lower"
+    // Column Q = savings_rate from the Data(tax).csv; the receipt's "% lower"
     // always reflects this published figure.
-    savings_rate: parseFloat(rec["5-year_savings_rate"]),
+    savings_rate: parseFloat(rec["savings_rate"]),
     savings_rate_fy26: act26 ? (act26 - hyp26) / act26 : null,
     // Values the calculation library consumes
     l_actual: act26,
@@ -113,7 +117,9 @@ for (const row of taxRows.slice(1)) {
     l_scenario,
     r_actual: x ? round6((100 * act26) / x) : null,
     r_scenario: x ? round6((100 * l_scenario) / x) : null,
-    below_benchmark: act26 <= hyp26,
+    // The at/below flag is the five-year savings rate itself: a county with a
+    // non-positive rate shows the no-savings sentence, so flag and rate agree.
+    below_benchmark: parseFloat(rec["savings_rate"]) <= 0,
     by_year: byYear.filter((y) => y.fy === "2025-26"),
   };
 }

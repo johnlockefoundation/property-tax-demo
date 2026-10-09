@@ -11,8 +11,12 @@ Parcel data comes from NC OneMap, which publishes no site address for nine count
 Five of those (Orange, Bladen, Cabarrus, Guilford, Avery) resolve the address through the
 county's own service and are then read from NC OneMap by parcel number, so the assessed
 value still comes from one place; the per-county sources live in `calc.js`. The other
-four (Franklin, Hoke, Perquimans, Richmond) have no address the tool can rely on and
-report the county's savings rate instead.
+four (Franklin, Hoke, Perquimans, Richmond) have no address the tool can rely on.
+Three more — Camden, Chowan, Yancey — publish addresses the parcel layer can match but
+carry no assessed value, so no per-parcel receipt is possible. All seven are keyed out
+in `calc.js` (`NO_PARCEL_ADDRESS_FIPS`); Franklin and Richmond are also at/below
+benchmark, so they get the "no savings" sentence, while the other five report the
+county's savings rate.
 
 A further 59 counties publish a site address that no search pattern can match,
 because they pad it with more than one space ("5223␣␣LONE␣EAGLE␣CT"). The tool
@@ -49,8 +53,9 @@ Live: https://johnlockefoundation.github.io/property-tax-demo/ (served from `mai
 `Data(tax).csv` (the "authoritative levies" export, exported from the current
 methodology `Data.xlsx` in Afternoon.zip/OneDrive research folder) lives in the parent
 workspace `/Users/mihirkale/repos/locke/property_tax/Data(tax).csv`;
-`data/source/Data(tax).csv` is its vendored copy. Column map: A County, ... K `2025-26_act`, L `2025_26_hyp`,
-M/N/O/P five-year act/hyp/cnt_diff/pct_diff, **Q `5-year_savings_rate`**, R grade.
+`data/source/Data(tax).csv` is its vendored copy. Row 1 is a methodology note; the header
+is row 2. Column map: A County, ... K `2025-26_act`, L `2025_26_hyp`, M/N 5-year act/hyp,
+O `savings_amount`, P `5-year_pct_diff`, **Q `savings_rate`**, R grade.
 The receipt's "percent lower" MUST equal column Q (100 × Q for the display).
 
 ## Calculation contract (do not break)
@@ -62,8 +67,9 @@ saved      = paid * savings_rate      # paid - could_have
 percent    = 100 * savings_rate       # rendered as "NN% lower"
 ```
 
-- `below_benchmark` counties (`act26 <= hyp26`) render a "would not have saved anything"
-  sentence, NOT a receipt. There are exactly 2: Alamance, Moore.
+- `below_benchmark` counties (five-year `savings_rate <= 0`) render a "would not have
+  saved anything" sentence, NOT a receipt. There are 39, including Alamance, Franklin,
+  Moore, Richmond.
 - County-wide property tax only (no municipal/school/special district).
 
 ## Commands

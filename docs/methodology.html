@@ -73,6 +73,15 @@ whose fields are clean, and the parcel is the one whose polygon contains that po
 way to identify the parcel: <code>V</code> and every other figure on the receipt still come from the one parcel
 record in the parcel layer, and the address shown is still the parcel&#8217;s own.
 </p>
+<p>
+Seven counties are reported at the county level rather than per parcel. Franklin, Hoke,
+Perquimans and Richmond publish no site address the tool can match against the parcel layer
+(Franklin&#8217;s service answers a browser with a bot challenge; the others list no usable
+address). Camden, Chowan and Yancey do publish addresses that resolve, but the parcel layer
+carries no assessed value for them, so no per-parcel receipt is possible. Franklin and Richmond
+are also at/below benchmark, so the site shows the &#8220;would not have saved anything&#8221;
+sentence there; for the other five it shows the county&#8217;s five-year savings rate instead of a bill.
+</p>
 
 <h2>3. Benchmark construction (research methodology)</h2>
 <p>
@@ -95,9 +104,12 @@ special-district levies are excluded, so the county levies are comparable to a c
 savings_rate = (&#931; actual &#8722; &#931; hypothetical) / &#931; actual
 </div>
 <p>
-Counties at or below the benchmark have a non-positive rate (a grade of A) and are treated as
-&#8220;no savings&#8221; on the site. All 100 counties&#8217; computed columns, including this rate, are
-recorded in <code>Data(tax).csv</code>; column Q (<code>5-year_savings_rate</code>) is the number
+Counties whose five-year actual total does not exceed the hypothetical total have a non-positive
+rate (a grade of A). The site flags a county as at/below benchmark, and shows &#8220;no savings&#8221;
+instead of a receipt, when that five-year savings rate is not positive
+(<code>savings_rate &#8804; 0</code>); the flag is the rate itself, so the two always agree.
+All 100 counties&#8217; computed columns, including this rate, are
+recorded in <code>Data(tax).csv</code>; column Q (<code>savings_rate</code>) is the number
 the receipt displays as &#8220;percent lower&#8221;.
 </p>
 
@@ -125,10 +137,10 @@ avoids that assumption. The <em>rate</em> shown is the five-year measure from th
 
 <h2>5. Below-benchmark counties</h2>
 <p>
-A county is flagged below benchmark when its FY2025&#8211;26 actual levy does not exceed the hypothetical
-levy (<code>act26 &#8804; hyp26</code>). In that case the site shows a short explanation (&#8220;would not
-have saved anything&#8221;) instead of a receipt. As of this version the flagged counties are
-<strong>Alamance and Moore</strong>.
+A county is flagged below benchmark when its five-year savings rate is not positive
+(<code>savings_rate &#8804; 0</code>). In that case the site shows a short explanation (&#8220;would not
+have saved anything&#8221;) instead of a receipt. As of this version 39 of the 100 counties are flagged,
+including Alamance, Franklin, Moore, and Richmond.
 </p>
 
 <h2>6. Reconciliation &amp; data notes</h2>

@@ -33,23 +33,23 @@
     "period": "FY2025-26",
     "x": 4242495513,
     "act": 27602273,
-    "hyp": 21113245,
-    "cnt_diff": 6489028,
-    "pct_diff": 30.734394,
-    "savings_rate": 0.169,
-    "savings_rate_fy26": 0.2350903492621785,
+    "hyp": 26137174,
+    "cnt_diff": 1465099,
+    "pct_diff": 5.605422,
+    "savings_rate": 0.0568,
+    "savings_rate_fy26": 0.05307892578267014,
     "l_actual": 27602273,
-    "b_endpoint": 21113245,
-    "l_benchmark": 21113245,
-    "l_scenario": 21113245,
+    "b_endpoint": 26137174,
+    "l_benchmark": 26137174,
+    "l_scenario": 26137174,
     "r_actual": 0.650614,
-    "r_scenario": 0.497661,
+    "r_scenario": 0.61608,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 27602273,
-        "hypothetical": 21113245
+        "hypothetical": 26137174
       }
     ]
   },
@@ -60,23 +60,23 @@
     "period": "FY2025-26",
     "x": 2223775261,
     "act": 13282980,
-    "hyp": 11147568,
-    "cnt_diff": 2135412,
-    "pct_diff": 19.155855,
-    "savings_rate": 0.1278,
-    "savings_rate_fy26": 0.16076302155088693,
+    "hyp": 13743871,
+    "cnt_diff": -460891,
+    "pct_diff": -3.353429,
+    "savings_rate": 0.011,
+    "savings_rate_fy26": -0.03469786147385602,
     "l_actual": 13282980,
-    "b_endpoint": 11147568,
-    "l_benchmark": 11147568,
-    "l_scenario": 11147568,
+    "b_endpoint": 13743871,
+    "l_benchmark": 13743871,
+    "l_scenario": 13282980,
     "r_actual": 0.597317,
-    "r_scenario": 0.50129,
+    "r_scenario": 0.597317,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 13282980,
-        "hypothetical": 11147568
+        "hypothetical": 13743871
       }
     ]
   },
@@ -87,23 +87,23 @@
     "period": "FY2025-26",
     "x": 2400672775,
     "act": 18675283,
-    "hyp": 16526288,
-    "cnt_diff": 2148995,
-    "pct_diff": 13.003495,
-    "savings_rate": 0.0647,
-    "savings_rate_fy26": 0.11507161631767508,
+    "hyp": 20436126,
+    "cnt_diff": -1760843,
+    "pct_diff": -8.616325,
+    "savings_rate": -0.0607,
+    "savings_rate_fy26": -0.09428735296809157,
     "l_actual": 18675283,
-    "b_endpoint": 16526288,
-    "l_benchmark": 16526288,
-    "l_scenario": 16526288,
+    "b_endpoint": 20436126,
+    "l_benchmark": 20436126,
+    "l_scenario": 18675283,
     "r_actual": 0.777919,
-    "r_scenario": 0.688402,
-    "below_benchmark": false,
+    "r_scenario": 0.777919,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 18675283,
-        "hypothetical": 16526288
+        "hypothetical": 20436126
       }
     ]
   },
@@ -114,23 +114,23 @@
     "period": "FY2025-26",
     "x": 6180747523,
     "act": 27209339,
-    "hyp": 18502535,
-    "cnt_diff": 8706804,
-    "pct_diff": 47.057357,
-    "savings_rate": 0.2536,
-    "savings_rate_fy26": 0.3199932199749505,
+    "hyp": 22881649,
+    "cnt_diff": 4327690,
+    "pct_diff": 18.913366,
+    "savings_rate": 0.1534,
+    "savings_rate_fy26": 0.1590516403209942,
     "l_actual": 27209339,
-    "b_endpoint": 18502535,
-    "l_benchmark": 18502535,
-    "l_scenario": 18502535,
+    "b_endpoint": 22881649,
+    "l_benchmark": 22881649,
+    "l_scenario": 22881649,
     "r_actual": 0.440227,
-    "r_scenario": 0.299358,
+    "r_scenario": 0.370208,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 27209339,
-        "hypothetical": 18502535
+        "hypothetical": 22881649
       }
     ]
   },
@@ -141,23 +141,23 @@
     "period": "FY2025-26",
     "x": 6539113774,
     "act": 25945644,
-    "hyp": 22863840,
-    "cnt_diff": 3081804,
-    "pct_diff": 13.478943,
-    "savings_rate": 0.0867,
-    "savings_rate_fy26": 0.11877924479346129,
+    "hyp": 28294693,
+    "cnt_diff": -2349049,
+    "pct_diff": -8.302083,
+    "savings_rate": -0.0371,
+    "savings_rate_fy26": -0.09053731716969522,
     "l_actual": 25945644,
-    "b_endpoint": 22863840,
-    "l_benchmark": 22863840,
-    "l_scenario": 22863840,
+    "b_endpoint": 28294693,
+    "l_benchmark": 28294693,
+    "l_scenario": 25945644,
     "r_actual": 0.396776,
-    "r_scenario": 0.349647,
-    "below_benchmark": false,
+    "r_scenario": 0.396776,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 25945644,
-        "hypothetical": 22863840
+        "hypothetical": 28294693
       }
     ]
   },
@@ -168,23 +168,23 @@
     "period": "FY2025-26",
     "x": 9629636325,
     "act": 43845067,
-    "hyp": 39448376,
-    "cnt_diff": 4396691,
-    "pct_diff": 11.14543,
-    "savings_rate": 0.0281,
-    "savings_rate_fy26": 0.10027789443222883,
+    "hyp": 48814757,
+    "cnt_diff": -4969690,
+    "pct_diff": -10.180712,
+    "savings_rate": -0.1027,
+    "savings_rate_fy26": -0.11334661662166008,
     "l_actual": 43845067,
-    "b_endpoint": 39448376,
-    "l_benchmark": 39448376,
-    "l_scenario": 39448376,
+    "b_endpoint": 48814757,
+    "l_benchmark": 48814757,
+    "l_scenario": 43845067,
     "r_actual": 0.455314,
-    "r_scenario": 0.409656,
-    "below_benchmark": false,
+    "r_scenario": 0.455314,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 43845067,
-        "hypothetical": 39448376
+        "hypothetical": 48814757
       }
     ]
   },
@@ -195,23 +195,23 @@
     "period": "FY2025-26",
     "x": 1545183553,
     "act": 14389275,
-    "hyp": 11653462,
-    "cnt_diff": 2735813,
-    "pct_diff": 23.476397,
-    "savings_rate": 0.1052,
-    "savings_rate_fy26": 0.19012862010073475,
+    "hyp": 14468133,
+    "cnt_diff": -78858,
+    "pct_diff": -0.545046,
+    "savings_rate": -0.0164,
+    "savings_rate_fy26": -0.00548033170538474,
     "l_actual": 14389275,
-    "b_endpoint": 11653462,
-    "l_benchmark": 11653462,
-    "l_scenario": 11653462,
+    "b_endpoint": 14468133,
+    "l_benchmark": 14468133,
+    "l_scenario": 14389275,
     "r_actual": 0.931234,
-    "r_scenario": 0.75418,
-    "below_benchmark": false,
+    "r_scenario": 0.931234,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 14389275,
-        "hypothetical": 11653462
+        "hypothetical": 14468133
       }
     ]
   },
@@ -222,23 +222,23 @@
     "period": "FY2025-26",
     "x": 3722356134,
     "act": 29256108,
-    "hyp": 24505640,
-    "cnt_diff": 4750468,
-    "pct_diff": 19.385203,
-    "savings_rate": 0.1151,
-    "savings_rate_fy26": 0.16237525510912115,
+    "hyp": 30328468,
+    "cnt_diff": -1072360,
+    "pct_diff": -3.53582,
+    "savings_rate": -0.0045,
+    "savings_rate_fy26": -0.03665422618757081,
     "l_actual": 29256108,
-    "b_endpoint": 24505640,
-    "l_benchmark": 24505640,
-    "l_scenario": 24505640,
+    "b_endpoint": 30328468,
+    "l_benchmark": 30328468,
+    "l_scenario": 29256108,
     "r_actual": 0.785957,
-    "r_scenario": 0.658337,
-    "below_benchmark": false,
+    "r_scenario": 0.785957,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 29256108,
-        "hypothetical": 24505640
+        "hypothetical": 30328468
       }
     ]
   },
@@ -249,23 +249,23 @@
     "period": "FY2025-26",
     "x": 56315243011,
     "act": 192664580,
-    "hyp": 185140911,
-    "cnt_diff": 7523669,
-    "pct_diff": 4.063753,
-    "savings_rate": 0.024,
-    "savings_rate_fy26": 0.039050608056758536,
+    "hyp": 226682766,
+    "cnt_diff": -34018186,
+    "pct_diff": -15.006957,
+    "savings_rate": -0.1059,
+    "savings_rate_fy26": -0.17656689153761423,
     "l_actual": 192664580,
-    "b_endpoint": 185140911,
-    "l_benchmark": 185140911,
-    "l_scenario": 185140911,
+    "b_endpoint": 226682766,
+    "l_benchmark": 226682766,
+    "l_scenario": 192664580,
     "r_actual": 0.342118,
-    "r_scenario": 0.328758,
-    "below_benchmark": false,
+    "r_scenario": 0.342118,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 192664580,
-        "hypothetical": 185140911
+        "hypothetical": 226682766
       }
     ]
   },
@@ -276,23 +276,23 @@
     "period": "FY2025-26",
     "x": 53610452817,
     "act": 292375443,
-    "hyp": 226040374,
-    "cnt_diff": 66335069,
-    "pct_diff": 29.346558,
-    "savings_rate": 0.1448,
-    "savings_rate_fy26": 0.2268831756844914,
+    "hyp": 279112776,
+    "cnt_diff": 13262667,
+    "pct_diff": 4.751723,
+    "savings_rate": 0.03,
+    "savings_rate_fy26": 0.04536176795121607,
     "l_actual": 292375443,
-    "b_endpoint": 226040374,
-    "l_benchmark": 226040374,
-    "l_scenario": 226040374,
+    "b_endpoint": 279112776,
+    "l_benchmark": 279112776,
+    "l_scenario": 279112776,
     "r_actual": 0.54537,
-    "r_scenario": 0.421635,
+    "r_scenario": 0.520631,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 292375443,
-        "hypothetical": 226040374
+        "hypothetical": 279112776
       }
     ]
   },
@@ -303,23 +303,23 @@
     "period": "FY2025-26",
     "x": 11182146810,
     "act": 62141849,
-    "hyp": 52426756,
-    "cnt_diff": 9715093,
-    "pct_diff": 18.530792,
-    "savings_rate": 0.1091,
-    "savings_rate_fy26": 0.15633736614435145,
+    "hyp": 64756156,
+    "cnt_diff": -2614307,
+    "pct_diff": -4.037156,
+    "savings_rate": -0.0106,
+    "savings_rate_fy26": -0.04206999054695009,
     "l_actual": 62141849,
-    "b_endpoint": 52426756,
-    "l_benchmark": 52426756,
-    "l_scenario": 52426756,
+    "b_endpoint": 64756156,
+    "l_benchmark": 64756156,
+    "l_scenario": 62141849,
     "r_actual": 0.555724,
-    "r_scenario": 0.468843,
-    "below_benchmark": false,
+    "r_scenario": 0.555724,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 62141849,
-        "hypothetical": 52426756
+        "hypothetical": 64756156
       }
     ]
   },
@@ -330,23 +330,23 @@
     "period": "FY2025-26",
     "x": 49881485579,
     "act": 287669831,
-    "hyp": 235662856,
-    "cnt_diff": 52006975,
-    "pct_diff": 22.06838,
-    "savings_rate": 0.0922,
-    "savings_rate_fy26": 0.18078703220011974,
+    "hyp": 290210955,
+    "cnt_diff": -2541124,
+    "pct_diff": -0.875613,
+    "savings_rate": -0.0291,
+    "savings_rate_fy26": -0.008833474094820878,
     "l_actual": 287669831,
-    "b_endpoint": 235662856,
-    "l_benchmark": 235662856,
-    "l_scenario": 235662856,
+    "b_endpoint": 290210955,
+    "l_benchmark": 290210955,
+    "l_scenario": 287669831,
     "r_actual": 0.576707,
-    "r_scenario": 0.472446,
-    "below_benchmark": false,
+    "r_scenario": 0.576707,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 287669831,
-        "hypothetical": 235662856
+        "hypothetical": 290210955
       }
     ]
   },
@@ -357,23 +357,23 @@
     "period": "FY2025-26",
     "x": 12156498807,
     "act": 60478582,
-    "hyp": 49131742,
-    "cnt_diff": 11346840,
-    "pct_diff": 23.094724,
-    "savings_rate": 0.122,
-    "savings_rate_fy26": 0.18761749407418316,
+    "hyp": 60746742,
+    "cnt_diff": -268160,
+    "pct_diff": -0.441439,
+    "savings_rate": 0.0039,
+    "savings_rate_fy26": -0.004433966391606205,
     "l_actual": 60478582,
-    "b_endpoint": 49131742,
-    "l_benchmark": 49131742,
-    "l_scenario": 49131742,
+    "b_endpoint": 60746742,
+    "l_benchmark": 60746742,
+    "l_scenario": 60478582,
     "r_actual": 0.4975,
-    "r_scenario": 0.40416,
+    "r_scenario": 0.4975,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 60478582,
-        "hypothetical": 49131742
+        "hypothetical": 60746742
       }
     ]
   },
@@ -384,23 +384,23 @@
     "period": "FY2025-26",
     "x": 1817886573,
     "act": 13275443,
-    "hyp": 9323342,
-    "cnt_diff": 3952101,
-    "pct_diff": 42.389317,
-    "savings_rate": 0.2463,
-    "savings_rate_fy26": 0.29770012194696627,
+    "hyp": 11494883,
+    "cnt_diff": 1780560,
+    "pct_diff": 15.490023,
+    "savings_rate": 0.1454,
+    "savings_rate_fy26": 0.13412433769630136,
     "l_actual": 13275443,
-    "b_endpoint": 9323342,
-    "l_benchmark": 9323342,
-    "l_scenario": 9323342,
+    "b_endpoint": 11494883,
+    "l_benchmark": 11494883,
+    "l_scenario": 11494883,
     "r_actual": 0.730268,
-    "r_scenario": 0.512867,
+    "r_scenario": 0.632321,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 13275443,
-        "hypothetical": 9323342
+        "hypothetical": 11494883
       }
     ]
   },
@@ -411,23 +411,23 @@
     "period": "FY2025-26",
     "x": 31644682512,
     "act": 72401908,
-    "hyp": 57129765,
-    "cnt_diff": 15272143,
-    "pct_diff": 26.732375,
-    "savings_rate": 0.0865,
-    "savings_rate_fy26": 0.21093564274576854,
+    "hyp": 70465073,
+    "cnt_diff": 1936835,
+    "pct_diff": 2.748645,
+    "savings_rate": -0.0358,
+    "savings_rate_fy26": 0.026751159651759452,
     "l_actual": 72401908,
-    "b_endpoint": 57129765,
-    "l_benchmark": 57129765,
-    "l_scenario": 57129765,
+    "b_endpoint": 70465073,
+    "l_benchmark": 70465073,
+    "l_scenario": 70465073,
     "r_actual": 0.228796,
-    "r_scenario": 0.180535,
-    "below_benchmark": false,
+    "r_scenario": 0.222676,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 72401908,
-        "hypothetical": 57129765
+        "hypothetical": 70465073
       }
     ]
   },
@@ -438,23 +438,23 @@
     "period": "FY2025-26",
     "x": 2435459823,
     "act": 15204067,
-    "hyp": 12046847,
-    "cnt_diff": 3157220,
-    "pct_diff": 26.207853,
-    "savings_rate": 0.1193,
-    "savings_rate_fy26": 0.2076562803886618,
+    "hyp": 14928313,
+    "cnt_diff": 275754,
+    "pct_diff": 1.847188,
+    "savings_rate": 0.0001,
+    "savings_rate_fy26": 0.018136857723660388,
     "l_actual": 15204067,
-    "b_endpoint": 12046847,
-    "l_benchmark": 12046847,
-    "l_scenario": 12046847,
+    "b_endpoint": 14928313,
+    "l_benchmark": 14928313,
+    "l_scenario": 14928313,
     "r_actual": 0.624279,
-    "r_scenario": 0.494644,
+    "r_scenario": 0.612957,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 15204067,
-        "hypothetical": 12046847
+        "hypothetical": 14928313
       }
     ]
   },
@@ -465,23 +465,23 @@
     "period": "FY2025-26",
     "x": 32409892902,
     "act": 129220963,
-    "hyp": 114660167,
-    "cnt_diff": 14560796,
-    "pct_diff": 12.699088,
-    "savings_rate": 0.0809,
-    "savings_rate_fy26": 0.11268137662772254,
+    "hyp": 141529703,
+    "cnt_diff": -12308740,
+    "pct_diff": -8.696931,
+    "savings_rate": -0.0425,
+    "savings_rate_fy26": -0.09525343035866402,
     "l_actual": 129220963,
-    "b_endpoint": 114660167,
-    "l_benchmark": 114660167,
-    "l_scenario": 114660167,
+    "b_endpoint": 141529703,
+    "l_benchmark": 141529703,
+    "l_scenario": 129220963,
     "r_actual": 0.398708,
-    "r_scenario": 0.353781,
-    "below_benchmark": false,
+    "r_scenario": 0.398708,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 129220963,
-        "hypothetical": 114660167
+        "hypothetical": 141529703
       }
     ]
   },
@@ -492,23 +492,23 @@
     "period": "FY2025-26",
     "x": 22716432644,
     "act": 137739646,
-    "hyp": 88650208,
-    "cnt_diff": 49089438,
-    "pct_diff": 55.374307,
-    "savings_rate": 0.2219,
-    "savings_rate_fy26": 0.35639294441050035,
+    "hyp": 109193399,
+    "cnt_diff": 28546247,
+    "pct_diff": 26.142832,
+    "savings_rate": 0.1173,
+    "savings_rate_fy26": 0.20724786093903566,
     "l_actual": 137739646,
-    "b_endpoint": 88650208,
-    "l_benchmark": 88650208,
-    "l_scenario": 88650208,
+    "b_endpoint": 109193399,
+    "l_benchmark": 109193399,
+    "l_scenario": 109193399,
     "r_actual": 0.606344,
-    "r_scenario": 0.390247,
+    "r_scenario": 0.48068,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 137739646,
-        "hypothetical": 88650208
+        "hypothetical": 109193399
       }
     ]
   },
@@ -519,23 +519,23 @@
     "period": "FY2025-26",
     "x": 4290126844,
     "act": 26187252,
-    "hyp": 17909239,
-    "cnt_diff": 8278013,
-    "pct_diff": 46.222025,
-    "savings_rate": 0.2812,
-    "savings_rate_fy26": 0.31610850195354595,
+    "hyp": 22116387,
+    "cnt_diff": 4070865,
+    "pct_diff": 18.406555,
+    "savings_rate": 0.1841,
+    "savings_rate_fy26": 0.1554521642820713,
     "l_actual": 26187252,
-    "b_endpoint": 17909239,
-    "l_benchmark": 17909239,
-    "l_scenario": 17909239,
+    "b_endpoint": 22116387,
+    "l_benchmark": 22116387,
+    "l_scenario": 22116387,
     "r_actual": 0.610407,
-    "r_scenario": 0.417452,
+    "r_scenario": 0.515518,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 26187252,
-        "hypothetical": 17909239
+        "hypothetical": 22116387
       }
     ]
   },
@@ -546,23 +546,23 @@
     "period": "FY2025-26",
     "x": 2656396695,
     "act": 17323255,
-    "hyp": 11365493,
-    "cnt_diff": 5957762,
-    "pct_diff": 52.419741,
-    "savings_rate": 0.1778,
-    "savings_rate_fy26": 0.34391700635937067,
+    "hyp": 14047635,
+    "cnt_diff": 3275620,
+    "pct_diff": 23.317946,
+    "savings_rate": 0.0674,
+    "savings_rate_fy26": 0.18908802069818864,
     "l_actual": 17323255,
-    "b_endpoint": 11365493,
-    "l_benchmark": 11365493,
-    "l_scenario": 11365493,
+    "b_endpoint": 14047635,
+    "l_benchmark": 14047635,
+    "l_scenario": 14047635,
     "r_actual": 0.652134,
-    "r_scenario": 0.427854,
+    "r_scenario": 0.528823,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 17323255,
-        "hypothetical": 11365493
+        "hypothetical": 14047635
       }
     ]
   },
@@ -573,23 +573,23 @@
     "period": "FY2025-26",
     "x": 2274566422,
     "act": 9784057,
-    "hyp": 9361774,
-    "cnt_diff": 422283,
-    "pct_diff": 4.510716,
-    "savings_rate": 0.0421,
-    "savings_rate_fy26": 0.04316031682971593,
+    "hyp": 11535395,
+    "cnt_diff": -1751338,
+    "pct_diff": -15.182298,
+    "savings_rate": -0.0867,
+    "savings_rate_fy26": -0.17899916159523602,
     "l_actual": 9784057,
-    "b_endpoint": 9361774,
-    "l_benchmark": 9361774,
-    "l_scenario": 9361774,
+    "b_endpoint": 11535395,
+    "l_benchmark": 11535395,
+    "l_scenario": 9784057,
     "r_actual": 0.43015,
-    "r_scenario": 0.411585,
-    "below_benchmark": false,
+    "r_scenario": 0.43015,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 9784057,
-        "hypothetical": 9361774
+        "hypothetical": 11535395
       }
     ]
   },
@@ -600,23 +600,23 @@
     "period": "FY2025-26",
     "x": 15261995928,
     "act": 84507735,
-    "hyp": 69954966,
-    "cnt_diff": 14552769,
-    "pct_diff": 20.803053,
-    "savings_rate": 0.1005,
-    "savings_rate_fy26": 0.1722063548384062,
+    "hyp": 86516614,
+    "cnt_diff": -2008879,
+    "pct_diff": -2.321957,
+    "savings_rate": -0.0206,
+    "savings_rate_fy26": -0.023771539966134462,
     "l_actual": 84507735,
-    "b_endpoint": 69954966,
-    "l_benchmark": 69954966,
-    "l_scenario": 69954966,
+    "b_endpoint": 86516614,
+    "l_benchmark": 86516614,
+    "l_scenario": 84507735,
     "r_actual": 0.553714,
-    "r_scenario": 0.458361,
-    "below_benchmark": false,
+    "r_scenario": 0.553714,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 84507735,
-        "hypothetical": 69954966
+        "hypothetical": 86516614
       }
     ]
   },
@@ -627,23 +627,23 @@
     "period": "FY2025-26",
     "x": 4516623580,
     "act": 36404978,
-    "hyp": 29884816,
-    "cnt_diff": 6520162,
-    "pct_diff": 21.817641,
-    "savings_rate": 0.1686,
-    "savings_rate_fy26": 0.1791008361548797,
+    "hyp": 36982281,
+    "cnt_diff": -577303,
+    "pct_diff": -1.561026,
+    "savings_rate": 0.0565,
+    "savings_rate_fy26": -0.015857803842100934,
     "l_actual": 36404978,
-    "b_endpoint": 29884816,
-    "l_benchmark": 29884816,
-    "l_scenario": 29884816,
+    "b_endpoint": 36982281,
+    "l_benchmark": 36982281,
+    "l_scenario": 36404978,
     "r_actual": 0.806022,
-    "r_scenario": 0.661663,
+    "r_scenario": 0.806022,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 36404978,
-        "hypothetical": 29884816
+        "hypothetical": 36982281
       }
     ]
   },
@@ -654,23 +654,23 @@
     "period": "FY2025-26",
     "x": 14823408594,
     "act": 65977229,
-    "hyp": 57442937,
-    "cnt_diff": 8534292,
-    "pct_diff": 14.856991,
-    "savings_rate": 0.0934,
-    "savings_rate_fy26": 0.1293520829739606,
+    "hyp": 70875626,
+    "cnt_diff": -4898397,
+    "pct_diff": -6.911257,
+    "savings_rate": -0.0279,
+    "savings_rate_fy26": -0.07424375158283777,
     "l_actual": 65977229,
-    "b_endpoint": 57442937,
-    "l_benchmark": 57442937,
-    "l_scenario": 57442937,
+    "b_endpoint": 70875626,
+    "l_benchmark": 70875626,
+    "l_scenario": 65977229,
     "r_actual": 0.445088,
-    "r_scenario": 0.387515,
-    "below_benchmark": false,
+    "r_scenario": 0.445088,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 65977229,
-        "hypothetical": 57442937
+        "hypothetical": 70875626
       }
     ]
   },
@@ -681,23 +681,23 @@
     "period": "FY2025-26",
     "x": 40818103706,
     "act": 212000554,
-    "hyp": 196257035,
-    "cnt_diff": 15743519,
-    "pct_diff": 8.021888,
-    "savings_rate": 0.0324,
-    "savings_rate_fy26": 0.0742616880142681,
+    "hyp": 242592806,
+    "cnt_diff": -30592252,
+    "pct_diff": -12.610536,
+    "savings_rate": -0.0971,
+    "savings_rate_fy26": -0.14430269837879764,
     "l_actual": 212000554,
-    "b_endpoint": 196257035,
-    "l_benchmark": 196257035,
-    "l_scenario": 196257035,
+    "b_endpoint": 242592806,
+    "l_benchmark": 242592806,
+    "l_scenario": 212000554,
     "r_actual": 0.519379,
-    "r_scenario": 0.480809,
-    "below_benchmark": false,
+    "r_scenario": 0.519379,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 212000554,
-        "hypothetical": 196257035
+        "hypothetical": 242592806
       }
     ]
   },
@@ -708,23 +708,23 @@
     "period": "FY2025-26",
     "x": 9227663891,
     "act": 57237630,
-    "hyp": 38476170,
-    "cnt_diff": 18761460,
-    "pct_diff": 48.761246,
-    "savings_rate": 0.2365,
-    "savings_rate_fy26": 0.3277819154985977,
+    "hyp": 47219390,
+    "cnt_diff": 10018240,
+    "pct_diff": 21.216369,
+    "savings_rate": 0.135,
+    "savings_rate_fy26": 0.1750289101767491,
     "l_actual": 57237630,
-    "b_endpoint": 38476170,
-    "l_benchmark": 38476170,
-    "l_scenario": 38476170,
+    "b_endpoint": 47219390,
+    "l_benchmark": 47219390,
+    "l_scenario": 47219390,
     "r_actual": 0.620283,
-    "r_scenario": 0.416965,
+    "r_scenario": 0.511716,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 57237630,
-        "hypothetical": 38476170
+        "hypothetical": 47219390
       }
     ]
   },
@@ -735,23 +735,23 @@
     "period": "FY2025-26",
     "x": 28651238661,
     "act": 76180697,
-    "hyp": 71214288,
-    "cnt_diff": 4966409,
-    "pct_diff": 6.973894,
-    "savings_rate": 0.0085,
-    "savings_rate_fy26": 0.06519248570277586,
+    "hyp": 87893286,
+    "cnt_diff": -11712589,
+    "pct_diff": -13.32592,
+    "savings_rate": -0.1239,
+    "savings_rate_fy26": -0.15374746440033227,
     "l_actual": 76180697,
-    "b_endpoint": 71214288,
-    "l_benchmark": 71214288,
-    "l_scenario": 71214288,
+    "b_endpoint": 87893286,
+    "l_benchmark": 87893286,
+    "l_scenario": 76180697,
     "r_actual": 0.26589,
-    "r_scenario": 0.248556,
-    "below_benchmark": false,
+    "r_scenario": 0.26589,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 76180697,
-        "hypothetical": 71214288
+        "hypothetical": 87893286
       }
     ]
   },
@@ -762,23 +762,23 @@
     "period": "FY2025-26",
     "x": 20082688456,
     "act": 108446518,
-    "hyp": 87700556,
-    "cnt_diff": 20745962,
-    "pct_diff": 23.655451,
-    "savings_rate": 0.1575,
-    "savings_rate_fy26": 0.19130131960530075,
+    "hyp": 108206274,
+    "cnt_diff": 240244,
+    "pct_diff": 0.222024,
+    "savings_rate": 0.0444,
+    "savings_rate_fy26": 0.0022153223951367437,
     "l_actual": 108446518,
-    "b_endpoint": 87700556,
-    "l_benchmark": 87700556,
-    "l_scenario": 87700556,
+    "b_endpoint": 108206274,
+    "l_benchmark": 108206274,
+    "l_scenario": 108206274,
     "r_actual": 0.54,
-    "r_scenario": 0.436697,
+    "r_scenario": 0.538804,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 108446518,
-        "hypothetical": 87700556
+        "hypothetical": 108206274
       }
     ]
   },
@@ -789,23 +789,23 @@
     "period": "FY2025-26",
     "x": 7955181304,
     "act": 52091918,
-    "hyp": 37885282,
-    "cnt_diff": 14206636,
-    "pct_diff": 37.49909,
-    "savings_rate": 0.1545,
-    "savings_rate_fy26": 0.27272245955697005,
+    "hyp": 46754957,
+    "cnt_diff": 5336961,
+    "pct_diff": 11.414749,
+    "savings_rate": 0.0409,
+    "savings_rate_fy26": 0.10245276436164244,
     "l_actual": 52091918,
-    "b_endpoint": 37885282,
-    "l_benchmark": 37885282,
-    "l_scenario": 37885282,
+    "b_endpoint": 46754957,
+    "l_benchmark": 46754957,
+    "l_scenario": 46754957,
     "r_actual": 0.654817,
-    "r_scenario": 0.476234,
+    "r_scenario": 0.58773,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 52091918,
-        "hypothetical": 37885282
+        "hypothetical": 46754957
       }
     ]
   },
@@ -816,23 +816,23 @@
     "period": "FY2025-26",
     "x": 7040257751,
     "act": 41702475,
-    "hyp": 33945998,
-    "cnt_diff": 7756477,
-    "pct_diff": 22.849459,
-    "savings_rate": 0.1088,
-    "savings_rate_fy26": 0.18599560337845655,
+    "hyp": 41965689,
+    "cnt_diff": -263214,
+    "pct_diff": -0.627212,
+    "savings_rate": -0.0115,
+    "savings_rate_fy26": -0.00631171171495217,
     "l_actual": 41702475,
-    "b_endpoint": 33945998,
-    "l_benchmark": 33945998,
-    "l_scenario": 33945998,
+    "b_endpoint": 41965689,
+    "l_benchmark": 41965689,
+    "l_scenario": 41702475,
     "r_actual": 0.592343,
-    "r_scenario": 0.48217,
-    "below_benchmark": false,
+    "r_scenario": 0.592343,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 41702475,
-        "hypothetical": 33945998
+        "hypothetical": 41965689
       }
     ]
   },
@@ -843,23 +843,23 @@
     "period": "FY2025-26",
     "x": 85900023146,
     "act": 483021156,
-    "hyp": 342221368,
-    "cnt_diff": 140799788,
-    "pct_diff": 41.142898,
-    "savings_rate": 0.1642,
-    "savings_rate_fy26": 0.2914981802577608,
+    "hyp": 422050129,
+    "cnt_diff": 60971027,
+    "pct_diff": 14.446395,
+    "savings_rate": 0.0521,
+    "savings_rate_fy26": 0.12622848138767653,
     "l_actual": 483021156,
-    "b_endpoint": 342221368,
-    "l_benchmark": 342221368,
-    "l_scenario": 342221368,
+    "b_endpoint": 422050129,
+    "l_benchmark": 422050129,
+    "l_scenario": 422050129,
     "r_actual": 0.562306,
-    "r_scenario": 0.398395,
+    "r_scenario": 0.491327,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 483021156,
-        "hypothetical": 342221368
+        "hypothetical": 422050129
       }
     ]
   },
@@ -870,23 +870,23 @@
     "period": "FY2025-26",
     "x": 4484571498,
     "act": 39958224,
-    "hyp": 31979695,
-    "cnt_diff": 7978529,
-    "pct_diff": 24.948734,
-    "savings_rate": 0.1079,
-    "savings_rate_fy26": 0.1996717621884296,
+    "hyp": 39566372,
+    "cnt_diff": 391852,
+    "pct_diff": 0.990366,
+    "savings_rate": -0.012,
+    "savings_rate_fy26": 0.009806541952415102,
     "l_actual": 39958224,
-    "b_endpoint": 31979695,
-    "l_benchmark": 31979695,
-    "l_scenario": 31979695,
+    "b_endpoint": 39566372,
+    "l_benchmark": 39566372,
+    "l_scenario": 39566372,
     "r_actual": 0.891015,
-    "r_scenario": 0.713105,
-    "below_benchmark": false,
+    "r_scenario": 0.882278,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 39958224,
-        "hypothetical": 31979695
+        "hypothetical": 39566372
       }
     ]
   },
@@ -897,23 +897,23 @@
     "period": "FY2025-26",
     "x": 65804730764,
     "act": 352186919,
-    "hyp": 297172128,
-    "cnt_diff": 55014791,
-    "pct_diff": 18.512769,
-    "savings_rate": 0.069,
-    "savings_rate_fy26": 0.15620906976388865,
+    "hyp": 366816046,
+    "cnt_diff": -14629127,
+    "pct_diff": -3.988137,
+    "savings_rate": -0.0558,
+    "savings_rate_fy26": -0.041537962402289,
     "l_actual": 352186919,
-    "b_endpoint": 297172128,
-    "l_benchmark": 297172128,
-    "l_scenario": 297172128,
+    "b_endpoint": 366816046,
+    "l_benchmark": 366816046,
+    "l_scenario": 352186919,
     "r_actual": 0.5352,
-    "r_scenario": 0.451597,
-    "below_benchmark": false,
+    "r_scenario": 0.5352,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 352186919,
-        "hypothetical": 297172128
+        "hypothetical": 366816046
       }
     ]
   },
@@ -924,23 +924,23 @@
     "period": "FY2025-26",
     "x": 13336167553,
     "act": 67453484,
-    "hyp": 60284630,
-    "cnt_diff": 7168854,
-    "pct_diff": 11.891678,
-    "savings_rate": 0.0845,
-    "savings_rate_fy26": 0.10627848370293223,
+    "hyp": 73939667,
+    "cnt_diff": -6486183,
+    "pct_diff": -8.772264,
+    "savings_rate": -0.0378,
+    "savings_rate_fy26": -0.09615786487766888,
     "l_actual": 67453484,
-    "b_endpoint": 60284630,
-    "l_benchmark": 60284630,
-    "l_scenario": 60284630,
+    "b_endpoint": 73939667,
+    "l_benchmark": 73939667,
+    "l_scenario": 67453484,
     "r_actual": 0.505794,
-    "r_scenario": 0.452039,
-    "below_benchmark": false,
+    "r_scenario": 0.505794,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 67453484,
-        "hypothetical": 60284630
+        "hypothetical": 73939667
       }
     ]
   },
@@ -951,23 +951,23 @@
     "period": "FY2025-26",
     "x": 35687843558,
     "act": 213967202,
-    "hyp": 182624547,
-    "cnt_diff": 31342655,
-    "pct_diff": 17.162345,
-    "savings_rate": 0.0991,
-    "savings_rate_fy26": 0.14648345497362722,
+    "hyp": 225146869,
+    "cnt_diff": -11179667,
+    "pct_diff": -4.9655,
+    "savings_rate": -0.0217,
+    "savings_rate_fy26": -0.05224944241688032,
     "l_actual": 213967202,
-    "b_endpoint": 182624547,
-    "l_benchmark": 182624547,
-    "l_scenario": 182624547,
+    "b_endpoint": 225146869,
+    "l_benchmark": 225146869,
+    "l_scenario": 213967202,
     "r_actual": 0.599552,
-    "r_scenario": 0.511728,
-    "below_benchmark": false,
+    "r_scenario": 0.599552,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 213967202,
-        "hypothetical": 182624547
+        "hypothetical": 225146869
       }
     ]
   },
@@ -978,23 +978,23 @@
     "period": "FY2025-26",
     "x": 1372668628,
     "act": 9398343,
-    "hyp": 7017027,
-    "cnt_diff": 2381316,
-    "pct_diff": 33.936252,
-    "savings_rate": 0.1615,
-    "savings_rate_fy26": 0.25337615364751,
+    "hyp": 8699156,
+    "cnt_diff": 699187,
+    "pct_diff": 8.037412,
+    "savings_rate": 0.0485,
+    "savings_rate_fy26": 0.0743947097908642,
     "l_actual": 9398343,
-    "b_endpoint": 7017027,
-    "l_benchmark": 7017027,
-    "l_scenario": 7017027,
+    "b_endpoint": 8699156,
+    "l_benchmark": 8699156,
+    "l_scenario": 8699156,
     "r_actual": 0.684677,
-    "r_scenario": 0.511196,
+    "r_scenario": 0.63374,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 9398343,
-        "hypothetical": 7017027
+        "hypothetical": 8699156
       }
     ]
   },
@@ -1005,23 +1005,23 @@
     "period": "FY2025-26",
     "x": 1704253704,
     "act": 10059886,
-    "hyp": 7629249,
-    "cnt_diff": 2430637,
-    "pct_diff": 31.859453,
-    "savings_rate": 0.1645,
-    "savings_rate_fy26": 0.24161675390754925,
+    "hyp": 9441902,
+    "cnt_diff": 617984,
+    "pct_diff": 6.545122,
+    "savings_rate": 0.0518,
+    "savings_rate_fy26": 0.06143051720466813,
     "l_actual": 10059886,
-    "b_endpoint": 7629249,
-    "l_benchmark": 7629249,
-    "l_scenario": 7629249,
+    "b_endpoint": 9441902,
+    "l_benchmark": 9441902,
+    "l_scenario": 9441902,
     "r_actual": 0.590281,
-    "r_scenario": 0.447659,
+    "r_scenario": 0.55402,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 10059886,
-        "hypothetical": 7629249
+        "hypothetical": 9441902
       }
     ]
   },
@@ -1032,23 +1032,23 @@
     "period": "FY2025-26",
     "x": 8922035249,
     "act": 56387275,
-    "hyp": 38439357,
-    "cnt_diff": 17947918,
-    "pct_diff": 46.691515,
-    "savings_rate": 0.2317,
-    "savings_rate_fy26": 0.3182973108737743,
+    "hyp": 47512628,
+    "cnt_diff": 8874647,
+    "pct_diff": 18.678502,
+    "savings_rate": 0.1282,
+    "savings_rate_fy26": 0.15738740699918555,
     "l_actual": 56387275,
-    "b_endpoint": 38439357,
-    "l_benchmark": 38439357,
-    "l_scenario": 38439357,
+    "b_endpoint": 47512628,
+    "l_benchmark": 47512628,
+    "l_scenario": 47512628,
     "r_actual": 0.632,
-    "r_scenario": 0.430836,
+    "r_scenario": 0.532531,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 56387275,
-        "hypothetical": 38439357
+        "hypothetical": 47512628
       }
     ]
   },
@@ -1059,23 +1059,23 @@
     "period": "FY2025-26",
     "x": 1447656302,
     "act": 11394277,
-    "hyp": 9174307,
-    "cnt_diff": 2219970,
-    "pct_diff": 24.197686,
-    "savings_rate": 0.1543,
-    "savings_rate_fy26": 0.19483201961826976,
+    "hyp": 11351467,
+    "cnt_diff": 42810,
+    "pct_diff": 0.377132,
+    "savings_rate": 0.04,
+    "savings_rate_fy26": 0.003757149312764645,
     "l_actual": 11394277,
-    "b_endpoint": 9174307,
-    "l_benchmark": 9174307,
-    "l_scenario": 9174307,
+    "b_endpoint": 11351467,
+    "l_benchmark": 11351467,
+    "l_scenario": 11351467,
     "r_actual": 0.787084,
-    "r_scenario": 0.633735,
+    "r_scenario": 0.784127,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 11394277,
-        "hypothetical": 9174307
+        "hypothetical": 11351467
       }
     ]
   },
@@ -1086,23 +1086,23 @@
     "period": "FY2025-26",
     "x": 75161295696,
     "act": 549532480,
-    "hyp": 404363438,
-    "cnt_diff": 145169042,
-    "pct_diff": 35.900635,
-    "savings_rate": 0.2092,
-    "savings_rate_fy26": 0.26416826535894655,
+    "hyp": 499448911,
+    "cnt_diff": 50083569,
+    "pct_diff": 10.027766,
+    "savings_rate": 0.1031,
+    "savings_rate_fy26": 0.09113850558933295,
     "l_actual": 549532480,
-    "b_endpoint": 404363438,
-    "l_benchmark": 404363438,
-    "l_scenario": 404363438,
+    "b_endpoint": 499448911,
+    "l_benchmark": 499448911,
+    "l_scenario": 499448911,
     "r_actual": 0.731138,
-    "r_scenario": 0.537994,
+    "r_scenario": 0.664503,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 549532480,
-        "hypothetical": 404363438
+        "hypothetical": 499448911
       }
     ]
   },
@@ -1113,23 +1113,23 @@
     "period": "FY2025-26",
     "x": 5410701109,
     "act": 37908378,
-    "hyp": 28773469,
-    "cnt_diff": 9134909,
-    "pct_diff": 31.74768,
-    "savings_rate": 0.1425,
-    "savings_rate_fy26": 0.2409733542279229,
+    "hyp": 35671249,
+    "cnt_diff": 2237129,
+    "pct_diff": 6.271519,
+    "savings_rate": 0.0269,
+    "savings_rate_fy26": 0.05901410500866062,
     "l_actual": 37908378,
-    "b_endpoint": 28773469,
-    "l_benchmark": 28773469,
-    "l_scenario": 28773469,
+    "b_endpoint": 35671249,
+    "l_benchmark": 35671249,
+    "l_scenario": 35671249,
     "r_actual": 0.700619,
-    "r_scenario": 0.531788,
+    "r_scenario": 0.659272,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 37908378,
-        "hypothetical": 28773469
+        "hypothetical": 35671249
       }
     ]
   },
@@ -1140,23 +1140,23 @@
     "period": "FY2025-26",
     "x": 16084942722,
     "act": 95167231,
-    "hyp": 75362459,
-    "cnt_diff": 19804772,
-    "pct_diff": 26.27936,
-    "savings_rate": 0.1597,
-    "savings_rate_fy26": 0.2081049515878002,
+    "hyp": 92906348,
+    "cnt_diff": 2260883,
+    "pct_diff": 2.433508,
+    "savings_rate": 0.0465,
+    "savings_rate_fy26": 0.02375694843953167,
     "l_actual": 95167231,
-    "b_endpoint": 75362459,
-    "l_benchmark": 75362459,
-    "l_scenario": 75362459,
+    "b_endpoint": 92906348,
+    "l_benchmark": 92906348,
+    "l_scenario": 92906348,
     "r_actual": 0.591654,
-    "r_scenario": 0.468528,
+    "r_scenario": 0.577598,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 95167231,
-        "hypothetical": 75362459
+        "hypothetical": 92906348
       }
     ]
   },
@@ -1167,23 +1167,23 @@
     "period": "FY2025-26",
     "x": 10292447413,
     "act": 56608462,
-    "hyp": 47004458,
-    "cnt_diff": 9604004,
-    "pct_diff": 20.432113,
-    "savings_rate": 0.1525,
-    "savings_rate_fy26": 0.1696566848963323,
+    "hyp": 58066223,
+    "cnt_diff": -1457761,
+    "pct_diff": -2.510515,
+    "savings_rate": 0.0387,
+    "savings_rate_fy26": -0.02575164469227233,
     "l_actual": 56608462,
-    "b_endpoint": 47004458,
-    "l_benchmark": 47004458,
-    "l_scenario": 47004458,
+    "b_endpoint": 58066223,
+    "l_benchmark": 58066223,
+    "l_scenario": 56608462,
     "r_actual": 0.55,
-    "r_scenario": 0.456689,
+    "r_scenario": 0.55,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 56608462,
-        "hypothetical": 47004458
+        "hypothetical": 58066223
       }
     ]
   },
@@ -1194,23 +1194,23 @@
     "period": "FY2025-26",
     "x": 25990621259,
     "act": 112080007,
-    "hyp": 98261318,
-    "cnt_diff": 13818689,
-    "pct_diff": 14.063203,
-    "savings_rate": 0.0843,
-    "savings_rate_fy26": 0.12329307759589986,
+    "hyp": 121238450,
+    "cnt_diff": -9158443,
+    "pct_diff": -7.554075,
+    "savings_rate": -0.0386,
+    "savings_rate_fy26": -0.08171344064958883,
     "l_actual": 112080007,
-    "b_endpoint": 98261318,
-    "l_benchmark": 98261318,
-    "l_scenario": 98261318,
+    "b_endpoint": 121238450,
+    "l_benchmark": 121238450,
+    "l_scenario": 112080007,
     "r_actual": 0.431233,
-    "r_scenario": 0.378065,
-    "below_benchmark": false,
+    "r_scenario": 0.431233,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 112080007,
-        "hypothetical": 98261318
+        "hypothetical": 121238450
       }
     ]
   },
@@ -1221,23 +1221,23 @@
     "period": "FY2025-26",
     "x": 1913313906,
     "act": 16091603,
-    "hyp": 12331839,
-    "cnt_diff": 3759764,
-    "pct_diff": 30.488267,
-    "savings_rate": 0.169,
-    "savings_rate_fy26": 0.23364757383089801,
+    "hyp": 15369404,
+    "cnt_diff": 722199,
+    "pct_diff": 4.69894,
+    "savings_rate": 0.0549,
+    "savings_rate_fy26": 0.044880488289451334,
     "l_actual": 16091603,
-    "b_endpoint": 12331839,
-    "l_benchmark": 12331839,
-    "l_scenario": 12331839,
+    "b_endpoint": 15369404,
+    "l_benchmark": 15369404,
+    "l_scenario": 15369404,
     "r_actual": 0.841033,
-    "r_scenario": 0.644528,
+    "r_scenario": 0.803287,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 16091603,
-        "hypothetical": 12331839
+        "hypothetical": 15369404
       }
     ]
   },
@@ -1248,23 +1248,23 @@
     "period": "FY2025-26",
     "x": 5306362664,
     "act": 38736448,
-    "hyp": 30953765,
-    "cnt_diff": 7782683,
-    "pct_diff": 25.142928,
-    "savings_rate": 0.1386,
-    "savings_rate_fy26": 0.20091369761109742,
+    "hyp": 38150994,
+    "cnt_diff": 585454,
+    "pct_diff": 1.534571,
+    "savings_rate": 0.0236,
+    "savings_rate_fy26": 0.015113776048851975,
     "l_actual": 38736448,
-    "b_endpoint": 30953765,
-    "l_benchmark": 30953765,
-    "l_scenario": 30953765,
+    "b_endpoint": 38150994,
+    "l_benchmark": 38150994,
+    "l_scenario": 38150994,
     "r_actual": 0.73,
-    "r_scenario": 0.583333,
+    "r_scenario": 0.718967,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 38736448,
-        "hypothetical": 30953765
+        "hypothetical": 38150994
       }
     ]
   },
@@ -1275,23 +1275,23 @@
     "period": "FY2025-26",
     "x": 1404732462,
     "act": 12768531,
-    "hyp": 7369319,
-    "cnt_diff": 5399212,
-    "pct_diff": 73.266091,
-    "savings_rate": 0.2914,
-    "savings_rate_fy26": 0.4228530282770978,
+    "hyp": 9104505,
+    "cnt_diff": 3664026,
+    "pct_diff": 40.244099,
+    "savings_rate": 0.1962,
+    "savings_rate_fy26": 0.2869575207985946,
     "l_actual": 12768531,
-    "b_endpoint": 7369319,
-    "l_benchmark": 7369319,
-    "l_scenario": 7369319,
+    "b_endpoint": 9104505,
+    "l_benchmark": 9104505,
+    "l_scenario": 9104505,
     "r_actual": 0.908965,
-    "r_scenario": 0.524607,
+    "r_scenario": 0.648131,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 12768531,
-        "hypothetical": 7369319
+        "hypothetical": 9104505
       }
     ]
   },
@@ -1302,23 +1302,23 @@
     "period": "FY2025-26",
     "x": 44377519044,
     "act": 222019214,
-    "hyp": 163783898,
-    "cnt_diff": 58235316,
-    "pct_diff": 35.556191,
-    "savings_rate": 0.1766,
-    "savings_rate_fy26": 0.2622985414226356,
+    "hyp": 201577529,
+    "cnt_diff": 20441685,
+    "pct_diff": 10.140855,
+    "savings_rate": 0.0664,
+    "savings_rate_fy26": 0.09207169339857225,
     "l_actual": 222019214,
-    "b_endpoint": 163783898,
-    "l_benchmark": 163783898,
-    "l_scenario": 163783898,
+    "b_endpoint": 201577529,
+    "l_benchmark": 201577529,
+    "l_scenario": 201577529,
     "r_actual": 0.500297,
-    "r_scenario": 0.36907,
+    "r_scenario": 0.454233,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 222019214,
-        "hypothetical": 163783898
+        "hypothetical": 201577529
       }
     ]
   },
@@ -1329,23 +1329,23 @@
     "period": "FY2025-26",
     "x": 19611070471,
     "act": 61118173,
-    "hyp": 38732499,
-    "cnt_diff": 22385674,
-    "pct_diff": 57.795584,
-    "savings_rate": 0.2246,
-    "savings_rate_fy26": 0.36626870374544734,
+    "hyp": 47757047,
+    "cnt_diff": 13361126,
+    "pct_diff": 27.977287,
+    "savings_rate": 0.1202,
+    "savings_rate_fy26": 0.21861134494318082,
     "l_actual": 61118173,
-    "b_endpoint": 38732499,
-    "l_benchmark": 38732499,
-    "l_scenario": 38732499,
+    "b_endpoint": 47757047,
+    "l_benchmark": 47757047,
+    "l_scenario": 47757047,
     "r_actual": 0.311651,
-    "r_scenario": 0.197503,
+    "r_scenario": 0.243521,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 61118173,
-        "hypothetical": 38732499
+        "hypothetical": 47757047
       }
     ]
   },
@@ -1356,23 +1356,23 @@
     "period": "FY2025-26",
     "x": 44872868080,
     "act": 237576684,
-    "hyp": 196587543,
-    "cnt_diff": 40989141,
-    "pct_diff": 20.850325,
-    "savings_rate": 0.0667,
-    "savings_rate_fy26": 0.17253015030717408,
+    "hyp": 241515091,
+    "cnt_diff": -3938407,
+    "pct_diff": -1.630708,
+    "savings_rate": -0.058,
+    "savings_rate_fy26": -0.016577413800421593,
     "l_actual": 237576684,
-    "b_endpoint": 196587543,
-    "l_benchmark": 196587543,
-    "l_scenario": 196587543,
+    "b_endpoint": 241515091,
+    "l_benchmark": 241515091,
+    "l_scenario": 237576684,
     "r_actual": 0.529444,
-    "r_scenario": 0.438099,
-    "below_benchmark": false,
+    "r_scenario": 0.529444,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 237576684,
-        "hypothetical": 196587543
+        "hypothetical": 241515091
       }
     ]
   },
@@ -1383,23 +1383,23 @@
     "period": "FY2025-26",
     "x": 1221440110,
     "act": 9045619,
-    "hyp": 6865947,
-    "cnt_diff": 2179672,
-    "pct_diff": 31.746123,
-    "savings_rate": 0.1863,
-    "savings_rate_fy26": 0.24096438286865718,
+    "hyp": 8485278,
+    "cnt_diff": 560341,
+    "pct_diff": 6.603685,
+    "savings_rate": 0.0765,
+    "savings_rate_fy26": 0.06194611999466261,
     "l_actual": 9045619,
-    "b_endpoint": 6865947,
-    "l_benchmark": 6865947,
-    "l_scenario": 6865947,
+    "b_endpoint": 8485278,
+    "l_benchmark": 8485278,
+    "l_scenario": 8485278,
     "r_actual": 0.74057,
-    "r_scenario": 0.562119,
+    "r_scenario": 0.694695,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 9045619,
-        "hypothetical": 6865947
+        "hypothetical": 8485278
       }
     ]
   },
@@ -1410,23 +1410,23 @@
     "period": "FY2025-26",
     "x": 10304180841,
     "act": 67029974,
-    "hyp": 52304193,
-    "cnt_diff": 14725781,
-    "pct_diff": 28.154112,
-    "savings_rate": 0.1509,
-    "savings_rate_fy26": 0.21968949294236634,
+    "hyp": 64444017,
+    "cnt_diff": 2585957,
+    "pct_diff": 4.012719,
+    "savings_rate": 0.0369,
+    "savings_rate_fy26": 0.03857911387523438,
     "l_actual": 67029974,
-    "b_endpoint": 52304193,
-    "l_benchmark": 52304193,
-    "l_scenario": 52304193,
+    "b_endpoint": 64444017,
+    "l_benchmark": 64444017,
+    "l_scenario": 64444017,
     "r_actual": 0.650512,
-    "r_scenario": 0.507602,
+    "r_scenario": 0.625416,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 67029974,
-        "hypothetical": 52304193
+        "hypothetical": 64444017
       }
     ]
   },
@@ -1437,23 +1437,23 @@
     "period": "FY2025-26",
     "x": 6707364122,
     "act": 46253231,
-    "hyp": 34731853,
-    "cnt_diff": 11521378,
-    "pct_diff": 33.172368,
-    "savings_rate": 0.1278,
-    "savings_rate_fy26": 0.24909347414021737,
+    "hyp": 42986265,
+    "cnt_diff": 3266966,
+    "pct_diff": 7.600023,
+    "savings_rate": 0.0102,
+    "savings_rate_fy26": 0.07063216837759939,
     "l_actual": 46253231,
-    "b_endpoint": 34731853,
-    "l_benchmark": 34731853,
-    "l_scenario": 34731853,
+    "b_endpoint": 42986265,
+    "l_benchmark": 42986265,
+    "l_scenario": 42986265,
     "r_actual": 0.689589,
-    "r_scenario": 0.517817,
+    "r_scenario": 0.640882,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 46253231,
-        "hypothetical": 34731853
+        "hypothetical": 42986265
       }
     ]
   },
@@ -1464,23 +1464,23 @@
     "period": "FY2025-26",
     "x": 20428324709,
     "act": 102000844,
-    "hyp": 76645324,
-    "cnt_diff": 25355520,
-    "pct_diff": 33.081627,
-    "savings_rate": 0.1873,
-    "savings_rate_fy26": 0.24858147252193324,
+    "hyp": 94277730,
+    "cnt_diff": 7723114,
+    "pct_diff": 8.191875,
+    "savings_rate": 0.0786,
+    "savings_rate_fy26": 0.07571617740731636,
     "l_actual": 102000844,
-    "b_endpoint": 76645324,
-    "l_benchmark": 76645324,
-    "l_scenario": 76645324,
+    "b_endpoint": 94277730,
+    "l_benchmark": 94277730,
+    "l_scenario": 94277730,
     "r_actual": 0.499311,
-    "r_scenario": 0.375191,
+    "r_scenario": 0.461505,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 102000844,
-        "hypothetical": 76645324
+        "hypothetical": 94277730
       }
     ]
   },
@@ -1491,23 +1491,23 @@
     "period": "FY2025-26",
     "x": 13585801288,
     "act": 36693161,
-    "hyp": 32175607,
-    "cnt_diff": 4517554,
-    "pct_diff": 14.040307,
-    "savings_rate": 0.105,
-    "savings_rate_fy26": 0.12311705715405659,
+    "hyp": 39717412,
+    "cnt_diff": -3024251,
+    "pct_diff": -7.614421,
+    "savings_rate": -0.0153,
+    "savings_rate_fy26": -0.08242001826988958,
     "l_actual": 36693161,
-    "b_endpoint": 32175607,
-    "l_benchmark": 32175607,
-    "l_scenario": 32175607,
+    "b_endpoint": 39717412,
+    "l_benchmark": 39717412,
+    "l_scenario": 36693161,
     "r_actual": 0.270085,
-    "r_scenario": 0.236833,
-    "below_benchmark": false,
+    "r_scenario": 0.270085,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 36693161,
-        "hypothetical": 32175607
+        "hypothetical": 39717412
       }
     ]
   },
@@ -1518,23 +1518,23 @@
     "period": "FY2025-26",
     "x": 4771948550,
     "act": 17195719,
-    "hyp": 14025282,
-    "cnt_diff": 3170437,
-    "pct_diff": 22.605157,
-    "savings_rate": 0.1056,
-    "savings_rate_fy26": 0.18437362229517706,
+    "hyp": 17320926,
+    "cnt_diff": -125207,
+    "pct_diff": -0.722866,
+    "savings_rate": -0.0147,
+    "savings_rate_fy26": -0.00728128902315745,
     "l_actual": 17195719,
-    "b_endpoint": 14025282,
-    "l_benchmark": 14025282,
-    "l_scenario": 14025282,
+    "b_endpoint": 17320926,
+    "l_benchmark": 17320926,
+    "l_scenario": 17195719,
     "r_actual": 0.36035,
-    "r_scenario": 0.293911,
-    "below_benchmark": false,
+    "r_scenario": 0.36035,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 17195719,
-        "hypothetical": 14025282
+        "hypothetical": 17320926
       }
     ]
   },
@@ -1545,23 +1545,23 @@
     "period": "FY2025-26",
     "x": 2756789047,
     "act": 20052722,
-    "hyp": 15747651,
-    "cnt_diff": 4305071,
-    "pct_diff": 27.337861,
-    "savings_rate": 0.1079,
-    "savings_rate_fy26": 0.21468761198604358,
+    "hyp": 19508936,
+    "cnt_diff": 543786,
+    "pct_diff": 2.787369,
+    "savings_rate": -0.0126,
+    "savings_rate_fy26": 0.027117814728593953,
     "l_actual": 20052722,
-    "b_endpoint": 15747651,
-    "l_benchmark": 15747651,
-    "l_scenario": 15747651,
+    "b_endpoint": 19508936,
+    "l_benchmark": 19508936,
+    "l_scenario": 19508936,
     "r_actual": 0.727394,
-    "r_scenario": 0.571232,
-    "below_benchmark": false,
+    "r_scenario": 0.707669,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 20052722,
-        "hypothetical": 15747651
+        "hypothetical": 19508936
       }
     ]
   },
@@ -1572,23 +1572,23 @@
     "period": "FY2025-26",
     "x": 6688660689,
     "act": 37976438,
-    "hyp": 26696955,
-    "cnt_diff": 11279483,
-    "pct_diff": 42.250073,
-    "savings_rate": 0.2075,
-    "savings_rate_fy26": 0.2970126634836053,
+    "hyp": 33034793,
+    "cnt_diff": 4941645,
+    "pct_diff": 14.95891,
+    "savings_rate": 0.1006,
+    "savings_rate_fy26": 0.1301239731856895,
     "l_actual": 37976438,
-    "b_endpoint": 26696955,
-    "l_benchmark": 26696955,
-    "l_scenario": 26696955,
+    "b_endpoint": 33034793,
+    "l_benchmark": 33034793,
+    "l_scenario": 33034793,
     "r_actual": 0.567773,
-    "r_scenario": 0.399138,
+    "r_scenario": 0.493892,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 37976438,
-        "hypothetical": 26696955
+        "hypothetical": 33034793
       }
     ]
   },
@@ -1599,23 +1599,23 @@
     "period": "FY2025-26",
     "x": 302954055682,
     "act": 1492300028,
-    "hyp": 1276702407,
-    "cnt_diff": 215597621,
-    "pct_diff": 16.887069,
-    "savings_rate": 0.0904,
-    "savings_rate_fy26": 0.14447337462624507,
+    "hyp": 1573410252,
+    "cnt_diff": -81110224,
+    "pct_diff": -5.155059,
+    "savings_rate": -0.0317,
+    "savings_rate_fy26": -0.05435249110643319,
     "l_actual": 1492300028,
-    "b_endpoint": 1276702407,
-    "l_benchmark": 1276702407,
-    "l_scenario": 1276702407,
+    "b_endpoint": 1573410252,
+    "l_benchmark": 1573410252,
+    "l_scenario": 1492300028,
     "r_actual": 0.492583,
-    "r_scenario": 0.421418,
-    "below_benchmark": false,
+    "r_scenario": 0.492583,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 1492300028,
-        "hypothetical": 1276702407
+        "hypothetical": 1573410252
       }
     ]
   },
@@ -1626,23 +1626,23 @@
     "period": "FY2025-26",
     "x": 2601398734,
     "act": 14567833,
-    "hyp": 10560593,
-    "cnt_diff": 4007240,
-    "pct_diff": 37.945218,
-    "savings_rate": 0.2135,
-    "savings_rate_fy26": 0.27507454265847225,
+    "hyp": 13071441,
+    "cnt_diff": 1496392,
+    "pct_diff": 11.447797,
+    "savings_rate": 0.1077,
+    "savings_rate_fy26": 0.10271891502325706,
     "l_actual": 14567833,
-    "b_endpoint": 10560593,
-    "l_benchmark": 10560593,
-    "l_scenario": 10560593,
+    "b_endpoint": 13071441,
+    "l_benchmark": 13071441,
+    "l_scenario": 13071441,
     "r_actual": 0.56,
-    "r_scenario": 0.405958,
+    "r_scenario": 0.502477,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 14567833,
-        "hypothetical": 10560593
+        "hypothetical": 13071441
       }
     ]
   },
@@ -1653,23 +1653,23 @@
     "period": "FY2025-26",
     "x": 3951844601,
     "act": 24325009,
-    "hyp": 22009154,
-    "cnt_diff": 2315855,
-    "pct_diff": 10.522235,
-    "savings_rate": 0.0734,
-    "savings_rate_fy26": 0.09520469242169653,
+    "hyp": 27213478,
+    "cnt_diff": -2888469,
+    "pct_diff": -10.614112,
+    "savings_rate": -0.0519,
+    "savings_rate_fy26": -0.11874482759698055,
     "l_actual": 24325009,
-    "b_endpoint": 22009154,
-    "l_benchmark": 22009154,
-    "l_scenario": 22009154,
+    "b_endpoint": 27213478,
+    "l_benchmark": 27213478,
+    "l_scenario": 24325009,
     "r_actual": 0.615536,
-    "r_scenario": 0.556934,
-    "below_benchmark": false,
+    "r_scenario": 0.615536,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 24325009,
-        "hypothetical": 22009154
+        "hypothetical": 27213478
       }
     ]
   },
@@ -1680,14 +1680,14 @@
     "period": "FY2025-26",
     "x": 23647846740,
     "act": 70000523,
-    "hyp": 80727679,
-    "cnt_diff": -10727156,
-    "pct_diff": -13.288077,
-    "savings_rate": -0.0666,
-    "savings_rate_fy26": -0.1532439407631283,
+    "hyp": 99363900,
+    "cnt_diff": -29363377,
+    "pct_diff": -29.551353,
+    "savings_rate": -0.209,
+    "savings_rate_fy26": -0.41947368021807496,
     "l_actual": 70000523,
-    "b_endpoint": 80727679,
-    "l_benchmark": 80727679,
+    "b_endpoint": 99363900,
+    "l_benchmark": 99363900,
     "l_scenario": 70000523,
     "r_actual": 0.296012,
     "r_scenario": 0.296012,
@@ -1696,7 +1696,7 @@
       {
         "fy": "2025-26",
         "actual": 70000523,
-        "hypothetical": 80727679
+        "hypothetical": 99363900
       }
     ]
   },
@@ -1707,23 +1707,23 @@
     "period": "FY2025-26",
     "x": 12565503195,
     "act": 79258414,
-    "hyp": 56583804,
-    "cnt_diff": 22674610,
-    "pct_diff": 40.072615,
-    "savings_rate": 0.1613,
-    "savings_rate_fy26": 0.2860845789823652,
+    "hyp": 69834426,
+    "cnt_diff": 9423988,
+    "pct_diff": 13.49476,
+    "savings_rate": 0.0488,
+    "savings_rate_fy26": 0.11890205120682834,
     "l_actual": 79258414,
-    "b_endpoint": 56583804,
-    "l_benchmark": 56583804,
-    "l_scenario": 56583804,
+    "b_endpoint": 69834426,
+    "l_benchmark": 69834426,
+    "l_scenario": 69834426,
     "r_actual": 0.630762,
-    "r_scenario": 0.450311,
+    "r_scenario": 0.555763,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 79258414,
-        "hypothetical": 56583804
+        "hypothetical": 69834426
       }
     ]
   },
@@ -1734,23 +1734,23 @@
     "period": "FY2025-26",
     "x": 80988112436,
     "act": 251847898,
-    "hyp": 216889384,
-    "cnt_diff": 34958514,
-    "pct_diff": 16.118131,
-    "savings_rate": 0.1025,
-    "savings_rate_fy26": 0.13880804357557117,
+    "hyp": 267150192,
+    "cnt_diff": -15302294,
+    "pct_diff": -5.727974,
+    "savings_rate": -0.0176,
+    "savings_rate_fy26": -0.060760062408779764,
     "l_actual": 251847898,
-    "b_endpoint": 216889384,
-    "l_benchmark": 216889384,
-    "l_scenario": 216889384,
+    "b_endpoint": 267150192,
+    "l_benchmark": 267150192,
+    "l_scenario": 251847898,
     "r_actual": 0.310969,
-    "r_scenario": 0.267804,
-    "below_benchmark": false,
+    "r_scenario": 0.310969,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 251847898,
-        "hypothetical": 216889384
+        "hypothetical": 267150192
       }
     ]
   },
@@ -1761,23 +1761,23 @@
     "period": "FY2025-26",
     "x": 2983573368,
     "act": 24614180,
-    "hyp": 18696993,
-    "cnt_diff": 5917187,
-    "pct_diff": 31.6478,
-    "savings_rate": 0.1519,
-    "savings_rate_fy26": 0.24039748632698713,
+    "hyp": 23207915,
+    "cnt_diff": 1406265,
+    "pct_diff": 6.05942,
+    "savings_rate": 0.0372,
+    "savings_rate_fy26": 0.057132311537495865,
     "l_actual": 24614180,
-    "b_endpoint": 18696993,
-    "l_benchmark": 18696993,
-    "l_scenario": 18696993,
+    "b_endpoint": 23207915,
+    "l_benchmark": 23207915,
+    "l_scenario": 23207915,
     "r_actual": 0.82499,
-    "r_scenario": 0.626664,
+    "r_scenario": 0.777856,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 24614180,
-        "hypothetical": 18696993
+        "hypothetical": 23207915
       }
     ]
   },
@@ -1788,23 +1788,23 @@
     "period": "FY2025-26",
     "x": 22479019300,
     "act": 147363826,
-    "hyp": 110950440,
-    "cnt_diff": 36413386,
-    "pct_diff": 32.819506,
-    "savings_rate": 0.1974,
-    "savings_rate_fy26": 0.2470985382803511,
+    "hyp": 136963906,
+    "cnt_diff": 10399920,
+    "pct_diff": 7.593183,
+    "savings_rate": 0.0893,
+    "savings_rate_fy26": 0.07057308623352382,
     "l_actual": 147363826,
-    "b_endpoint": 110950440,
-    "l_benchmark": 110950440,
-    "l_scenario": 110950440,
+    "b_endpoint": 136963906,
+    "l_benchmark": 136963906,
+    "l_scenario": 136963906,
     "r_actual": 0.655562,
-    "r_scenario": 0.493573,
+    "r_scenario": 0.609297,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 147363826,
-        "hypothetical": 110950440
+        "hypothetical": 136963906
       }
     ]
   },
@@ -1815,23 +1815,23 @@
     "period": "FY2025-26",
     "x": 33695281433,
     "act": 218119292,
-    "hyp": 174281487,
-    "cnt_diff": 43837805,
-    "pct_diff": 25.153449,
-    "savings_rate": 0.1265,
-    "savings_rate_fy26": 0.20098086967933126,
+    "hyp": 214828400,
+    "cnt_diff": 3290892,
+    "pct_diff": 1.53187,
+    "savings_rate": 0.01,
+    "savings_rate_fy26": 0.015087578773178853,
     "l_actual": 218119292,
-    "b_endpoint": 174281487,
-    "l_benchmark": 174281487,
-    "l_scenario": 174281487,
+    "b_endpoint": 214828400,
+    "l_benchmark": 214828400,
+    "l_scenario": 214828400,
     "r_actual": 0.647329,
-    "r_scenario": 0.517228,
+    "r_scenario": 0.637562,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 218119292,
-        "hypothetical": 174281487
+        "hypothetical": 214828400
       }
     ]
   },
@@ -1842,23 +1842,23 @@
     "period": "FY2025-26",
     "x": 2118380188,
     "act": 13670778,
-    "hyp": 12398225,
-    "cnt_diff": 1272553,
-    "pct_diff": 10.263993,
-    "savings_rate": 0.0704,
-    "savings_rate_fy26": 0.09308563126399975,
+    "hyp": 15307061,
+    "cnt_diff": -1636283,
+    "pct_diff": -10.689727,
+    "savings_rate": -0.0554,
+    "savings_rate_fy26": -0.11969201752819042,
     "l_actual": 13670778,
-    "b_endpoint": 12398225,
-    "l_benchmark": 12398225,
-    "l_scenario": 12398225,
+    "b_endpoint": 15307061,
+    "l_benchmark": 15307061,
+    "l_scenario": 13670778,
     "r_actual": 0.645341,
-    "r_scenario": 0.585269,
-    "below_benchmark": false,
+    "r_scenario": 0.645341,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 13670778,
-        "hypothetical": 12398225
+        "hypothetical": 15307061
       }
     ]
   },
@@ -1869,23 +1869,23 @@
     "period": "FY2025-26",
     "x": 4718962245,
     "act": 29276648,
-    "hyp": 26759314,
-    "cnt_diff": 2517334,
-    "pct_diff": 9.407319,
-    "savings_rate": 0.05,
-    "savings_rate_fy26": 0.08598436542325474,
+    "hyp": 33053717,
+    "cnt_diff": -3777069,
+    "pct_diff": -11.427063,
+    "savings_rate": -0.0774,
+    "savings_rate_fy26": -0.1290130277209331,
     "l_actual": 29276648,
-    "b_endpoint": 26759314,
-    "l_benchmark": 26759314,
-    "l_scenario": 26759314,
+    "b_endpoint": 33053717,
+    "l_benchmark": 33053717,
+    "l_scenario": 29276648,
     "r_actual": 0.620404,
-    "r_scenario": 0.567059,
-    "below_benchmark": false,
+    "r_scenario": 0.620404,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 29276648,
-        "hypothetical": 26759314
+        "hypothetical": 33053717
       }
     ]
   },
@@ -1896,23 +1896,23 @@
     "period": "FY2025-26",
     "x": 10434196388,
     "act": 77033055,
-    "hyp": 58714548,
-    "cnt_diff": 18318507,
-    "pct_diff": 31.199264,
-    "savings_rate": 0.1695,
-    "savings_rate_fy26": 0.2378006039095814,
+    "hyp": 72135550,
+    "cnt_diff": 4897505,
+    "pct_diff": 6.789308,
+    "savings_rate": 0.0584,
+    "savings_rate_fy26": 0.06357666848341922,
     "l_actual": 77033055,
-    "b_endpoint": 58714548,
-    "l_benchmark": 58714548,
-    "l_scenario": 58714548,
+    "b_endpoint": 72135550,
+    "l_benchmark": 72135550,
+    "l_scenario": 72135550,
     "r_actual": 0.738275,
-    "r_scenario": 0.562713,
+    "r_scenario": 0.691338,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 77033055,
-        "hypothetical": 58714548
+        "hypothetical": 72135550
       }
     ]
   },
@@ -1923,23 +1923,23 @@
     "period": "FY2025-26",
     "x": 2406000152,
     "act": 12521682,
-    "hyp": 10011805,
-    "cnt_diff": 2509877,
-    "pct_diff": 25.069176,
-    "savings_rate": 0.1415,
-    "savings_rate_fy26": 0.20044248049103947,
+    "hyp": 12364162,
+    "cnt_diff": 157520,
+    "pct_diff": 1.274005,
+    "savings_rate": 0.0259,
+    "savings_rate_fy26": 0.012579779617466726,
     "l_actual": 12521682,
-    "b_endpoint": 10011805,
-    "l_benchmark": 10011805,
-    "l_scenario": 10011805,
+    "b_endpoint": 12364162,
+    "l_benchmark": 12364162,
+    "l_scenario": 12364162,
     "r_actual": 0.520436,
-    "r_scenario": 0.416118,
+    "r_scenario": 0.513889,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 12521682,
-        "hypothetical": 10011805
+        "hypothetical": 12364162
       }
     ]
   },
@@ -1950,23 +1950,23 @@
     "period": "FY2025-26",
     "x": 7819835952,
     "act": 49661752,
-    "hyp": 33609172,
-    "cnt_diff": 16052580,
-    "pct_diff": 47.762498,
-    "savings_rate": 0.1897,
-    "savings_rate_fy26": 0.32323829413025945,
+    "hyp": 41557924,
+    "cnt_diff": 8103828,
+    "pct_diff": 19.500079,
+    "savings_rate": 0.0806,
+    "savings_rate_fy26": 0.1631804693479199,
     "l_actual": 49661752,
-    "b_endpoint": 33609172,
-    "l_benchmark": 33609172,
-    "l_scenario": 33609172,
+    "b_endpoint": 41557924,
+    "l_benchmark": 41557924,
+    "l_scenario": 41557924,
     "r_actual": 0.635074,
-    "r_scenario": 0.429794,
+    "r_scenario": 0.531442,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 49661752,
-        "hypothetical": 33609172
+        "hypothetical": 41557924
       }
     ]
   },
@@ -1977,23 +1977,23 @@
     "period": "FY2025-26",
     "x": 24131014296,
     "act": 136841369,
-    "hyp": 109783305,
-    "cnt_diff": 27058064,
-    "pct_diff": 24.646793,
-    "savings_rate": 0.108,
-    "savings_rate_fy26": 0.19773307003381413,
+    "hyp": 135454999,
+    "cnt_diff": 1386370,
+    "pct_diff": 1.023491,
+    "savings_rate": -0.0115,
+    "savings_rate_fy26": 0.01013121989447504,
     "l_actual": 136841369,
-    "b_endpoint": 109783305,
-    "l_benchmark": 109783305,
-    "l_scenario": 109783305,
+    "b_endpoint": 135454999,
+    "l_benchmark": 135454999,
+    "l_scenario": 135454999,
     "r_actual": 0.567077,
-    "r_scenario": 0.454947,
-    "below_benchmark": false,
+    "r_scenario": 0.561332,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 136841369,
-        "hypothetical": 109783305
+        "hypothetical": 135454999
       }
     ]
   },
@@ -2004,23 +2004,23 @@
     "period": "FY2025-26",
     "x": 5331207111,
     "act": 23058538,
-    "hyp": 17376175,
-    "cnt_diff": 5682363,
-    "pct_diff": 32.702036,
-    "savings_rate": 0.1468,
-    "savings_rate_fy26": 0.24643205913575267,
+    "hyp": 21468236,
+    "cnt_diff": 1590302,
+    "pct_diff": 7.407698,
+    "savings_rate": 0.0321,
+    "savings_rate_fy26": 0.06896803257864831,
     "l_actual": 23058538,
-    "b_endpoint": 17376175,
-    "l_benchmark": 17376175,
-    "l_scenario": 17376175,
+    "b_endpoint": 21468236,
+    "l_benchmark": 21468236,
+    "l_scenario": 21468236,
     "r_actual": 0.43252,
-    "r_scenario": 0.325933,
+    "r_scenario": 0.40269,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 23058538,
-        "hypothetical": 17376175
+        "hypothetical": 21468236
       }
     ]
   },
@@ -2031,23 +2031,23 @@
     "period": "FY2025-26",
     "x": 20574848118,
     "act": 102954030,
-    "hyp": 77721049,
-    "cnt_diff": 25232981,
-    "pct_diff": 32.466084,
-    "savings_rate": 0.1355,
-    "savings_rate_fy26": 0.24508978424642533,
+    "hyp": 96054663,
+    "cnt_diff": 6899367,
+    "pct_diff": 7.182751,
+    "savings_rate": 0.0189,
+    "savings_rate_fy26": 0.0670140547193733,
     "l_actual": 102954030,
-    "b_endpoint": 77721049,
-    "l_benchmark": 77721049,
-    "l_scenario": 77721049,
+    "b_endpoint": 96054663,
+    "l_benchmark": 96054663,
+    "l_scenario": 96054663,
     "r_actual": 0.500388,
-    "r_scenario": 0.377748,
+    "r_scenario": 0.466855,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 102954030,
-        "hypothetical": 77721049
+        "hypothetical": 96054663
       }
     ]
   },
@@ -2058,23 +2058,23 @@
     "period": "FY2025-26",
     "x": 5055041440,
     "act": 37017755,
-    "hyp": 32114757,
-    "cnt_diff": 4902998,
-    "pct_diff": 15.267118,
-    "savings_rate": 0.0237,
-    "savings_rate_fy26": 0.13244990140542018,
+    "hyp": 39750394,
+    "cnt_diff": -2732639,
+    "pct_diff": -6.874495,
+    "savings_rate": -0.1073,
+    "savings_rate_fy26": -0.07381968463511632,
     "l_actual": 37017755,
-    "b_endpoint": 32114757,
-    "l_benchmark": 32114757,
-    "l_scenario": 32114757,
+    "b_endpoint": 39750394,
+    "l_benchmark": 39750394,
+    "l_scenario": 37017755,
     "r_actual": 0.732294,
-    "r_scenario": 0.635302,
-    "below_benchmark": false,
+    "r_scenario": 0.732294,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 37017755,
-        "hypothetical": 32114757
+        "hypothetical": 39750394
       }
     ]
   },
@@ -2085,23 +2085,23 @@
     "period": "FY2025-26",
     "x": 9962746888,
     "act": 74871261,
-    "hyp": 56716636,
-    "cnt_diff": 18154625,
-    "pct_diff": 32.009347,
-    "savings_rate": 0.1577,
-    "savings_rate_fy26": 0.24247788480549298,
+    "hyp": 70113809,
+    "cnt_diff": 4757452,
+    "pct_diff": 6.785328,
+    "savings_rate": 0.0442,
+    "savings_rate_fy26": 0.06354176404214695,
     "l_actual": 74871261,
-    "b_endpoint": 56716636,
-    "l_benchmark": 56716636,
-    "l_scenario": 56716636,
+    "b_endpoint": 70113809,
+    "l_benchmark": 70113809,
+    "l_scenario": 70113809,
     "r_actual": 0.751512,
-    "r_scenario": 0.569287,
+    "r_scenario": 0.70376,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 74871261,
-        "hypothetical": 56716636
+        "hypothetical": 70113809
       }
     ]
   },
@@ -2112,23 +2112,23 @@
     "period": "FY2025-26",
     "x": 12818605931,
     "act": 74442165,
-    "hyp": 55752601,
-    "cnt_diff": 18689564,
-    "pct_diff": 33.522318,
-    "savings_rate": 0.1507,
-    "savings_rate_fy26": 0.25106153213034577,
+    "hyp": 68870391,
+    "cnt_diff": 5571774,
+    "pct_diff": 8.090231,
+    "savings_rate": 0.0364,
+    "savings_rate_fy26": 0.0748470171441145,
     "l_actual": 74442165,
-    "b_endpoint": 55752601,
-    "l_benchmark": 55752601,
-    "l_scenario": 55752601,
+    "b_endpoint": 68870391,
+    "l_benchmark": 68870391,
+    "l_scenario": 68870391,
     "r_actual": 0.580735,
-    "r_scenario": 0.434935,
+    "r_scenario": 0.537269,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 74442165,
-        "hypothetical": 55752601
+        "hypothetical": 68870391
       }
     ]
   },
@@ -2139,23 +2139,23 @@
     "period": "FY2025-26",
     "x": 21643877753,
     "act": 125620537,
-    "hyp": 96869082,
-    "cnt_diff": 28751455,
-    "pct_diff": 29.680734,
-    "savings_rate": 0.1442,
-    "savings_rate_fy26": 0.2288754345955391,
+    "hyp": 119515865,
+    "cnt_diff": 6104672,
+    "pct_diff": 5.107834,
+    "savings_rate": 0.0295,
+    "savings_rate_fy26": 0.04859613042412006,
     "l_actual": 125620537,
-    "b_endpoint": 96869082,
-    "l_benchmark": 96869082,
-    "l_scenario": 96869082,
+    "b_endpoint": 119515865,
+    "l_benchmark": 119515865,
+    "l_scenario": 119515865,
     "r_actual": 0.580398,
-    "r_scenario": 0.447559,
+    "r_scenario": 0.552192,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 125620537,
-        "hypothetical": 96869082
+        "hypothetical": 119515865
       }
     ]
   },
@@ -2166,23 +2166,23 @@
     "period": "FY2025-26",
     "x": 11411024102,
     "act": 51823099,
-    "hyp": 46669522,
-    "cnt_diff": 5153577,
-    "pct_diff": 11.042704,
-    "savings_rate": 0.0664,
-    "savings_rate_fy26": 0.09944555805124661,
+    "hyp": 57703062,
+    "cnt_diff": -5879963,
+    "pct_diff": -10.190036,
+    "savings_rate": -0.0594,
+    "savings_rate_fy26": -0.11346220340856111,
     "l_actual": 51823099,
-    "b_endpoint": 46669522,
-    "l_benchmark": 46669522,
-    "l_scenario": 46669522,
+    "b_endpoint": 57703062,
+    "l_benchmark": 57703062,
+    "l_scenario": 51823099,
     "r_actual": 0.454149,
-    "r_scenario": 0.408986,
-    "below_benchmark": false,
+    "r_scenario": 0.454149,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 51823099,
-        "hypothetical": 46669522
+        "hypothetical": 57703062
       }
     ]
   },
@@ -2193,23 +2193,23 @@
     "period": "FY2025-26",
     "x": 7251924968,
     "act": 49370252,
-    "hyp": 41578562,
-    "cnt_diff": 7791690,
-    "pct_diff": 18.739681,
-    "savings_rate": 0.0853,
-    "savings_rate_fy26": 0.157821556187317,
+    "hyp": 51392806,
+    "cnt_diff": -2022554,
+    "pct_diff": -3.935481,
+    "savings_rate": -0.0382,
+    "savings_rate_fy26": -0.0409670584626548,
     "l_actual": 49370252,
-    "b_endpoint": 41578562,
-    "l_benchmark": 41578562,
-    "l_scenario": 41578562,
+    "b_endpoint": 51392806,
+    "l_benchmark": 51392806,
+    "l_scenario": 49370252,
     "r_actual": 0.680788,
-    "r_scenario": 0.573345,
-    "below_benchmark": false,
+    "r_scenario": 0.680788,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 49370252,
-        "hypothetical": 41578562
+        "hypothetical": 51392806
       }
     ]
   },
@@ -2220,23 +2220,23 @@
     "period": "FY2025-26",
     "x": 2708761750,
     "act": 26851303,
-    "hyp": 22344803,
-    "cnt_diff": 4506500,
-    "pct_diff": 20.168001,
-    "savings_rate": 0.1243,
-    "savings_rate_fy26": 0.16783170634214659,
+    "hyp": 27663272,
+    "cnt_diff": -811969,
+    "pct_diff": -2.935188,
+    "savings_rate": 0.0062,
+    "savings_rate_fy26": -0.030239463611877605,
     "l_actual": 26851303,
-    "b_endpoint": 22344803,
-    "l_benchmark": 22344803,
-    "l_scenario": 22344803,
+    "b_endpoint": 27663272,
+    "l_benchmark": 27663272,
+    "l_scenario": 26851303,
     "r_actual": 0.991276,
-    "r_scenario": 0.824908,
+    "r_scenario": 0.991276,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 26851303,
-        "hypothetical": 22344803
+        "hypothetical": 27663272
       }
     ]
   },
@@ -2247,23 +2247,23 @@
     "period": "FY2025-26",
     "x": 9759965469,
     "act": 50581133,
-    "hyp": 37191524,
-    "cnt_diff": 13389609,
-    "pct_diff": 36.001776,
-    "savings_rate": 0.1742,
-    "savings_rate_fy26": 0.26471548195648364,
+    "hyp": 45863342,
+    "cnt_diff": 4717791,
+    "pct_diff": 10.286627,
+    "savings_rate": 0.0628,
+    "savings_rate_fy26": 0.09327175411432559,
     "l_actual": 50581133,
-    "b_endpoint": 37191524,
-    "l_benchmark": 37191524,
-    "l_scenario": 37191524,
+    "b_endpoint": 45863342,
+    "l_benchmark": 45863342,
+    "l_scenario": 45863342,
     "r_actual": 0.518251,
-    "r_scenario": 0.381062,
+    "r_scenario": 0.469913,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 50581133,
-        "hypothetical": 37191524
+        "hypothetical": 45863342
       }
     ]
   },
@@ -2274,23 +2274,23 @@
     "period": "FY2025-26",
     "x": 6683095669,
     "act": 41907181,
-    "hyp": 28423679,
-    "cnt_diff": 13483502,
-    "pct_diff": 47.437568,
-    "savings_rate": 0.1959,
-    "savings_rate_fy26": 0.3217468147046207,
+    "hyp": 35103303,
+    "cnt_diff": 6803878,
+    "pct_diff": 19.382444,
+    "savings_rate": 0.0879,
+    "savings_rate_fy26": 0.16235589790685276,
     "l_actual": 41907181,
-    "b_endpoint": 28423679,
-    "l_benchmark": 28423679,
-    "l_scenario": 28423679,
+    "b_endpoint": 35103303,
+    "l_benchmark": 35103303,
+    "l_scenario": 35103303,
     "r_actual": 0.627062,
-    "r_scenario": 0.425307,
+    "r_scenario": 0.525255,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 41907181,
-        "hypothetical": 28423679
+        "hypothetical": 35103303
       }
     ]
   },
@@ -2301,23 +2301,23 @@
     "period": "FY2025-26",
     "x": 9171681548,
     "act": 47367745,
-    "hyp": 37090381,
-    "cnt_diff": 10277364,
-    "pct_diff": 27.708974,
-    "savings_rate": 0.1356,
-    "savings_rate_fy26": 0.21696966997267866,
+    "hyp": 45875777,
+    "cnt_diff": 1491968,
+    "pct_diff": 3.252191,
+    "savings_rate": 0.019,
+    "savings_rate_fy26": 0.03149755176228043,
     "l_actual": 47367745,
-    "b_endpoint": 37090381,
-    "l_benchmark": 37090381,
-    "l_scenario": 37090381,
+    "b_endpoint": 45875777,
+    "l_benchmark": 45875777,
+    "l_scenario": 45875777,
     "r_actual": 0.516456,
-    "r_scenario": 0.404401,
+    "r_scenario": 0.500189,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 47367745,
-        "hypothetical": 37090381
+        "hypothetical": 45875777
       }
     ]
   },
@@ -2328,23 +2328,23 @@
     "period": "FY2025-26",
     "x": 2138174616,
     "act": 8767851,
-    "hyp": 5952435,
-    "cnt_diff": 2815416,
-    "pct_diff": 47.298559,
-    "savings_rate": 0.236,
-    "savings_rate_fy26": 0.3211067341358789,
+    "hyp": 7374637,
+    "cnt_diff": 1393214,
+    "pct_diff": 18.891967,
+    "savings_rate": 0.1331,
+    "savings_rate_fy26": 0.15890028240671517,
     "l_actual": 8767851,
-    "b_endpoint": 5952435,
-    "l_benchmark": 5952435,
-    "l_scenario": 5952435,
+    "b_endpoint": 7374637,
+    "l_benchmark": 7374637,
+    "l_scenario": 7374637,
     "r_actual": 0.410062,
-    "r_scenario": 0.278389,
+    "r_scenario": 0.344903,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 8767851,
-        "hypothetical": 5952435
+        "hypothetical": 7374637
       }
     ]
   },
@@ -2355,23 +2355,23 @@
     "period": "FY2025-26",
     "x": 12054183992,
     "act": 50190923,
-    "hyp": 39122991,
-    "cnt_diff": 11067932,
-    "pct_diff": 28.290097,
-    "savings_rate": 0.1371,
-    "savings_rate_fy26": 0.22051660616004212,
+    "hyp": 48351642,
+    "cnt_diff": 1839281,
+    "pct_diff": 3.803968,
+    "savings_rate": 0.0209,
+    "savings_rate_fy26": 0.03664568989894846,
     "l_actual": 50190923,
-    "b_endpoint": 39122991,
-    "l_benchmark": 39122991,
-    "l_scenario": 39122991,
+    "b_endpoint": 48351642,
+    "l_benchmark": 48351642,
+    "l_scenario": 48351642,
     "r_actual": 0.416378,
-    "r_scenario": 0.324559,
+    "r_scenario": 0.401119,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 50190923,
-        "hypothetical": 39122991
+        "hypothetical": 48351642
       }
     ]
   },
@@ -2382,23 +2382,23 @@
     "period": "FY2025-26",
     "x": 562155608,
     "act": 4920671,
-    "hyp": 3958167,
-    "cnt_diff": 962504,
-    "pct_diff": 24.316912,
-    "savings_rate": 0.1248,
-    "savings_rate_fy26": 0.1956042173923028,
+    "hyp": 4873971,
+    "cnt_diff": 46700,
+    "pct_diff": 0.958151,
+    "savings_rate": 0.0078,
+    "savings_rate_fy26": 0.009490575573941033,
     "l_actual": 4920671,
-    "b_endpoint": 3958167,
-    "l_benchmark": 3958167,
-    "l_scenario": 3958167,
+    "b_endpoint": 4873971,
+    "l_benchmark": 4873971,
+    "l_scenario": 4873971,
     "r_actual": 0.875322,
-    "r_scenario": 0.704105,
+    "r_scenario": 0.867015,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 4920671,
-        "hypothetical": 3958167
+        "hypothetical": 4873971
       }
     ]
   },
@@ -2409,23 +2409,23 @@
     "period": "FY2025-26",
     "x": 62771098102,
     "act": 277899273,
-    "hyp": 229780229,
-    "cnt_diff": 48119044,
-    "pct_diff": 20.941333,
-    "savings_rate": 0.0875,
-    "savings_rate_fy26": 0.17315282433286538,
+    "hyp": 282713774,
+    "cnt_diff": -4814501,
+    "pct_diff": -1.702959,
+    "savings_rate": -0.0346,
+    "savings_rate_fy26": -0.017324626106524577,
     "l_actual": 277899273,
-    "b_endpoint": 229780229,
-    "l_benchmark": 229780229,
-    "l_scenario": 229780229,
+    "b_endpoint": 282713774,
+    "l_benchmark": 282713774,
+    "l_scenario": 277899273,
     "r_actual": 0.442719,
-    "r_scenario": 0.366061,
-    "below_benchmark": false,
+    "r_scenario": 0.442719,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 277899273,
-        "hypothetical": 229780229
+        "hypothetical": 282713774
       }
     ]
   },
@@ -2436,23 +2436,23 @@
     "period": "FY2025-26",
     "x": 4836650515,
     "act": 34480481,
-    "hyp": 24333617,
-    "cnt_diff": 10146864,
-    "pct_diff": 41.698955,
-    "savings_rate": 0.1741,
-    "savings_rate_fy26": 0.2942784933887668,
+    "hyp": 30143030,
+    "cnt_diff": 4337451,
+    "pct_diff": 14.389565,
+    "savings_rate": 0.0625,
+    "savings_rate_fy26": 0.12579438784511154,
     "l_actual": 34480481,
-    "b_endpoint": 24333617,
-    "l_benchmark": 24333617,
-    "l_scenario": 24333617,
+    "b_endpoint": 30143030,
+    "l_benchmark": 30143030,
+    "l_scenario": 30143030,
     "r_actual": 0.7129,
-    "r_scenario": 0.503109,
+    "r_scenario": 0.623221,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 34480481,
-        "hypothetical": 24333617
+        "hypothetical": 30143030
       }
     ]
   },
@@ -2463,23 +2463,23 @@
     "period": "FY2025-26",
     "x": 311698513683,
     "act": 1612589315,
-    "hyp": 1264554241,
-    "cnt_diff": 348035074,
-    "pct_diff": 27.522352,
-    "savings_rate": 0.1316,
-    "savings_rate_fy26": 0.21582375051269642,
+    "hyp": 1557678110,
+    "cnt_diff": 54911205,
+    "pct_diff": 3.525196,
+    "savings_rate": 0.0152,
+    "savings_rate_fy26": 0.03405157437744774,
     "l_actual": 1612589315,
-    "b_endpoint": 1264554241,
-    "l_benchmark": 1264554241,
-    "l_scenario": 1264554241,
+    "b_endpoint": 1557678110,
+    "l_benchmark": 1557678110,
+    "l_scenario": 1557678110,
     "r_actual": 0.517355,
-    "r_scenario": 0.405698,
+    "r_scenario": 0.499739,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 1612589315,
-        "hypothetical": 1264554241
+        "hypothetical": 1557678110
       }
     ]
   },
@@ -2490,23 +2490,23 @@
     "period": "FY2025-26",
     "x": 5008921574,
     "act": 29571944,
-    "hyp": 20243407,
-    "cnt_diff": 9328537,
-    "pct_diff": 46.081853,
-    "savings_rate": 0.1534,
-    "savings_rate_fy26": 0.31545227462895237,
+    "hyp": 25017910,
+    "cnt_diff": 4554034,
+    "pct_diff": 18.203095,
+    "savings_rate": 0.0398,
+    "savings_rate_fy26": 0.15399846557263872,
     "l_actual": 29571944,
-    "b_endpoint": 20243407,
-    "l_benchmark": 20243407,
-    "l_scenario": 20243407,
+    "b_endpoint": 25017910,
+    "l_benchmark": 25017910,
+    "l_scenario": 25017910,
     "r_actual": 0.590385,
-    "r_scenario": 0.404147,
+    "r_scenario": 0.499467,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 29571944,
-        "hypothetical": 20243407
+        "hypothetical": 25017910
       }
     ]
   },
@@ -2517,23 +2517,23 @@
     "period": "FY2025-26",
     "x": 1065615957,
     "act": 9065390,
-    "hyp": 7991676,
-    "cnt_diff": 1073714,
-    "pct_diff": 13.435405,
-    "savings_rate": 0.0664,
-    "savings_rate_fy26": 0.11844101577538307,
+    "hyp": 9909664,
+    "cnt_diff": -844274,
+    "pct_diff": -8.519704,
+    "savings_rate": -0.0595,
+    "savings_rate_fy26": -0.09313156962910586,
     "l_actual": 9065390,
-    "b_endpoint": 7991676,
-    "l_benchmark": 7991676,
-    "l_scenario": 7991676,
+    "b_endpoint": 9909664,
+    "l_benchmark": 9909664,
+    "l_scenario": 9065390,
     "r_actual": 0.850718,
-    "r_scenario": 0.749958,
-    "below_benchmark": false,
+    "r_scenario": 0.850718,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 9065390,
-        "hypothetical": 7991676
+        "hypothetical": 9909664
       }
     ]
   },
@@ -2544,23 +2544,23 @@
     "period": "FY2025-26",
     "x": 15173462466,
     "act": 48265529,
-    "hyp": 39487486,
-    "cnt_diff": 8778043,
-    "pct_diff": 22.229936,
-    "savings_rate": 0.134,
-    "savings_rate_fy26": 0.18186981851996276,
+    "hyp": 48760892,
+    "cnt_diff": -495363,
+    "pct_diff": -1.015902,
+    "savings_rate": 0.0181,
+    "savings_rate_fy26": -0.010263287490332904,
     "l_actual": 48265529,
-    "b_endpoint": 39487486,
-    "l_benchmark": 39487486,
-    "l_scenario": 39487486,
+    "b_endpoint": 48760892,
+    "l_benchmark": 48760892,
+    "l_scenario": 48265529,
     "r_actual": 0.318092,
-    "r_scenario": 0.26024,
+    "r_scenario": 0.318092,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 48265529,
-        "hypothetical": 39487486
+        "hypothetical": 48760892
       }
     ]
   },
@@ -2571,23 +2571,23 @@
     "period": "FY2025-26",
     "x": 13748358150,
     "act": 87663085,
-    "hyp": 60421164,
-    "cnt_diff": 27241921,
-    "pct_diff": 45.08672,
-    "savings_rate": 0.1912,
-    "savings_rate_fy26": 0.3107570421460755,
+    "hyp": 74689162,
+    "cnt_diff": 12973923,
+    "pct_diff": 17.370556,
+    "savings_rate": 0.082,
+    "savings_rate_fy26": 0.14799756362669647,
     "l_actual": 87663085,
-    "b_endpoint": 60421164,
-    "l_benchmark": 60421164,
-    "l_scenario": 60421164,
+    "b_endpoint": 74689162,
+    "l_benchmark": 74689162,
+    "l_scenario": 74689162,
     "r_actual": 0.637626,
-    "r_scenario": 0.439479,
+    "r_scenario": 0.543259,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 87663085,
-        "hypothetical": 60421164
+        "hypothetical": 74689162
       }
     ]
   },
@@ -2598,23 +2598,23 @@
     "period": "FY2025-26",
     "x": 10319038032,
     "act": 44969142,
-    "hyp": 38562104,
-    "cnt_diff": 6407038,
-    "pct_diff": 16.614856,
-    "savings_rate": 0.0884,
-    "savings_rate_fy26": 0.14247632298610455,
+    "hyp": 47716556,
+    "cnt_diff": -2747414,
+    "pct_diff": -5.757779,
+    "savings_rate": -0.0346,
+    "savings_rate_fy26": -0.0610955396925296,
     "l_actual": 44969142,
-    "b_endpoint": 38562104,
-    "l_benchmark": 38562104,
-    "l_scenario": 38562104,
+    "b_endpoint": 47716556,
+    "l_benchmark": 47716556,
+    "l_scenario": 44969142,
     "r_actual": 0.435788,
-    "r_scenario": 0.373699,
-    "below_benchmark": false,
+    "r_scenario": 0.435788,
+    "below_benchmark": true,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 44969142,
-        "hypothetical": 38562104
+        "hypothetical": 47716556
       }
     ]
   },
@@ -2625,23 +2625,23 @@
     "period": "FY2025-26",
     "x": 11561896006,
     "act": 68877970,
-    "hyp": 55672834,
-    "cnt_diff": 13205136,
-    "pct_diff": 23.719173,
-    "savings_rate": 0.1189,
-    "savings_rate_fy26": 0.19171784534300298,
+    "hyp": 68823952,
+    "cnt_diff": 54018,
+    "pct_diff": 0.078487,
+    "savings_rate": 0.0002,
+    "savings_rate_fy26": 0.0007842565627297087,
     "l_actual": 68877970,
-    "b_endpoint": 55672834,
-    "l_benchmark": 55672834,
-    "l_scenario": 55672834,
+    "b_endpoint": 68823952,
+    "l_benchmark": 68823952,
+    "l_scenario": 68823952,
     "r_actual": 0.595732,
-    "r_scenario": 0.48152,
+    "r_scenario": 0.595265,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 68877970,
-        "hypothetical": 55672834
+        "hypothetical": 68823952
       }
     ]
   },
@@ -2652,23 +2652,23 @@
     "period": "FY2025-26",
     "x": 4400246130,
     "act": 28627039,
-    "hyp": 21033350,
-    "cnt_diff": 7593689,
-    "pct_diff": 36.103089,
-    "savings_rate": 0.173,
-    "savings_rate_fy26": 0.2652628167377003,
+    "hyp": 25991644,
+    "cnt_diff": 2635395,
+    "pct_diff": 10.139393,
+    "savings_rate": 0.0615,
+    "savings_rate_fy26": 0.09205964333230551,
     "l_actual": 28627039,
-    "b_endpoint": 21033350,
-    "l_benchmark": 21033350,
-    "l_scenario": 21033350,
+    "b_endpoint": 25991644,
+    "l_benchmark": 25991644,
+    "l_scenario": 25991644,
     "r_actual": 0.650578,
-    "r_scenario": 0.478004,
+    "r_scenario": 0.590686,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 28627039,
-        "hypothetical": 21033350
+        "hypothetical": 25991644
       }
     ]
   },
@@ -2679,23 +2679,23 @@
     "period": "FY2025-26",
     "x": 3950196682,
     "act": 20743170,
-    "hyp": 14360717,
-    "cnt_diff": 6382453,
-    "pct_diff": 44.443832,
-    "savings_rate": 0.1765,
-    "savings_rate_fy26": 0.3076893743820255,
+    "hyp": 17751229,
+    "cnt_diff": 2991941,
+    "pct_diff": 16.854839,
+    "savings_rate": 0.0657,
+    "savings_rate_fy26": 0.14423740440829438,
     "l_actual": 20743170,
-    "b_endpoint": 14360717,
-    "l_benchmark": 14360717,
-    "l_scenario": 14360717,
+    "b_endpoint": 17751229,
+    "l_benchmark": 17751229,
+    "l_scenario": 17751229,
     "r_actual": 0.525117,
-    "r_scenario": 0.363544,
+    "r_scenario": 0.449376,
     "below_benchmark": false,
     "by_year": [
       {
         "fy": "2025-26",
         "actual": 20743170,
-        "hypothetical": 14360717
+        "hypothetical": 17751229
       }
     ]
   }

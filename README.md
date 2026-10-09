@@ -36,7 +36,8 @@ saved       = paid * savings_rate  # the "percent lower" always matches column Q
 - Where the county is at or below the benchmark, the page shows a short "no savings"
   explanation instead of a receipt.
 
-Two counties are at or below the benchmark: **Alamance and Moore**.
+39 of the 100 counties are at or below the benchmark, including **Alamance, Franklin,
+Moore, and Richmond**.
 
 ## Data
 
@@ -49,7 +50,7 @@ without any sibling checkout:
 
 ```
 data/source/
-  Data(tax).csv                # authoritative yearly levies; column Q = 5-year savings rate
+  Data(tax).csv                # authoritative yearly levies; column Q = savings_rate
   lg04_fy2025-26_valuation.csv # NCDOR LG04 assessed valuation (taxable base X)
   nc_county_fips.csv           # county name -> 5-digit STCOFIPS
 ```
@@ -74,7 +75,7 @@ node --test test/calc.test.mjs
 ```
 
 Tests cover the receipt arithmetic, address/residential filtering, column-Q wiring for
-all 100 counties, the two at/below-benchmark counties, the per-county address sources
+all 100 counties, the 39 at/below-benchmark counties, the per-county address sources
 used for the counties the statewide parcel layer cannot search, the statewide address
 lookup used for the counties that pad `siteadd`, and build reproducibility.
 

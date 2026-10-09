@@ -126,6 +126,7 @@
   }
 
   .below-sentence-note { text-transform: none; font-size: 12.5px; line-height: 1.55; }
+  .below-sentence-note .rate-note { color: #c41230; white-space: nowrap; }
 
   .method { margin-top: 18px; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; }
   .method summary { cursor: pointer; font-weight: 800; font-size: 15px; list-style: none; }
@@ -274,6 +275,13 @@
           <dd>Your receipt uses the parcel's current assessed value from NC OneMap. Reassessment timing is not modeled: where a county has revalued since the base year, the figure moves with the county's newer assessment.</dd>
           <dt>Finding your parcel</dt>
           <dd>We match what you type against the address stored on the parcel record. Fifty-nine counties store that address with extra spaces in it, which no search can match, so in those counties we look the address up in the state's NG 9-1 address file instead and take the parcel that sits at that point. Either way the value, and the address printed on your receipt, come from the one parcel record.</dd>
+          <dt>Counties without parcel values</dt>
+          <dd>Camden, Chowan and Yancey resolve a typed address to a parcel, but the parcel
+          layer records no assessed value for them, so a per-parcel receipt is not possible
+          there. They join Franklin, Hoke, Perquimans and Richmond, which publish no address
+          the search can match. Franklin and Richmond are also at/below benchmark, so they
+          get the no-savings sentence; the other five show the county-wide savings rate
+          instead of a receipt.</dd>
         </dl>
         <p class="sources">Sources: county levy data (Data(tax).csv), NCDOR LG04 FY2025-26 assessed valuation, NC OneMap parcels, OSBM certified county population estimates, and BLS South urban CPI.</p>
         <p>This is an estimate based on historical tax and property data and a hypothetical policy scenario. It is not an official tax assessment.</p>
@@ -347,20 +355,29 @@ function selectCounty(key) {
   showCountyLevel();
 }
 
-// Counties with no site address in the state parcel service cannot be matched
-// to an individual parcel, so no receipt can be printed. The county-level
-// savings rate is published for every county, so the reader still gets the
-// finding rather than a dead end.
+// Counties whose parcel records cannot yield a receipt: four the parcel layer
+// cannot be matched to an address at all, and three more (Camden, Chowan,
+// Yancey) whose addresses resolve but whose parcel layer carries no assessed
+// value. The county-level savings rate is published for every county, so the
+// reader still gets the finding rather than a dead end.
 function showCountyLevel() {
   if (!COUNTY || PT.hasParcelAddress(COUNTY)) return;
   const nm = COUNTY.label.replace(/ County$/, "");
-  const pct = Math.round(COUNTY.savings_rate * 100);
   const sentence = byId("belowSentence");
-  sentence.textContent = "We do not have individual parcel data for " + nm +
-    " County, so we cannot print a receipt for your property. Our county-level " +
-    "analysis estimates that a property tax levy limit would have lowered property " +
-    "tax bills across " + nm + " County by about " + pct +
-    "% over the five years to " + COUNTY.period + ".";
+  if (COUNTY.below_benchmark) {
+    sentence.textContent = "Property tax rate growth in " + nm + " County was below the " +
+      "maximum allowed under a levy limit, so this property would not have saved anything.";
+    sentence.classList.add("below-sentence-note");
+    sentence.classList.remove("hidden");
+    byId("bill").classList.add("hidden");
+    byId("billResults").classList.remove("hidden");
+    return;
+  }
+  const pct = Math.round(COUNTY.savings_rate * 100);
+  sentence.innerHTML = "We cannot currently print a receipt for individual properties in " +
+    esc(nm) + " County. Our county-level analysis estimates that a property tax levy limit " +
+    "would have lowered property tax bills across " + esc(nm) + " County by about " +
+    '<span class="rate-note">' + pct + "%</span> over the five years to " + esc(COUNTY.period) + ".";
   sentence.classList.add("below-sentence-note");
   sentence.classList.remove("hidden");
   byId("bill").classList.add("hidden");
