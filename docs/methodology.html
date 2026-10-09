@@ -55,7 +55,7 @@ school, and special district taxes are out of scope.
     <tr><th style="width:26%">Input</th><th style="width:34%">Source</th><th>Used for</th></tr>
   </thead>
   <tbody>
-    <tr><td>County-wide autonomous levies, FY2020&#8211;21 to FY2025&#8211;26 <code>act</code></td><td>NCDOR LG04 (total property tax levied by all local jurisdictions</td><td>Anchor &amp; actuals</td></tr>
+    <tr><td>County-wide autonomous levies, FY2020&#8211;21 to FY2025&#8211;26 <code>act</code></td><td>NCDOR LG04 (total property tax levied by all local jurisdictions)</td><td>Anchor &amp; actuals</td></tr>
     <tr><td>County population estimates, 2019&#8211;2024</td><td>OSBM Certified County Population Estimates</td><td>Benchmark growth component</td></tr>
     <tr><td>Inflation, 2019&#8211;2024</td><td>BLS/U.S. South urban CPI (FRED CUUR0300SA0)</td><td>Benchmark growth component</td></tr>
     <tr><td>FY2025&#8211;26 taxable base <code>x</code></td><td>NCDOR LG04 (total assessed valuation)</td><td>Scaled &#8220;what you paid&#8221;</td></tr>
@@ -110,7 +110,9 @@ instead of a receipt, when that five-year savings rate is not positive
 (<code>savings_rate &#8804; 0</code>); the flag is the rate itself, so the two always agree.
 All 100 counties&#8217; computed columns, including this rate, are
 recorded in <code>Data(tax).csv</code>; column Q (<code>savings_rate</code>) is the number
-the receipt displays as &#8220;percent lower&#8221;.
+the receipt displays as &#8220;percent lower&#8221;. A county whose rate is below 1 percent keeps
+the fraction (Caldwell prints 0.39%) so the discount is never rounded to zero; at or above
+1 percent it prints the whole percent.
 </p>
 
 <h3>3.2 Per-property receipt</h3>

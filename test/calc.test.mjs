@@ -56,6 +56,25 @@ test("Wake fixture: V=291834 => paid 1509.82, could 1486.87, saved 22.95, 2% low
   assert.ok(Math.abs(res.could_have - 1486.87) < 0.02, `could ${res.could_have}`);
   assert.ok(Math.abs(res.saved - 22.95) < 0.02, `saved ${res.saved}`);
   assert.equal(Math.round(100 * res.rate), 2);
+  assert.equal(PT.formatPercent(res.rate), "2");
+});
+
+test("formatPercent matches the published % for every county", () => {
+  const expected = new Map();
+  for (const [slug, rec] of CSV_BY_SLUG) {
+    const rate = parseFloat(rec.savings_rate);
+    const p = 100 * rate;
+    expected.set(slug, p >= 1 ? String(Math.round(p)) : rate <= 0 ? "0" : p.toFixed(2).replace(/\.?0+$/, ""));
+  }
+  for (const [slug, c] of Object.entries(BENCHMARKS)) {
+    assert.equal(PT.formatPercent(c.savings_rate), expected.get(slug), `${slug} display`);
+  }
+  // The sub-1% counties must not round to a zero-dollar-savings "0%".
+  assert.equal(PT.formatPercent(BENCHMARKS.caldwell.savings_rate), "0.39");
+  assert.equal(PT.formatPercent(BENCHMARKS.caswell.savings_rate), "0.01");
+  assert.equal(PT.formatPercent(BENCHMARKS.wilson.savings_rate), "0.02");
+  assert.equal(PT.formatPercent(0.1454), "15");
+  assert.equal(PT.formatPercent(NaN), "");
 });
 
 test("receipt math identities: paid=V*act/X; could=(1-rate)*paid; saved=rate*paid", () => {

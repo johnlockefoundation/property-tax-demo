@@ -64,7 +64,8 @@ The receipt's "percent lower" MUST equal column Q (100 × Q for the display).
 paid       = V * act / x
 could_have = paid * (1 - savings_rate)
 saved      = paid * savings_rate      # paid - could_have
-percent    = 100 * savings_rate       # rendered as "NN% lower"
+percent    = 100 * savings_rate       # rendered as "NN% lower"; below 1% the
+                                     # fraction is kept (0.39%) so it never rounds to 0%
 ```
 
 - `below_benchmark` counties (five-year `savings_rate <= 0`) render a "would not have

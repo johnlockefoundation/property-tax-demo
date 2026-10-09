@@ -373,11 +373,10 @@ function showCountyLevel() {
     byId("billResults").classList.remove("hidden");
     return;
   }
-  const pct = Math.round(COUNTY.savings_rate * 100);
   sentence.innerHTML = "We cannot currently print a receipt for individual properties in " +
     esc(nm) + " County. Our county-level analysis estimates that a property tax levy limit " +
     "would have lowered property tax bills across " + esc(nm) + " County by about " +
-    '<span class="rate-note">' + pct + "%</span> over the five years to " + esc(COUNTY.period) + ".";
+    '<span class="rate-note">' + PT.formatPercent(COUNTY.savings_rate) + "%</span> over the five years to " + esc(COUNTY.period) + ".";
   sentence.classList.add("below-sentence-note");
   sentence.classList.remove("hidden");
   byId("bill").classList.add("hidden");
@@ -696,7 +695,7 @@ function selectParcel(f) {
       byId("bPaid").textContent = fmtMoney(receipt.paid);
       byId("bCould").textContent = fmtMoney(receipt.could_have);
       byId("bSaved").textContent = fmtMoney(receipt.saved);
-      byId("bPct").textContent = "OR " + Math.round(100 * receipt.rate) + "% lower";
+      byId("bPct").textContent = "OR " + PT.formatPercent(receipt.rate) + "% lower";
     }
   }
   byId("billResults").classList.remove("hidden");

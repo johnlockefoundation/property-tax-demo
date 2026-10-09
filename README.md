@@ -27,7 +27,7 @@ paid        = V * act / X          # V = parcel assessed value (NC OneMap)
                                   # act = county-wide FY2025-26 actual levy (NCDOR LG04)
                                   # X   = county FY2025-26 assessed valuation (LG04)
 could_have  = paid * (1 - savings_rate)
-saved       = paid * savings_rate  # the "percent lower" always matches column Q
+saved       = paid * savings_rate  # the "percent lower" always matches column Q (fraction kept below 1%)
 ```
 
 - County-wide property tax only — municipal, school, and special district taxes are

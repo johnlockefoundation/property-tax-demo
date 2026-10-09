@@ -40,6 +40,17 @@
     };
   }
 
+  // The published rate as the receipt prints it: column Q x 100. A whole
+  // percent is enough at and above 1%; below it the fraction is kept, or a
+  // 0.39% county would print "0% lower" next to a few dollars saved.
+  function formatPercent(rate) {
+    var p = 100 * Number(rate);
+    if (!isFinite(p)) return "";
+    if (p >= 1) return String(Math.round(p));
+    if (p <= 0) return "0";
+    return p.toFixed(2).replace(/\.?0+$/, "");
+  }
+
   // Build a safe OneMap where-clause for a free-text NC address search.
   // Escapes single quotes (SQL injection safe) and uses a case-insensitive
   // substring match on the site address. Prefix-free; the service matches %...%.
@@ -604,6 +615,7 @@
   return {
 
     computeReceipt: computeReceipt,
+    formatPercent: formatPercent,
     buildAddressWhere: buildAddressWhere,
     buildQueryVariants: buildQueryVariants,
     readsAsResidential: readsAsResidential,
